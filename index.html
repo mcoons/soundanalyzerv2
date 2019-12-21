@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Sound Visualizer v2.0</title>
+
+    <script src="app/jquery/jquery-1.7.2.min.js"></script>
+    <!-- <script src="app/jquery/jquery-ui-1.8.21.custom.min.js"></script> -->
+    <script src="app/babylon/babylon.max.js"></script>
+
+    <script src="app/index.js" defer></script>
+    <link rel="stylesheet" href="index.css" type="text/css" media="all">
+</head>
+
+<body>
+    <div id="wrapper">
+
+        <canvas id="canvas3D"></canvas>
+
+        <div id="title">Sound Visualizer v2.0</div>
+
+        <canvas id="canvas2D"></canvas>
+        <div id="content">
+            <button class="new_Btn">Choose File</button>
+            <input id="thefile" type="file" accept="audio/*" />
+            <audio id="audio" controls></audio>
+        </div>
+    </div>
+</body>
+
+</html>
