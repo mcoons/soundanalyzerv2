@@ -27,7 +27,7 @@ window.onload = function() {
 
       audio.src = URL.createObjectURL(files[0]);
       audio.load();
-      audio.play();
+    //   audio.play();
 
       canvas2D.style.width = canvas2D.width;
       canvas2D.style.height = canvas2D.height;
