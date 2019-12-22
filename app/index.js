@@ -32,6 +32,7 @@ window.onload = function () {
 
     var scene;
     var wheel1Objects = [];
+    var wheel2Objects = [];
 
     var palette = [];
 
@@ -115,7 +116,7 @@ window.onload = function () {
         // create a basic BJS Scene object
         var scene = new BABYLON.Scene(engine);
         scene.clearColor = BABYLON.Color3.Black();
-        scene.ambientColor = new BABYLON.Color3(0.3, 0.3, 0.3);
+        // scene.ambientColor = new BABYLON.Color3(0.3, 0.3, 0.3);
 
         // create a FreeCamera, and set its position to (x:0, y:5, z:-10)
         let camera = new BABYLON.ArcRotateCamera("camera1", 3 * Math.PI / 2, Math.PI / 3, 220, new BABYLON.Vector3(0, 0, 64), scene);
@@ -132,6 +133,42 @@ window.onload = function () {
 
 
 
+
+
+        createWheel1();
+        createWheel2();
+
+
+        return scene;
+    }
+
+    // call the createScene function
+    scene = createScene();
+    buildPalette();
+
+    // run the render loop
+    engine.runRenderLoop(function () {
+
+        wheel1Master.rotation.y += .005;
+        wheel2Master.rotation.y -= .005;
+        wheel1Objects.forEach((object, index) => {
+            // object.scaling.y = (soundData.frBuffer[index] + 140) * .2;
+            let y = dataArray[index] * .15 + .25;
+            object.scaling.y = y;
+            object.position.y = y / 2;
+            object.material = palette[Math.round(map(dataArray[index] || 0, 0, 255, 0, 1529))].mat;
+        });
+
+        updateWheel2();
+        scene.render();
+    });
+
+    // the canvas/window resize event handler
+    window.addEventListener('resize', function () {
+        engine.resize();
+    });
+
+    function createWheel1() {
         //create a Center of Transformation
         wheel1Master = new BABYLON.TransformNode("root");
         wheel1Master.position = new BABYLON.Vector3(0, 0, 0);
@@ -145,7 +182,13 @@ window.onload = function () {
             //     depth: depth
             // }, scene);
 
-            let thing = BABYLON.MeshBuilder.CreateCylinder("cylinder1", {height: 1, diameterTop: 8, diameterBottom: 8, tessellation: 100, subdivisons: 1}, scene, true);
+            let thing = BABYLON.MeshBuilder.CreateCylinder("cylinder1", {
+                height: 1,
+                diameterTop: 8.45,
+                diameterBottom: 8.45,
+                tessellation: 100,
+                subdivisons: 1
+            }, scene, true);
 
             thing.parent = wheel1Master; //apply to Box
             thing.position.x = radius * Math.cos(theta);
@@ -154,34 +197,51 @@ window.onload = function () {
 
             wheel1Objects.push(thing);
         }
-        return scene;
     }
 
-    // call the createScene function
-    scene = createScene();
-    buildPalette();
+    function createWheel2() {
+        wheel2Master = new BABYLON.TransformNode("root");
+        wheel2Master.position = new BABYLON.Vector3(0, -10, 0);
+        let width = 1;
+        let depth = 1;
+        let height = 1;
+        let radius = 10;
+        for (let theta = 0; theta < 2 * Math.PI - Math.PI / 19; theta += Math.PI / 18) {
 
-    // run the render loop
-    engine.runRenderLoop(function () {
+            let thing = BABYLON.MeshBuilder.CreateBox(("box"), {
+                width: width,
+                depth: depth,
+                height: height
+            }, scene);
+            thing.parent = wheel2Master; //apply to Box
 
-        wheel1Master.rotation.y += .005;
-        wheel1Objects.forEach((object, index) => {
-            // object.scaling.y = (soundData.frBuffer[index] + 140) * .2;
-            let y = dataArray[index] * .15 + .25;
-            object.scaling.y = y;
-            object.position.y = y / 2;
-            object.material = palette[Math.round(map(dataArray[index] || 0, 0, 255, 0, 1529))].mat;
+            // thing.material = palette[128].mat;
+            thing.position.x = radius * Math.cos(theta);
+            thing.position.z = radius * Math.sin(theta);
+            // thing.position.y = -50;
+            thing.rotation.y = -theta;
+            wheel2Objects.push(thing);
+
+        }
+        // wheel2Master.rotation.x = Math.PI / 2;
+    }
+
+    function updateWheel2(){
+        let radius = 12;
+    
+        wheel2Objects.forEach((object, index) => {
+          // object.scaling.y = (soundData.frBuffer[index] + 140) * .2;
+          let y = dataArray[index+25]*.35+.25;
+          object.scaling.x = y;
+          let theta = Math.PI/18 * index;
+        //   object.position.y = y / 2 ;
+          object.position.x = (radius+y/2)*Math.cos(theta);
+          object.position.z = (radius+y/2)*Math.sin(theta);
+        //   object.position.y = -30;
+          object.material = palette[Math.round(map(dataArray[index] || 0, 0, 255, 765, 0))].mat;
         });
-
-
-        scene.render();
-    });
-
-    // the canvas/window resize event handler
-    window.addEventListener('resize', function () {
-        engine.resize();
-    });
-
+      }
+    
     // Builds a palette array[1529] of palette objects
     function buildPalette() {
         let r = 255,
@@ -281,4 +341,3 @@ window.onload = function () {
     }
 
 };
-
