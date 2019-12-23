@@ -67,10 +67,20 @@ audio {
 #thefile,
 .new_Btn {
     position: absolute;
-    width: 50vw;
+    width: 24.8vw;
     height: 25px;
     bottom: 5px;
     left: 25vw;
+    border-radius: 30px;
+    z-index: 100;
+}
+
+.options_Btn {
+    position: absolute;
+    width: 24.8vw;
+    height: 25px;
+    bottom: 5px;
+    left: 50.2vw;
     border-radius: 30px;
     z-index: 100;
 }

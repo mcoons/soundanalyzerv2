@@ -2,39 +2,49 @@
 
 window.onload = function () {
 
-    var file = document.getElementById("thefile");
-    var audio = document.getElementById("audio");
-    var canvas2D = document.getElementById("canvas2D");
-    canvas2D.style.width = canvas2D.width;
-    canvas2D.style.height = canvas2D.height;
-
-    var ctx2D = canvas2D.getContext("2d");
-    ctx2D.globalAlpha = .5;
+    var showWheel1 = true;
+    var showWheel3 = true;
+    var showFloor = true;
+    var showBars = true;
 
     var title = document.getElementById("title");
 
-    var audioCtx = new AudioContext();
-    var audioSrc = audioCtx.createMediaElementSource(audio);
-    var analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 512;
-    analyser.smoothingTimeConstant = 0.9;
-
-    analyser.connect(audioCtx.destination);
-    audioSrc.connect(analyser);
-    var bufferLength = analyser.frequencyBinCount;
-    var dataLength = bufferLength - 64;
-    var dataArray = new Uint8Array(bufferLength);
-
+    // 2D canvas variables
+    var canvas2D = document.getElementById("canvas2D");
+    canvas2D.style.width = canvas2D.width;
+    canvas2D.style.height = canvas2D.height;
+    var ctx2D = canvas2D.getContext("2d");
+    ctx2D.globalAlpha = .5;
     var WIDTH = canvas2D.width;
     var HEIGHT = canvas2D.height;
 
-    var barWidth = (WIDTH / dataLength) - 3;
+    // audio variables
+    var file = document.getElementById("thefile");
+    var audio = document.getElementById("audio");
+    var audioCtx = new AudioContext();
+    var audioSrc = audioCtx.createMediaElementSource(audio);
 
-    var scene;
-    var wheel1Objects = [];
-    var wheel2Objects = [];
+    var frAnalyser = audioCtx.createAnalyser();
+    frAnalyser.fftSize = 512;
+    frAnalyser.smoothingTimeConstant = 0.9;
+    var frBufferLength = frAnalyser.frequencyBinCount;
+    var frDataLength = frBufferLength - 64;
+    var frDataArray = new Uint8Array(frBufferLength);
+    var barWidth = (WIDTH / frDataLength) - 3;
 
-    var palette = [];
+    var tdAnalyser = audioCtx.createAnalyser();
+    tdAnalyser.fftSize = 512;
+    tdAnalyser.smoothingTimeConstant = 0.9;
+    var tdBufferLength = tdAnalyser.frequencyBinCount;
+    var tdDataLength = tdBufferLength - 64;
+    var tdDataArray = new Uint8Array(tdBufferLength);
+    var tdHistory = [];
+    let arraySize = 256;
+    tdHistory = Array(arraySize).fill(0);
+
+    audioSrc.connect(frAnalyser);
+    frAnalyser.connect(tdAnalyser);
+    tdAnalyser.connect(audioCtx.destination);
 
     $('.new_Btn').bind("click", function () {
         $('#thefile').click();
@@ -73,24 +83,34 @@ window.onload = function () {
 
             x = 0;
 
-            analyser.getByteFrequencyData(dataArray);
+            frAnalyser.getByteFrequencyData(frDataArray);
+            tdAnalyser.getByteTimeDomainData(tdDataArray);
+            let highest = 0;
+            tdDataArray.forEach( d => {
+                if (d > highest) highest = d;
+            });
+
+            tdHistory.push(highest);
+            if (tdHistory.length > arraySize) tdHistory.shift();
+            // console.log(tdHistory.length);
 
             fix_dpi();
 
+            if (showBars){
             WIDTH = canvas2D.width;
             HEIGHT = canvas2D.height;
 
-            barWidth = (WIDTH / dataLength) - 3;
+            barWidth = (WIDTH / frDataLength) - 3;
 
             ctx2D.clearRect(0, 0, WIDTH, HEIGHT);
 
             let textColor;
 
-            for (var i = 0; i < bufferLength - 20; i++) {
-                barHeight = dataArray[i] * 1 + 3;
+            for (var i = 0; i < frBufferLength - 20; i++) {
+                barHeight = frDataArray[i] * 1 + 3;
 
-                var r = barHeight + (.22 * (i / dataLength));
-                var g = 250 * (i / dataLength);
+                var r = barHeight + (.22 * (i / frDataLength));
+                var g = 250 * (i / frDataLength);
                 var b = 250;
 
                 if (i == 20) textColor = "rgb(" + r + "," + g + "," + b + ")";
@@ -101,22 +121,40 @@ window.onload = function () {
                 x += barWidth + 3;
             }
             title.style.color = textColor;
+        }
+
+
 
         }
 
         render2DFrame();
     };
 
-    var canvas3D = document.getElementById('canvas3D');
+    // 3D canvas variables
+    var scene;
+    var masterTransform;
+    var wheel3Master;
+    var wheel1Master;
+    var floorMaster;
+    var wheel1Objects = [];
+    var wheel2Objects = [];
+    var wheel3Objects = [];
+    var floorObjects = [];
 
+    var palette = [];
+    var paletteRed = [];
+    var paletteGreen = [];
+    var paletteBlue = [];
+
+    var canvas3D = document.getElementById('canvas3D');
     var engine = new BABYLON.Engine(canvas3D, true);
 
     var createScene = function () {
-        console.log("Creating Scene");
+        // console.log("Creating Scene");
         // create a basic BJS Scene object
         var scene = new BABYLON.Scene(engine);
         scene.clearColor = BABYLON.Color3.Black();
-        // scene.ambientColor = new BABYLON.Color3(0.3, 0.3, 0.3);
+        scene.ambientColor = new BABYLON.Color3(0.3, 0.3, 0.3);
 
         // create a FreeCamera, and set its position to (x:0, y:5, z:-10)
         let camera = new BABYLON.ArcRotateCamera("camera1", 3 * Math.PI / 2, Math.PI / 3, 220, new BABYLON.Vector3(0, 0, 64), scene);
@@ -129,37 +167,46 @@ window.onload = function () {
 
         // create a basic light, aiming 0,1,0 - meaning, to the sky
         var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, 0), scene);
-        // var spotlight1 = new BABYLON.SpotLight("spotLight", new BABYLON.Vector3(0, 30, -10), new BABYLON.Vector3(0, -30, 10), Math.PI / 3, 200, scene);
+        light.intensity = 0.6;
 
+        var pointLight1 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(50, 50, 10), scene);
+        pointLight1.intensity = 0.5;
 
+        var pointLight2 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(0, -25, 0), scene);
+        pointLight2.intensity = 0.3;
 
+        var pointLight3 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(-50, -50, -10), scene);
+        pointLight3.intensity = .5;
 
+        masterTransform = new BABYLON.TransformNode("root");
+        masterTransform.position = new BABYLON.Vector3(0, 0, 0);
 
-        createWheel1();
-        createWheel2();
-
+        if (showWheel1) createWheel1();
+        // createWheel2();
+        if (showWheel3) createWheel3();
+        if (showFloor) createFloor();
 
         return scene;
     }
 
     // call the createScene function
     scene = createScene();
-    buildPalette();
+    buildPalettes();
+    // buildPaletteRed();
+    // buildPaletteGreen();
+    // buildPaletteBlue();
 
     // run the render loop
     engine.runRenderLoop(function () {
+        if (showWheel1) updateWheel1();
+        // updateWheel2();
+        if (showWheel3) updateWheel3();
+        if (showFloor) updateFloor();
 
-        wheel1Master.rotation.y += .005;
-        wheel2Master.rotation.y -= .005;
-        wheel1Objects.forEach((object, index) => {
-            // object.scaling.y = (soundData.frBuffer[index] + 140) * .2;
-            let y = dataArray[index] * .15 + .25;
-            object.scaling.y = y;
-            object.position.y = y / 2;
-            object.material = palette[Math.round(map(dataArray[index] || 0, 0, 255, 0, 1529))].mat;
-        });
+        // masterTransform.rotation.x += .0051;
+        // masterTransform.rotation.y -= .0051;
+        // masterTransform.rotation.z -= .0051;
 
-        updateWheel2();
         scene.render();
     });
 
@@ -172,6 +219,7 @@ window.onload = function () {
         //create a Center of Transformation
         wheel1Master = new BABYLON.TransformNode("root");
         wheel1Master.position = new BABYLON.Vector3(0, 0, 0);
+        wheel1Master.parent = masterTransform;
         let width = 6;
         let depth = 6;
         let radius = 40;
@@ -197,6 +245,18 @@ window.onload = function () {
 
             wheel1Objects.push(thing);
         }
+    }
+
+    function updateWheel1() {
+        wheel1Master.rotation.y += .005;
+        wheel1Objects.forEach((object, index) => {
+            // object.scaling.y = (soundData.frBuffer[index] + 140) * .2;
+            let y = frDataArray[index] * .15 + .25;
+            object.scaling.y = y;
+            object.position.y = y / 2;
+            object.material = palette[Math.round(map(frDataArray[index] || 0, 0, 255, 0, 1529))].mat;
+        });
+
     }
 
     function createWheel2() {
@@ -226,79 +286,246 @@ window.onload = function () {
         // wheel2Master.rotation.x = Math.PI / 2;
     }
 
-    function updateWheel2(){
+    function updateWheel2() {
         let radius = 12;
-    
+
         wheel2Objects.forEach((object, index) => {
-          // object.scaling.y = (soundData.frBuffer[index] + 140) * .2;
-          let y = dataArray[index+25]*.35+.25;
-          object.scaling.x = y;
-          let theta = Math.PI/18 * index;
-        //   object.position.y = y / 2 ;
-          object.position.x = (radius+y/2)*Math.cos(theta);
-          object.position.z = (radius+y/2)*Math.sin(theta);
-        //   object.position.y = -30;
-          object.material = palette[Math.round(map(dataArray[index] || 0, 0, 255, 765, 0))].mat;
+            // object.scaling.y = (soundData.frBuffer[index] + 140) * .2;
+            let y = frDataArray[index + 25] * .35 + .25;
+            object.scaling.x = y;
+            let theta = Math.PI / 18 * index;
+            //   object.position.y = y / 2 ;
+            object.position.x = (radius + y / 2) * Math.cos(theta);
+            object.position.z = (radius + y / 2) * Math.sin(theta);
+            //   object.position.y = -30;
+            object.material = palette[Math.round(map(frDataArray[index] || 0, 0, 255, 765, 0))].mat;
         });
-      }
-    
+    }
+
+    function createWheel3() {
+        wheel3Master = new BABYLON.TransformNode("root");
+        wheel3Master.position = new BABYLON.Vector3(0, -15, 0);
+        wheel3Master.parent = masterTransform;
+
+        let width = 1;
+        let depth = 1.5;
+        let height = 1;
+        let radius = 40;
+        // let count = 0;
+
+        let itemsDesired = 320;
+
+        let startIndex = 0;
+        let endIndex = startIndex + Math.round(itemsDesired / 32);
+        // 0 - 20 Index
+
+        let dataIndex = 0;
+        let direction = -1;
+
+        for (let theta = 0; theta < 2 * Math.PI; theta += Math.PI / (itemsDesired / 4)) {
+
+            if (dataIndex >= endIndex || dataIndex <= startIndex) direction = -direction;
+
+            let thing = BABYLON.MeshBuilder.CreateBox(("box"), {
+                width: width,
+                depth: depth,
+                height: dataIndex / 16 + .1
+            }, scene);
+            thing.parent = wheel3Master; //apply to Box
+
+            // thing.material = palette[128].mat;
+            thing.position.x = radius * Math.cos(theta);
+            thing.position.z = radius * Math.sin(theta);
+            // thing.position.y = -50;
+            thing.rotation.y = -theta;
+            wheel3Objects.push(thing);
+
+            // count++;
+
+            // console.log(dataIndex);
+            dataIndex += direction;
+        }
+        // wheel3Master.rotation.x = Math.PI / 2;
+        // console.log("count:", count)
+    }
+
+    function updateWheel3() {
+        let radius = 40;
+
+        let dataIndex = 3;
+        let direction = -1;
+
+        // let count = 0;
+        // let y;
+
+        let itemsDesired = 320;
+
+        let startIndex = 0;
+        let endIndex = startIndex + Math.round(itemsDesired / 16);
+
+        wheel3Master.rotation.y -= .005;
+
+        wheel3Objects.forEach((object, index) => {
+
+            if (dataIndex >= endIndex || dataIndex <= startIndex) direction = -direction;
+
+            let y = frDataArray[dataIndex + 25] * .3 + .01;
+            object.scaling.x = y;
+            object.scaling.y = .5 + dataIndex / 8;
+            let theta = Math.PI / (itemsDesired / 4) * index;
+            object.position.x = (radius + y / 2) * Math.cos(theta);
+            object.position.z = (radius + y / 2) * Math.sin(theta);
+            object.material = palette[Math.round(map((y * 1) % 255 || 0, 0, 255, 128, 1529))].mat;
+            // object.material = paletteRed[Math.round(map((y * 1.5) % 255 || 0, 0, 255, 255, 128))].mat;
+
+            //   count++;
+            dataIndex += direction;
+
+        });
+    }
+
+    function createFloor() {
+        floorMaster = new BABYLON.TransformNode("root");
+        floorMaster.position = new BABYLON.Vector3(0, -40, 0);
+        floorMaster.parent = masterTransform;
+
+        let width = 10;
+        let depth = 10;
+        let spacing = 2;
+        for (let z = -5; z < 5; z++) {
+            for (let x = -5; x < 5; x++) {
+                let thing = BABYLON.MeshBuilder.CreateBox(("box"), {
+                    width: width,
+                    depth: depth,
+                    height: 1
+                }, scene);
+                thing.position = new BABYLON.Vector3(x * (width+spacing) + (width+spacing)/2, -40, z * (depth+spacing) + (depth+spacing)/2);                
+
+                floorObjects.push(thing);
+
+            }           
+        }
+    }
+
+    function updateFloor() {
+
+        let dataIndex = 0;
+
+        floorObjects.forEach(o => {
+            let y = frDataArray[dataIndex]/80+.1;
+            o.scaling.y = y;
+            o.position.y = -40 + y/2;
+            o.material = palette[Math.round(map((frDataArray[dataIndex] * 2) % 255 || 0, 0, 255, 128, 1529))].mat;
+
+            dataIndex++;
+        })
+    }
+
+    ///////////////////////////////////////////////////
+    //   UTILITIES
+    ////////////////////////////////////////////////////
+
+    function addToPalette(r, g, b, palette) {
+
+        var color = new BABYLON.Color4(r / 255, g / 255, b / 255, 1);
+
+        let mat = new BABYLON.StandardMaterial("mat", scene);
+        mat.diffuseColor = color;
+        // mat.specularColor = new BABYLON.Color3(r / 255 * 1.1, g / 255 * 1.1, b / 255 * 1.1);
+        mat.specularColor = new BABYLON.Color3(.25, .25, .25);
+        mat.ambientColor = new BABYLON.Color3(r / 255 * .25, g / 255 * .25, b / 255 * .25);
+
+
+        palette.push({
+            r,
+            g,
+            b,
+            color,
+            mat
+        });
+    }
+
     // Builds a palette array[1529] of palette objects
-    function buildPalette() {
+    function buildPalettes() {
         let r = 255,
             g = 0,
             b = 0;
 
         for (g = 0; g <= 255; g++) {
-            addToPalette(r, g, b, );
+            addToPalette(r, g, b, palette);
+            addToPalette(g, 0, 0, paletteRed);
+            addToPalette(0, g, 0, paletteGreen);
+
         }
         g--;
 
         for (r = 254; r >= 0; r--) {
-            addToPalette(r, g, b, );
+            addToPalette(r, g, b, palette);
         }
         r++;
 
         for (b = 1; b <= 255; b++) {
-            addToPalette(r, g, b, );
+            addToPalette(r, g, b, palette);
         }
         b--;
 
         for (g = 254; g >= 0; g--) {
-            addToPalette(r, g, b, );
+            addToPalette(r, g, b, palette);
         }
         g++;
 
         for (r = 1; r <= 255; r++) {
-            addToPalette(r, g, b, );
+            addToPalette(r, g, b, palette);
         }
         r--;
 
         for (b = 254; b > 0; b--) {
-            addToPalette(r, g, b, );
+            addToPalette(r, g, b, palette);
         }
         b++;
 
-        function addToPalette(r, g, b) {
-
-            var color = new BABYLON.Color4(r / 255, g / 255, b / 255, 1);
-
-            let mat = new BABYLON.StandardMaterial("mat", scene);
-            mat.diffuseColor = color;
-            mat.specularColor = new BABYLON.Color3(r / 255 * .4, g / 255 * .4, b / 255 * .4);
-            mat.ambientColor = new BABYLON.Color3(r / 255 * .4, g / 255 * .4, b / 255 * .4);
-
-
-            palette.push({
-                r,
-                g,
-                b,
-                color,
-                mat
-            });
-        }
-
         // console.log(palette);
     }
+
+    // function buildPaletteRed() {
+    //     let r = 255,
+    //         g = 0,
+    //         b = 0;
+
+
+    //     for (r = 0; r <= 255; r++) {
+    //         addToPalette(r, 0, 0, paletteRed);
+    //     }
+
+
+    //     // console.log(palette);
+    // }
+
+    // function buildPaletteGreen() {
+    //     let r = 255,
+    //         g = 0,
+    //         b = 0;
+
+
+    //     for (g = 0; g <= 255; g++) {
+    //         addToPalette(0, g, 0, paletteGreen);
+    //     }
+
+    //     // console.log(palette);
+    // }
+
+    // function buildPaletteBlue() {
+    //     let r = 255,
+    //         g = 0,
+    //         b = 0;
+
+
+    //     for (b = 0; b <= 255; b++) {
+    //         addToPalette(0, 0, b, paletteBlue);
+    //     }
+
+    //     // console.log(palette);
+    // }
 
     // Function to map a value from one range to another
     function map(x, oMin, oMax, nMin, nMax) {
