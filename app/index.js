@@ -24,21 +24,43 @@
 //
 // 6) Add the ability to save the current screen (2D and 3D)
 //
-// 7) Add an overlay for output logging like the title is displayed
+// 7) 
 //
 // 8) 
+//
+// Can I determine what key a song is played in and what is out of key
+//
+// 
+//
+//
+//
+//
 
+import {
+    addToGlowPalette,
+    addToPalette,
+    buildPalettes,
+    map,
+    logToScreen
+} from './utilities.js';
+
+var scene;
 
 window.onload = function () {
 
-    var showDancers = false;
-    var showInnerSnowflake = false;
-    var showOuterSnowflake = false;
-    var showFloor = true;
+    var showDancers = true;
+    var showInnerSnowflake = true;
+    var showOuterSnowflake = true;
+    var showFrame = true;
     var showBars = true;
-    var showTitle = false;
+    var showTitle = true;
+    var showFloor = false;
+    var showRibbon = true;
+
+    var camera;
 
     var title = document.getElementById("title");
+    var console = document.getElementById("console");
 
     //////////////////////////////
     // 2D canvas variables
@@ -64,6 +86,8 @@ window.onload = function () {
     var frDataLength = frBufferLength - 64;
     var frDataArray = new Uint8Array(frBufferLength);
     var barWidth = (WIDTH / frDataLength) - 3;
+    var frCurrentHigh = 0;
+    var frCurrentLow = 255
 
     var tdAnalyser = audioCtx.createAnalyser();
     tdAnalyser.fftSize = 512;
@@ -83,16 +107,13 @@ window.onload = function () {
         $('#thefile').click();
     });
 
-
     //////////////////////////////
     // create the audio connection to the music file
     // start the 2D render loop
     // start the data analysis in this loop
     file.onchange = function () {
         var files = this.files;
-        console.log(files);
-        logToScreen('<p>testing 123</p><p>Current File: ' + files);
-
+        // console.log(files);
 
         if (showTitle) {
             title.innerHTML = files[0].name;
@@ -127,15 +148,25 @@ window.onload = function () {
             x = 0;
 
             frAnalyser.getByteFrequencyData(frDataArray);
+            frCurrentHigh = 0;
+            frCurrentLow = 255;
+            frDataArray.forEach(f=>{
+                if (f > frCurrentHigh) frCurrentHigh = f;
+                if (f < frCurrentLow) frCurrentLow = f;
+            });
+
             tdAnalyser.getByteTimeDomainData(tdDataArray);
             let highest = 0;
             tdDataArray.forEach(d => {
                 if (d > highest) highest = d;
             });
-
             tdHistory.push(highest);
             if (tdHistory.length > arraySize) tdHistory.shift();
             // console.log(tdHistory.length);
+
+
+
+            // scene.
 
             fix_dpi();
 
@@ -174,7 +205,7 @@ window.onload = function () {
 
     //////////////////////////////
     // 3D canvas variables
-    var scene;
+    // var scene;
     var masterTransform;
     var dancersObjects = [];
     var dancersMaster;
@@ -182,10 +213,12 @@ window.onload = function () {
     var innerSnowflakeMaster;
     var outerSnowflakeObjects = [];
     var outerSnowflakeMaster;
+    var frameObjects = [];
+    var frameMaster;
     var floorObjects = [];
     var floorMaster;
 
-    var helixPath = [];    
+    var helixPath = [];
     var helixMaster;
 
     var palette = [];
@@ -194,7 +227,11 @@ window.onload = function () {
     var paletteRed = [];
     var paletteGreen = [];
     var paletteBlue = [];
+    var paletteMetallic = [];
     var paletteScroller = 0;
+
+    var frameMaterial;
+    var ribbon;
 
     var canvas3D = document.getElementById('canvas3D');
     var engine = new BABYLON.Engine(canvas3D, true);
@@ -215,9 +252,18 @@ window.onload = function () {
         if (showDancers) updateDancers();
         if (showInnerSnowflake) updateInnerSnowflake();
         if (showOuterSnowflake) updateOuterSnowflake();
+        if (showFrame) updateFrame();
         if (showFloor) updateFloor();
+        if (showRibbon) updateRibbon();
 
-        ribbonMaster.rotation.y -= .01;
+        // ribbonMaster.rotation.y -= .01;
+
+        let outputString = ""; // = "camera pos:<br>"+scene.activeCamera.position + "<br>";
+        outputString += "alpha: <br>" + scene.activeCamera.alpha + "<br>";
+        outputString += "beta:  <br>" + scene.activeCamera.beta + "<br>";
+        outputString += "radius:<br>" + scene.activeCamera.radius + "<br>";
+
+        // logToScreen(outputString);
 
         // masterTransform.rotation.x += .0051;
         // masterTransform.rotation.y -= .0051;
@@ -233,20 +279,48 @@ window.onload = function () {
     // function to create the 3D scene
     function createScene() {
         // create a basic BJS Scene object
-        var scene = new BABYLON.Scene(engine);
+        let scene = new BABYLON.Scene(engine);
         scene.clearColor = BABYLON.Color3.Black();
         scene.ambientColor = new BABYLON.Color3(0.4, 0.3, 0.5);
 
         glowLayer = new BABYLON.GlowLayer("glow", scene);
-        glowLayer.intensity = .75;
+        glowLayer.intensity = .55;
 
         // highlightLayer = new BABYLON.HighlightLayer("hl1", scene);
 
-        buildPalettes();
+        buildPalettes(palette, paletteGlow, paletteRed, paletteGreen, paletteBlue, paletteGray, scene);
+
+        frameMaterial = new BABYLON.StandardMaterial("myMaterial", scene);
+        // frameMaterial.diffuseColor = new BABYLON.Color3(1, 0, 1);
+        // frameMaterial.specularColor = new BABYLON.Color3(0.5, 0.6, 0.87);
+        // frameMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1);
+        // frameMaterial.ambientColor = new BABYLON.Color3(0.23, 0.98, 0.53);
+
+        // frameMaterial.diffuseTexture = new BABYLON.Texture("PATH TO IMAGE", scene);
+        // frameMaterial.specularTexture = new BABYLON.Texture("PATH TO IMAGE", scene);
+        // frameMaterial.emissiveTexture = new BABYLON.Texture("PATH TO IMAGE", scene);
+        // frameMaterial.ambientTexture = new BABYLON.Texture("PATH TO IMAGE", scene);
+
+
+        var stoneDiffURL = "http://i.imgur.com/VSbN3Fc.png";
+        var stoneNHURL = "http://i.imgur.com/zVGaZNi.png";
+
+        var stoneDiffuseTexture = new BABYLON.Texture(stoneDiffURL, scene);
+        var stoneNormalsHeightTexture = new BABYLON.Texture(stoneNHURL, scene);
+        var normalsHeightTexture = stoneNormalsHeightTexture;
+
+        frameMaterial.diffuseTexture = stoneDiffuseTexture;
+        frameMaterial.bumpTexture = stoneNormalsHeightTexture;
+        frameMaterial.useParallax = true;
+        frameMaterial.useParallaxOcclusion = true;
+        frameMaterial.parallaxScaleBias = 0.1;
+        frameMaterial.specularPower = 1000.0;
+        frameMaterial.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+
 
         // create a FreeCamera, and set its position to (x:0, y:5, z:-10)
         // let camera = new BABYLON.ArcRotateCamera("camera1", 3 * Math.PI / 2, Math.PI / 3, 220, new BABYLON.Vector3(0, 0, 64), scene);
-        let camera = new BABYLON.ArcRotateCamera("camera1", 0, Math.PI/2, 220, new BABYLON.Vector3(0, 0, 0), scene);
+        camera = new BABYLON.ArcRotateCamera("camera1", 0, Math.PI / 2, 220, new BABYLON.Vector3(0, 0, 0), scene);
 
         // target the camera to scene origin
         camera.setTarget(BABYLON.Vector3.Zero());
@@ -259,14 +333,14 @@ window.onload = function () {
         light.intensity = 1.6;
         // light.groundColor = paletteBlue[255].color;
 
-        // var pointLight1 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(20, 20, -10), scene);
-        // pointLight1.intensity = 1.2;
+        var pointLight1 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(20, 20, -10), scene);
+        pointLight1.intensity = 1.2;
 
-        // var pointLight2 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(0, -80, 0), scene);
-        // pointLight2.intensity = 1.2;
+        var pointLight2 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(0, -80, 0), scene);
+        pointLight2.intensity = 1.2;
 
-        // var pointLight3 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(0, 80, 0), scene);
-        // pointLight3.intensity = .8;
+        var pointLight3 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(0, 80, 0), scene);
+        pointLight3.intensity = .8;
 
         var pointLight4 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(40, 580, -180), scene);
         pointLight4.intensity = 1.0;
@@ -276,10 +350,15 @@ window.onload = function () {
 
         if (showDancers) createDancers();
         if (showInnerSnowflake) createInnerSnowflake();
-        if (showFloor) createFloor();
+        if (showFrame) createFrame();
         if (showOuterSnowflake) createOuterSnowflake()
+        if (showFloor) createFloor();
+        if (showRibbon) createRibbon();
 
-        createSinglePathRibbon();
+        createBillboard();
+
+        // createSinglePathRibbon();
+
 
         return scene;
     }
@@ -292,9 +371,9 @@ window.onload = function () {
         dancersMaster.position = new BABYLON.Vector3(0, 0, 0);
         dancersMaster.parent = masterTransform;
 
-        let width = 6;
-        let depth = 6;
-        let radius = 40;
+        let width = 4.5;
+        let depth = 4.5;
+        let radius = 60;
         for (let theta = 0; theta < 2 * Math.PI - Math.PI / 36; theta += Math.PI / 15) {
 
             // let thing = BABYLON.MeshBuilder.CreateBox(("box"), {
@@ -306,9 +385,12 @@ window.onload = function () {
                 height: 1,
                 diameterTop: 8.45,
                 diameterBottom: 8.45,
-                tessellation: 100,
+                tessellation: 8,
                 subdivisons: 1
             }, scene, true);
+            thing.convertToFlatShadedMesh();
+
+
 
             thing.parent = dancersMaster; //apply to Box
             thing.position.x = radius * Math.cos(theta);
@@ -413,7 +495,7 @@ window.onload = function () {
         let width = 1;
         let depth = 1.5;
         let height = 1;
-        diameterTop = 2;
+        let diameterTop = 2;
         var diameterBottom = 6;
         let radius = 60;
         // let count = 0;
@@ -452,7 +534,7 @@ window.onload = function () {
     }
 
     function updateOuterSnowflake() {
-        let radius = 40;
+        let radius = 45;
         let dataIndex = 3; // index into the frDataArray
         let direction = -1; // direction to traverse the frDataArray, flips to positive at start
         let itemsDesired = 320;
@@ -479,17 +561,17 @@ window.onload = function () {
         });
     }
 
-    function createFloor() {
-        floorMaster = new BABYLON.TransformNode("root");
-        floorMaster.position = new BABYLON.Vector3(0, -40, 0);
-        floorMaster.parent = masterTransform;
+    function createFrame() {
+        frameMaster = new BABYLON.TransformNode("root");
+        frameMaster.position = new BABYLON.Vector3(0, -40, 0);
+        frameMaster.parent = masterTransform;
 
         let width = 30;
         let depth = 30;
         let spacing = 12;
         let frameWidth = spacing / 2;
         let frameLength = width + spacing;
-        let frameHeight = 7;
+        let frameHeight = 12;
         let frameColorIndex = 50;
 
         for (let x = -5; x < 5; x++) {
@@ -505,9 +587,9 @@ window.onload = function () {
 
             thing.position = new BABYLON.Vector3(px, py, pz);
 
-            floorObjects.push(thing);
+            frameObjects.push(thing);
 
-            createFrame(px, py, pz);
+            createBorder(px, py, pz);
         }
 
         for (let z = -4; z < 4; z++) {
@@ -523,9 +605,9 @@ window.onload = function () {
 
             thing.position = new BABYLON.Vector3(px, py, pz);
 
-            floorObjects.push(thing);
+            frameObjects.push(thing);
 
-            createFrame(px, py, pz);
+            createBorder(px, py, pz);
         }
 
         for (let x = 4; x >= -5; x--) {
@@ -541,9 +623,9 @@ window.onload = function () {
 
             thing.position = new BABYLON.Vector3(px, py, pz);
 
-            floorObjects.push(thing);
+            frameObjects.push(thing);
 
-            createFrame(px, py, pz);
+            createBorder(px, py, pz);
         }
 
         for (let z = 4; z > -4; z--) {
@@ -559,12 +641,111 @@ window.onload = function () {
 
             thing.position = new BABYLON.Vector3(px, py, pz);
 
-            floorObjects.push(thing);
+            frameObjects.push(thing);
 
-            createFrame(px, py, pz);
+            createBorder(px, py, pz);
         }
 
-        function createFrame(x, y, z) {
+        function createBorder(x, y, z) {
+
+            let materialIndex = 20;
+
+            let back = BABYLON.MeshBuilder.CreateBox(("box"), {
+                width: frameWidth,
+                depth: frameLength,
+                height: frameHeight
+            }, scene);
+
+            back.position = new BABYLON.Vector3(x + (width / 2 + frameWidth / 2), y, z);
+            back.material = paletteGray[materialIndex].mat;
+
+
+
+            let front = BABYLON.MeshBuilder.CreateBox(("box"), {
+                width: frameWidth,
+                depth: frameLength,
+                height: frameHeight
+            }, scene);
+
+            front.position = new BABYLON.Vector3(x - (width / 2 + frameWidth / 2), y, z);
+            front.material = paletteGray[materialIndex].mat;
+
+
+
+
+
+            let left = BABYLON.MeshBuilder.CreateBox(("box"), {
+                width: frameWidth,
+                depth: frameLength - 2 * frameWidth,
+                height: frameHeight
+            }, scene);
+
+            left.position = new BABYLON.Vector3(x, y, z + (width / 2 + frameWidth / 2));
+            left.rotation.y = Math.PI / 2;
+            left.material = paletteGray[materialIndex].mat;
+
+
+            let right = BABYLON.MeshBuilder.CreateBox(("box"), {
+                width: frameWidth,
+                depth: frameLength - 2 * frameWidth,
+                height: frameHeight
+            }, scene);
+
+            right.position = new BABYLON.Vector3(x, y, z - (width / 2 + frameWidth / 2));
+            right.rotation.y = Math.PI / 2;
+            right.material = paletteGray[materialIndex].mat;
+        }
+
+
+    }
+
+    function updateFrame() {
+        frameObjects.forEach((o, i) => {
+            let y = frDataArray[i] / 35 + .1;
+            o.scaling.y = y;
+            o.position.y = -40 + y / 2;
+            o.material = paletteGlow[Math.round(map((frDataArray[(i + 5) % 9] * 1.3) % 128 || 0, 0, 128, 0, 900))].mat;
+        });
+    }
+
+    function createFloor() {
+        floorMaster = new BABYLON.TransformNode("root");
+        floorMaster.position = new BABYLON.Vector3(0, -40, 0);
+        floorMaster.parent = masterTransform;
+
+        let width = 10;
+        let depth = 10;
+        let spacing = 8;
+        let frameWidth = spacing / 2;
+        let frameLength = width + spacing;
+        let frameHeight = 7.5;
+        let frameColorIndex = 50;
+
+        for (let x = 0; x < 8; x++) {
+            for (let z = 0; z < 8; z++) {
+
+
+                let thing = BABYLON.MeshBuilder.CreateBox(("floor(" + x + "," + z + ")"), {
+                    width: width,
+                    depth: depth,
+                    height: 1
+                }, scene);
+
+                let px = x * (width + spacing) - 3.5 * (width + spacing);
+                let py = -40;
+                let pz = z * (depth + spacing) - 3.5 * (depth + spacing);
+
+                thing.position = new BABYLON.Vector3(px, py, pz);
+
+                floorObjects.push(thing);
+
+                createBorder(px, py, pz);
+
+            }
+
+        }
+
+        function createBorder(x, y, z) {
             let back = BABYLON.MeshBuilder.CreateBox(("box"), {
                 width: frameWidth,
                 depth: frameLength,
@@ -603,57 +784,58 @@ window.onload = function () {
             right.rotation.y = Math.PI / 2;
             right.material = paletteGray[frameColorIndex].mat;
         }
+
     }
 
     function updateFloor() {
         floorObjects.forEach((o, i) => {
-            let y = frDataArray[i] / 50 + .1;
+            let y = frDataArray[i] / 35 + .1;
             o.scaling.y = y;
             o.position.y = -40 + y / 2;
-            o.material = paletteGlow[Math.round(map((frDataArray[(i + 5) % 9] * 1.3) % 128 || 0, 0, 128, 0, 900))].mat;
+            o.material = paletteGlow[Math.round(map((frDataArray[(i * 2)] * 2) % 255, 0, 255, 0, 1529))].mat;
         });
     }
 
     function createSinglePathRibbon() {
         ribbonMaster = new BABYLON.TransformNode("root");
-        ribbonMaster.position = new BABYLON.Vector3(0, -40, 0);
+        ribbonMaster.position = new BABYLON.Vector3(0, 5, 0);
         ribbonMaster.parent = masterTransform;
 
         // mat.wireframe = true;
 
-        var heightScale = 1;
+        var heightScale = .3;
         var vertexColors = [];
 
 
         for (var i = 0; i < frBufferLength; i++) {
             // var deltaTheta = flatness * Math.PI * i / frBufferLength;  // per
-            var deltaTheta =  3 * Math.PI * i / 20;  // per
-            helixPath.push(new BABYLON.Vector3(40 * Math.cos(deltaTheta), i * heightScale, 40 * Math.sin(deltaTheta)));
+            var deltaTheta = 3 * Math.PI * i / 60; // per
+            helixPath.push(new BABYLON.Vector3(30 * Math.cos(deltaTheta), i * heightScale, 30 * Math.sin(deltaTheta)));
 
-            console.log(Math.round( map(i, 0, 512, 0, 1529) ));
-            console.log(palette[Math.round( map(i, 0, 512, 0, 1529) )  ].color)
-            vertexColors.push(palette[i*5 ].color);
-            vertexColors.push(palette[1529 - i*5 ].color);
+            console.log(Math.round(map(i, 0, 512, 0, 1529)));
+            console.log(palette[Math.round(map(i, 0, 512, 0, 1529))].color)
+            vertexColors.push(palette[i * 5].color);
+            vertexColors.push(palette[1529 - i * 5].color);
 
         }
 
 
 
-        // // Show single path
-        // var lines = BABYLON.MeshBuilder.CreateLines("helixLines", {
-        //     points: helixPath,
-        //     colors: vertexColors
+        // Show single path
+        var lines = BABYLON.MeshBuilder.CreateLines("helixLines", {
+            points: helixPath,
+            colors: vertexColors
 
-        // }, scene);
+        }, scene);
 
-        // lines.parent = ribbonMaster;
+        lines.parent = ribbonMaster;
 
 
         //Create the Ribbon around the single path
         var helix = BABYLON.MeshBuilder.CreateRibbon("helix", {
             pathArray: [helixPath],
             updatable: true,
-            offset: 5,
+            offset: 30,
             colors: vertexColors,
             sideOrientation: 1
         }, scene);
@@ -664,145 +846,79 @@ window.onload = function () {
     }
 
 
-    
+    function createRibbon() {
+        var paths = [];
+        var sideO = BABYLON.Mesh.BACKSIDE;
 
-    ///////////////////////////////////////////////////
-    //   UTILITIES
-    ////////////////////////////////////////////////////
+        for (let r = 0; r < 128; r++) {
+            let path = [];
+            for (let theta = 0; theta <= 2 * Math.PI; theta += Math.PI / 8) {
 
-    function addToPalette(r, g, b, palette, saturation = .6) {
+                let x = .4 * r * Math.cos(theta);
+                let z = .4 * r * Math.sin(theta);
+                let y = Math.sin(r / 5);
 
-        r = r * saturation;
-        g = g * saturation;
-        b = b * saturation;
+                path.push(new BABYLON.Vector3(x, y, z));
+            }
+            //   var lines = BABYLON.Mesh.CreateLines("par", path, scene);
+            paths.push(path);
 
-        var color = new BABYLON.Color4(r / 255, g / 255, b / 255, 1);
+        }
 
-        let mat = new BABYLON.StandardMaterial("mat", scene);
-        mat.diffuseColor = color;
-        mat.specularColor = new BABYLON.Color3(r / 255 * .1, g / 255 * .1, b / 255 * .1);
-        // mat.specularColor = new BABYLON.Color3(.25, .25, .25);
-        mat.ambientColor = new BABYLON.Color3(r / 255 * .25, g / 255 * .25, b / 255 * .25);
-        mat.emissiveColor = new BABYLON.Color3(0, 0, 0);
-        mat.backFaceCulling = false;
+        // var ribbon = BABYLON.Mesh.CreateRibbon("rib", paths, false, true, 0, scene);
+        ribbon = BABYLON.Mesh.CreateRibbon("ribbon", paths, false, true, 0, scene, true, sideO);
 
-        palette.push({
-            r,
-            g,
-            b,
-            color,
-            mat
-        });
+        ribbon.material = paletteGray[50].mat;
     }
 
-    function addToGlowPalette(r, g, b, palette) {
+    function updateRibbon() {
+        var paths = [];
+        var vertexColors = [];
+        var sideO = BABYLON.Mesh.BACKSIDE;
+        var myColors = [];
 
-        var color = new BABYLON.Color4(r / 255, g / 255, b / 255, 1);
+        for (let r = 0; r < 128; r++) {
+            var path = [];
+            for (let theta = 0; theta <= 2 * Math.PI; theta += Math.PI / 8) {
 
-        let mat = new BABYLON.StandardMaterial("mat", scene);
-        mat.diffuseColor = color;
-        mat.specularColor = new BABYLON.Color3(r / 255 * .1, g / 255 * .1, b / 255 * .1);
-        // mat.specularColor = new BABYLON.Color3(.25, .25, .25);
-        mat.ambientColor = new BABYLON.Color3(r / 255 * .25, g / 255 * .25, b / 255 * .25);
-        mat.emissiveColor = new BABYLON.Color3(r / 255, g / 255, b / 255);
-        mat.backFaceCulling = true;
+                let x = .4 * r * Math.cos(theta);
+                let z = .4 * r * Math.sin(theta);
+                let y = frDataArray[r] / 18; // + 20.1;
 
-        palette.push({
-            r,
-            g,
-            b,
-            color,
-            mat
-        });
+                path.push(new BABYLON.Vector3(x, y, z));
+                myColors.push(new BABYLON.Color4(.5,.5,.5,.5));
+                myColors.push(new BABYLON.Color4(.5,.5,.5,.5));
+            }
+
+            // var lines = BABYLON.Mesh.CreateLines("par", path, scene);
+            paths.push(path);
+        };
+
+
+        logToScreen(paths.length + "<br>" +paths[0][0] + "<br>" + myColors[0] + "<br>");
+
+        ribbon = BABYLON.MeshBuilder.CreateRibbon(null, {pathArray: paths, instance: ribbon, myColors: myColors, sideOrientation:1});
+        // ribbon = BABYLON.MeshBuilder.CreateRibbon("ribbon", {
+        //     pathArray: paths,
+        //     instance: ribbon,
+        //     colors: myColors,
+        //     sideOrientation: 1
+        // });
     }
 
-    // Builds a palette array[1529] of palette objects
-    function buildPalettes() {
-        let r = 255,
-            g = 0,
-            b = 0;
+    function createBillboard() {
+        //Creation of a repeated textured material
+        var materialPlane = new BABYLON.StandardMaterial("texturePlane", scene);
+        materialPlane.diffuseTexture = new BABYLON.Texture("app/assets/images/img.jpg", scene);
 
-        for (g = 0; g <= 255; g++) {
-            addToPalette(r, g, b, palette);
-            addToGlowPalette(r, g, b, paletteGlow);
+        materialPlane.specularColor = new BABYLON.Color3(0, 0, 0);
+        materialPlane.backFaceCulling = false; //Allways show the front and the back of an element
 
-            addToPalette(g, 0, 0, paletteRed, 1);
-            addToPalette(0, g, 0, paletteGreen, 1);
-            addToPalette(0, 0, g, paletteBlue, 1);
-            addToPalette(g, g, g, paletteGray, 1);
-        }
-        g--;
-
-        for (r = 254; r >= 0; r--) {
-            addToPalette(r, g, b, palette);
-            addToGlowPalette(r, g, b, paletteGlow);
-        }
-        r++;
-
-        for (b = 1; b <= 255; b++) {
-            addToPalette(r, g, b, palette);
-            addToGlowPalette(r, g, b, paletteGlow);
-        }
-        b--;
-
-        for (g = 254; g >= 0; g--) {
-            addToPalette(r, g, b, palette);
-            addToGlowPalette(r, g, b, paletteGlow);
-        }
-        g++;
-
-        for (r = 1; r <= 255; r++) {
-            addToPalette(r, g, b, palette);
-            addToGlowPalette(r, g, b, paletteGlow);
-        }
-        r--;
-
-        for (b = 254; b > 0; b--) {
-            addToPalette(r, g, b, palette);
-            addToGlowPalette(r, g, b, paletteGlow);
-        }
-        b++;
-    }
-
-    // Function to map a value from one range to another
-    function map(x, oMin, oMax, nMin, nMax) {
-        // check range
-        if (oMin === oMax) {
-            console.log("Warning: Zero input range");
-            return null;
-        }
-
-        if (nMin === nMax) {
-            console.log("Warning: Zero output range");
-            return null;
-        }
-
-        // check reversed input range
-        let reverseInput = false;
-        let oldMin = Math.min(oMin, oMax);
-        let oldMax = Math.max(oMin, oMax);
-
-        if (oldMin != oMin) reverseInput = true;
-
-        // check reversed output range
-        let reverseOutput = false;
-        let newMin = Math.min(nMin, nMax);
-        let newMax = Math.max(nMin, nMax);
-
-        if (newMin != nMin) reverseOutput = true;
-
-        // calculate new range
-        let portion = (x - oldMin) * (newMax - newMin) / (oldMax - oldMin);
-        if (reverseInput) portion = (oldMax - x) * (newMax - newMin) / (oldMax - oldMin);
-
-        let result = portion + newMin;
-        if (reverseOutput) result = newMax - portion;
-
-        return result;
-    }
-
-    function logToScreen(htmlToRender) {
-        document.getElementById("output").innerHTML = htmlToRender;
+        //Creation of a plane
+        var plane = BABYLON.Mesh.CreatePlane("plane", 120, scene);
+        // plane.rotation.x = Math.PI / 2;
+        plane.position.z = 220;
+        plane.material = materialPlane;
     }
 
 };

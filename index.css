@@ -55,7 +55,7 @@ body {
     1px 1px 0 #fff;
 }
 
-#output {
+#console {
     pointer-events: none;
     
     font-family: courier;
