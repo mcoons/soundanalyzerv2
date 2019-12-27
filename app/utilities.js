@@ -31,6 +31,38 @@
         });
     }
 
+
+    function addToMetallicPalette(r, g, b, palette, saturation = .6, wireframe = false, scene) {
+
+        r = r * saturation;
+        g = g * saturation;
+        b = b * saturation;
+
+        var color = new BABYLON.Color4(r / 255, g / 255, b / 255, 1, false);
+
+        // let mat = new BABYLON.StandardMaterial("mat", scene);
+        let mat = new BABYLON.PBRMetallicRoughnessMaterial("mat", scene);
+
+        // mat.diffuseColor = color;
+        // mat.specularColor = new BABYLON.Color3(r / 255 * .1, g / 255 * .1, b / 255 * .1);
+        // // mat.specularColor = new BABYLON.Color3(.25, .25, .25);
+        // mat.ambientColor = new BABYLON.Color3(r / 255 * .25, g / 255 * .25, b / 255 * .25);
+        // mat.emissiveColor = new BABYLON.Color3(0, 0, 0);
+        // mat.backFaceCulling = false;
+        // mat.wireframe = wireframe;
+
+        mat.metallic = 1.0;
+        mat.roughness = 1.0;
+
+        palette.push({
+            r,
+            g,
+            b,
+            color,
+            mat
+        });
+    }
+
     function addToGlowPalette(r, g, b, palette, scene) {
 
         let dimmer = .8;
@@ -56,7 +88,7 @@
 
 
     // Builds a palette array[1529] of palette objects
-    function buildPalettes(palette,paletteGlow,paletteRed,paletteGreen,paletteBlue,paletteGray,scene) {
+    function buildPalettes(palette,paletteGlow,paletteRed,paletteGreen,paletteBlue,paletteGray, paletteMetallic, scene) {
         let r = 255,
             g = 0,
             b = 0;
@@ -64,7 +96,7 @@
         for (g = 0; g <= 255; g++) {
             addToPalette(r, g, b, palette, 1, false, scene);
             addToGlowPalette(r, g, b, paletteGlow, scene);
-            // addToMetallicPalette(r,g,b,paletteMetallic);
+            addToMetallicPalette(r,g,b,paletteMetallic, 1, false, scene);
 
             addToPalette(g, 0, 0, paletteRed, 1, false, scene);
             addToPalette(0, g, 0, paletteGreen, 1, false, scene);
@@ -76,35 +108,35 @@
         for (r = 254; r >= 0; r--) {
             addToPalette(r, g, b, palette, 1, false, scene);
             addToGlowPalette(r, g, b, paletteGlow, scene);
-            // addToMetallicPalette(r,g,b,paletteMetallic);
+            addToMetallicPalette(r,g,b,paletteMetallic, 1, false, scene);
         }
         r++;
 
         for (b = 1; b <= 255; b++) {
             addToPalette(r, g, b, palette, 1, false, scene);
             addToGlowPalette(r, g, b, paletteGlow, scene);
-            // addToMetallicPalette(r,g,b,paletteMetallic);
+            addToMetallicPalette(r,g,b,paletteMetallic, 1, false, scene);
         }
         b--;
 
         for (g = 254; g >= 0; g--) {
             addToPalette(r, g, b, palette, 1, false, scene);
             addToGlowPalette(r, g, b, paletteGlow, scene);
-            // addToMetallicPalette(r,g,b,paletteMetallic);
+            addToMetallicPalette(r,g,b,paletteMetallic, 1, false, scene);
         }
         g++;
 
         for (r = 1; r <= 255; r++) {
             addToPalette(r, g, b, palette, 1, false, scene);
             addToGlowPalette(r, g, b, paletteGlow, scene);
-            // addToMetallicPalette(r,g,b,paletteMetallic);
+            addToMetallicPalette(r,g,b,paletteMetallic, 1, false, scene);
         }
         r--;
 
         for (b = 254; b > 0; b--) {
             addToPalette(r, g, b, palette, 1, false, scene);
             addToGlowPalette(r, g, b, paletteGlow, scene);
-            // addToMetallicPalette(r,g,b,paletteMetallic);
+            addToMetallicPalette(r,g,b,paletteMetallic, 1, false, scene);
         }
         b++;
     }
@@ -147,7 +179,7 @@
     }
 
     function logToScreen(htmlToRender) {
-        document.getElementById("console").innerHTML = htmlToRender;
+        document.getElementById("consoleElement").innerHTML = htmlToRender;
     }
 
 
