@@ -71,14 +71,15 @@ var scene;
 window.onload = function () {
 
     var options = {
-        showDancers: true,
-        showInnerSnowflake: true,
-        showOuterSnowflake: true,
-        showFrame: true,
+        showDancers: false,
+        showInnerSnowflake: false,
+        showOuterSnowflake: false,
+        showFrame: false,
         showBars: true,
         showTitle: false,
         showFloor: false,
-        showRipple: true
+        showRipple: false,
+        showWater: false
     }
 
     var title = document.getElementById("title");
@@ -162,7 +163,6 @@ window.onload = function () {
     var star2;
     var star3;
     var star4;
-    var waterMaterial;
 
     var instanceMaster;
 
@@ -421,23 +421,25 @@ window.onload = function () {
         skySphere.material = skyMaterial;
 
         // Water material
-        waterMaterial = new BABYLON.WaterMaterial("waterMaterial", scene, new BABYLON.Vector2(512, 512));
-        waterMaterial.bumpTexture = new BABYLON.Texture("//www.babylonjs.com/assets/waterbump.png", scene);
-        waterMaterial.windForce = -10;
-        waterMaterial.waveHeight = 0.5;
-        waterMaterial.bumpHeight = 0.09;
-        waterMaterial.waveLength = 0.09;
-        waterMaterial.waveSpeed = 50.0;
-        waterMaterial.colorBlendFactor = .5;
-        waterMaterial.windDirection = new BABYLON.Vector2(1, 1);
-        waterMaterial.colorBlendFactor = 0;
+        if (options.showWater){
+            let waterMaterial = new BABYLON.WaterMaterial("waterMaterial", scene, new BABYLON.Vector2(512, 512));
+            waterMaterial.bumpTexture = new BABYLON.Texture("//www.babylonjs.com/assets/waterbump.png", scene);
+            waterMaterial.windForce = -10;
+            waterMaterial.waveHeight = 0.5;
+            waterMaterial.bumpHeight = 0.09;
+            waterMaterial.waveLength = 0.09;
+            waterMaterial.waveSpeed = 50.0;
+            waterMaterial.colorBlendFactor = .5;
+            waterMaterial.windDirection = new BABYLON.Vector2(1, 1);
+            waterMaterial.colorBlendFactor = 0;
 
-        // Configure water material
-        waterMaterial.addToRenderList(skySphere);
-        // Water mesh
-        var waterMesh = BABYLON.Mesh.CreateGround("waterMesh", 512, 512, 32, scene, false);
-        waterMesh.material = waterMaterial;
-        waterMesh.position.y = -47;
+            // Configure water material
+            waterMaterial.addToRenderList(skySphere);
+            // Water mesh
+            var waterMesh = BABYLON.Mesh.CreateGround("waterMesh", 512, 512, 32, scene, false);
+            waterMesh.material = waterMaterial;
+            waterMesh.position.y = -47;
+        }
 
         buildPalettes(palette, paletteGlow, paletteRed, paletteGreen, paletteBlue, paletteGray, paletteMetallic, scene);
 
