@@ -55,7 +55,26 @@ body {
     1px 1px 0 #fff;
 }
 
-#output {
+#cameraTarget {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    /* padding: 0; */
+    color: white;
+    z-index: 150;
+    /* border: 1px solid red; */
+}
+
+/* table,  */
+td {
+    border: 1px solid white;
+    text-align: center;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+}
+
+#consoleElement {
     pointer-events: none;
     
     font-family: courier;
