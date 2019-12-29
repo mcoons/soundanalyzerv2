@@ -59,8 +59,8 @@
 //
 
 import {
-    addToGlowPalette,
-    addToPalette,
+    // addToGlowPalette,
+    // addToPalette,
     buildPalettes,
     map,
     logToScreen
@@ -98,7 +98,6 @@ window.onload = function () {
     var frDataLength = frBufferLength - 64;
     var frDataArray = new Uint8Array(frBufferLength);
     var frDataArrayNormalized = new Uint8Array(frBufferLength);
-    var barWidth;
     var frCurrentHigh = 0;
     var frCurrentLow = 255
 
@@ -157,27 +156,15 @@ window.onload = function () {
     var frameMaster;
     var floorObjects = [];
     var floorMaster;
-
-    var helixPath = [];
-    var helixMaster;
     var starMaster;
 
-
-
-    var frameMaterial;
     var ripple;
     var star2;
     var star3;
     var star4;
     var waterMaterial;
 
-    var lines;
-
-    // var newInstance1;
-    // var newInstance2;
-    // var newInstance3;
     var instanceMaster;
-    // var helix;
 
     var defaultGridMaterial;
 
@@ -236,8 +223,8 @@ window.onload = function () {
     canvas2D.style.height = canvas2D.height;
     var ctx2D = canvas2D.getContext("2d");
     ctx2D.globalAlpha = .5;
-    var WIDTH = canvas2D.width;
-    var HEIGHT = canvas2D.height;
+    // var WIDTH = canvas2D.width;
+    // var HEIGHT = canvas2D.height;
 
     //////////////////////////////
     // event listeners
@@ -362,14 +349,11 @@ window.onload = function () {
 
     function draw2DBars() {
         if (options.showBars) {
-            WIDTH = canvas2D.width;
-            HEIGHT = canvas2D.height;
-
-            barWidth = (WIDTH / (frDataLength));
+            let WIDTH = canvas2D.width;
+            let HEIGHT = canvas2D.height;
+            let barWidth = (WIDTH / (frDataLength));
 
             ctx2D.clearRect(0, 0, WIDTH, HEIGHT);
-
-            let textColor;
 
             let x = 0;
 
@@ -379,8 +363,6 @@ window.onload = function () {
                 var r = barHeight + (55.52 * (i / frDataLength));
                 var g = 255 * (55 * i / frDataLength);
                 var b = 255;
-
-                // if (i == 20) textColor = "rgb(" + r + "," + g + "," + b + ")";
 
                 ctx2D.fillStyle = "rgba(" + r + "," + g + "," + b + ",.7)";
                 ctx2D.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
@@ -417,6 +399,7 @@ window.onload = function () {
         glowLayer = new BABYLON.GlowLayer("glow", scene);
         glowLayer.intensity = .55;
 
+        // default object grid material
         defaultGridMaterial = new BABYLON.GridMaterial("default", scene);
         defaultGridMaterial.majorUnitFrequency = 10;
         defaultGridMaterial.minorUnitVisibility = .33;
@@ -425,8 +408,7 @@ window.onload = function () {
         defaultGridMaterial.lineColor = new BABYLON.Color3(0, .30, .30);
         defaultGridMaterial.backFaceCulling = false;
 
-
-
+        // sky grid material
         var skyMaterial = new BABYLON.GridMaterial("skyMaterial", scene);
         skyMaterial.majorUnitFrequency = 5;
         skyMaterial.minorUnitVisibility = .43;
@@ -437,8 +419,6 @@ window.onload = function () {
 
         var skySphere = BABYLON.Mesh.CreateSphere("skySphere", 32, 2600, scene);
         skySphere.material = skyMaterial;
-
-
 
         // Water material
         waterMaterial = new BABYLON.WaterMaterial("waterMaterial", scene, new BABYLON.Vector2(512, 512));
@@ -461,8 +441,7 @@ window.onload = function () {
 
         buildPalettes(palette, paletteGlow, paletteRed, paletteGreen, paletteBlue, paletteGray, paletteMetallic, scene);
 
-        camera = new BABYLON.ArcRotateCamera("camera1", 0, Math.PI / 2, 220, new BABYLON.Vector3(0, 0, 0), scene);
-        // cameraTarget = new BABYLON.TransformNode("root");
+        camera = new BABYLON.ArcRotateCamera("camera1", 1.57, .01, 980, new BABYLON.Vector3(0, 0, 0), scene);
         camera.upperRadiusLimit = 1000;
         camera.lowerRadiusLimit = -1000;
 
@@ -517,9 +496,6 @@ window.onload = function () {
     }
 
     function updateObjects() {
-        // masterTransform.rotation.x += .0051;
-        // masterTransform.rotation.y -= .0051;
-        // masterTransform.rotation.z -= .0051;
 
         if (options.showDancers) updateDancers();
         if (options.showInnerSnowflake) updateInnerSnowflake();
@@ -536,8 +512,6 @@ window.onload = function () {
         updateStar3();
         updateStar4();
 
-        // instanceMaster.rotation.y += .005
-
     }
 
     function createDancers() {
@@ -546,15 +520,8 @@ window.onload = function () {
         dancersMaster.position = new BABYLON.Vector3(0, 0, 0);
         dancersMaster.parent = masterTransform;
 
-        let width = 3;
-        let depth = 3;
         let radius = 40;
         for (let theta = 0; theta < 2 * Math.PI - Math.PI / 36; theta += Math.PI / 15) {
-
-            // let thing = BABYLON.MeshBuilder.CreateBox(("box"), {
-            //     width: width,
-            //     depth: depth
-            // }, scene);
 
             let thing = BABYLON.MeshBuilder.CreateCylinder("cylinder1", {
                 height: 1,
@@ -564,7 +531,6 @@ window.onload = function () {
                 subdivisons: 1
             }, scene, true);
             thing.convertToFlatShadedMesh();
-
 
             thing.parent = dancersMaster; //apply to Box
             thing.position.x = radius * Math.cos(theta);
@@ -597,12 +563,10 @@ window.onload = function () {
         innerSnowflakeMaster.scaling.x = .5;
         innerSnowflakeMaster.scaling.z = .5;
 
-
         let width = 2.0;
         let depth = 2.0;
         let height = 4;
         let radius = 40.1;
-        // let count = 0;
 
         let itemsDesired = 320;
 
@@ -624,20 +588,14 @@ window.onload = function () {
             }, scene);
             thing.parent = innerSnowflakeMaster; //apply to Box
 
-            // thing.material = palette[128].mat;
             thing.position.x = radius * Math.cos(theta);
             thing.position.z = radius * Math.sin(theta);
-            // thing.position.y = -50;
             thing.rotation.y = -theta;
             innerSnowflakeObjects.push(thing);
 
-            // count++;
-
-            // console.log(dataIndex);
             dataIndex += direction;
         }
-        // innerSnowflakeMaster.rotation.x = Math.PI / 2;
-        // console.log("count:", count)
+
     }
 
     function updateInnerSnowflake() {
@@ -660,7 +618,6 @@ window.onload = function () {
             let theta = Math.PI / (itemsDesired / 4) * index;
             object.position.x = (radius + y / 2) * Math.cos(theta);
             object.position.z = (radius + y / 2) * Math.sin(theta);
-            // object.material = palette[Math.round(map(((1529 - paletteScroller) + (y * 1)) % 255 || 0, 0, 255, 128, 1529))].mat;
 
             dataIndex += direction;
         });
@@ -673,13 +630,9 @@ window.onload = function () {
         outerSnowflakeMaster.scaling.x = .5;
         outerSnowflakeMaster.scaling.z = .5;
 
-        let width = 1;
-        let depth = 1.5;
-        let height = 1;
         let diameterTop = 2;
         var diameterBottom = 6;
         let radius = 60;
-        // let count = 0;
 
         let itemsDesired = 320;
 
@@ -693,7 +646,6 @@ window.onload = function () {
         for (let theta = 0; theta < 2 * Math.PI; theta += Math.PI / (itemsDesired / 4)) {
 
             if (dataIndex >= endIndex || dataIndex <= startIndex) direction = -direction;
-
 
             let thing = BABYLON.MeshBuilder.CreateCylinder("cone", {
                 diameterTop: diameterTop,
@@ -711,7 +663,6 @@ window.onload = function () {
 
             dataIndex += direction;
         }
-        // innerSnowflakeMaster.rotation.x = Math.PI / 2;
     }
 
     function updateOuterSnowflake() {
@@ -750,7 +701,6 @@ window.onload = function () {
         let frameWidth = spacing / 2;
         let frameLength = width + spacing;
         let frameHeight = 12;
-        let frameColorIndex = 50;
 
         for (let x = -5; x < 5; x++) {
             let thing = BABYLON.MeshBuilder.CreateBox(("box"), {
@@ -897,7 +847,6 @@ window.onload = function () {
         for (let x = 0; x < 8; x++) {
             for (let z = 0; z < 8; z++) {
 
-
                 let thing = BABYLON.MeshBuilder.CreateBox(("floor(" + x + "," + z + ")"), {
                     width: width,
                     depth: depth,
@@ -911,9 +860,7 @@ window.onload = function () {
                 thing.position = new BABYLON.Vector3(px, py, pz);
 
                 floorObjects.push(thing);
-
                 createBorder(px, py, pz);
-
             }
 
         }
@@ -961,8 +908,6 @@ window.onload = function () {
     }
 
     function updateFloor() {
-        let xOffset = -95;
-        let zOffset = -95;
         floorObjects.forEach((o, i) => {
             let y = frDataArrayNormalized[i] / 35 + .1;
             o.scaling.y = y;
@@ -989,19 +934,16 @@ window.onload = function () {
 
                 path.push(new BABYLON.Vector3(x, y, z));
             }
-            //   var lines = BABYLON.Mesh.CreateLines("par", path, scene);
             paths.push(path);
 
         }
 
-        // var star = BABYLON.Mesh.CreateRibbon("rib", paths, false, true, 0, scene);
         ripple = BABYLON.Mesh.CreateRibbon("ripple", paths, false, false, 0, scene, true, sideO);
 
         ripple.material = paletteGray[140].mat;
         ripple.scaling.x = .25;
         ripple.scaling.z = .25;
         ripple.scaling.y = .5;
-
     }
 
     function updateRipple() {
@@ -1009,9 +951,6 @@ window.onload = function () {
         let xOffset = 95 * 4;
         let zOffset = 95 * 4;
         var paths = [];
-        var vertexColors = [];
-        var sideO = BABYLON.Mesh.BACKSIDE;
-        var myColors = [];
 
         for (let r = 0; r < 255; r++) {
             var path = [];
@@ -1024,8 +963,6 @@ window.onload = function () {
                 // ripple.material = defaultGridMaterial;
 
                 path.push(new BABYLON.Vector3(x, y, z));
-                // myColors.push(new BABYLON.Color4(1, .5, .5, .5));
-                // myColors.push(new BABYLON.Color4(.5, .5, 1, .5));
             }
 
             paths.push(path);
@@ -1034,10 +971,8 @@ window.onload = function () {
         ripple = BABYLON.MeshBuilder.CreateRibbon(null, {
             pathArray: paths,
             instance: ripple,
-            // colors: myColors,
             sideOrientation: 1
         });
-
 
     }
 
@@ -1051,7 +986,6 @@ window.onload = function () {
         let startIndex = 0;
         let endIndex = startIndex + Math.round(itemsDesired / 8);
 
-
         for (let r = 1; r <= 2; r++) {
             let path = [];
             for (let theta = 0; theta <= 2 * Math.PI; theta += Math.PI / 32) {
@@ -1063,13 +997,10 @@ window.onload = function () {
 
                 path.push(new BABYLON.Vector3(x, y, z));
                 dataIndex += direction;
-
             }
             paths.push(path);
-
         }
 
-        // var star = BABYLON.Mesh.CreateRibbon("rib", paths, false, true, 0, scene);
         star2 = BABYLON.Mesh.CreateRibbon("ribbon", paths, false, true, 0, scene, true, sideO);
         star2.parent = starMaster;
 
@@ -1086,36 +1017,19 @@ window.onload = function () {
         for (let theta = 0; theta <= 4 * Math.PI / 2; theta += Math.PI / 64) {
             let newTestInstance = star2.createInstance("clone");
             newTestInstance.parent = instanceMaster;
-            //    newTestInstance.position.y = 40;
             newTestInstance.rotation.z = theta
-            //    waterMaterial.addToRenderList(newTestInstance);
-
         }
-
 
         for (let theta = 0; theta <= 4 * Math.PI / 2; theta += Math.PI / 64) {
             let newTestInstance = star2.createInstance("clone");
             newTestInstance.parent = instanceMaster;
-            //    newTestInstance.position.y = 40;
             newTestInstance.rotation.x = theta
-
         }
-
-
-        //    for (let theta = 0; theta <= Math.PI/2; theta += Math.PI /64){
-        //        let newTestInstance =star2.createInstance("clone");
-        //        newTestInstance.parent = instanceMaster;
-        //     //    newTestInstance.position.y = 40;
-        //        newTestInstance.rotation.y = theta
-
-        //    }
 
     }
 
     function updateStar2() {
         var paths = [];
-        var vertexColors = [];
-        var sideO = BABYLON.Mesh.BACKSIDE;
         var myColors = [];
 
         let dataIndex = 3; // index into the frDataArray
@@ -1141,10 +1055,6 @@ window.onload = function () {
 
                 dataIndex += direction;
             }
-            // lines = BABYLON.Mesh.CreateLines("par", path, lines, scene);
-            // lines.enableEdgesRendering();	
-            // lines.edgesWidth = 60.0;
-            // lines.edgesColor = new BABYLON.Color4(0, 1, 0, 1);
             paths.push(path);
         }
 
@@ -1188,56 +1098,27 @@ window.onload = function () {
         for (let theta = 0; theta <= 4 * Math.PI / 2; theta += Math.PI / 64) {
             let newTestInstance = star3.createInstance("clone");
             newTestInstance.parent = instanceMaster;
-            //    newTestInstance.position.y = 40;
             newTestInstance.rotation.z = theta
             newTestInstance.position.y = 6;
             newTestInstance.scaling.x = .2
             newTestInstance.scaling.y = .2
             newTestInstance.scaling.z = .2
-            // waterMaterial.addToRenderList(newTestInstance);
-
         }
 
 
         for (let theta = 0; theta <= 4 * Math.PI / 2; theta += Math.PI / 64) {
             let newTestInstance = star3.createInstance("clone");
             newTestInstance.parent = instanceMaster;
-            //    newTestInstance.position.y = 10;
             newTestInstance.rotation.x = theta
             newTestInstance.position.y = 6;
             newTestInstance.scaling.x = .2
             newTestInstance.scaling.y = .2
             newTestInstance.scaling.z = .2
         }
-
-
-        // for (let theta = 0; theta <= Math.PI/2; theta += Math.PI /64){
-        //     let newTestInstance =star3.createInstance("clone");
-        //     newTestInstance.parent = instanceMaster;
-        //  //    newTestInstance.position.y = 10;
-        //     newTestInstance.rotation.y = theta
-        //     newTestInstance.position.y = 10;
-        //     newTestInstance.scaling.x = .2
-        //     newTestInstance.scaling.y = .2
-        //     newTestInstance.scaling.z = .2
-        // }
-
-        // newInstance2 =star3.createInstance("clone");
-        // newInstance2.parent = instanceMaster;
-        // newInstance2.position.y = 40;
-        // newInstance2.rotation.x = Math.PI/2;
-
-
-        // newInstance3 =star3.createInstance("clone");
-        // newInstance3.parent = instanceMaster;
-        // newInstance3.position.y = 40;
-        // newInstance3.rotation.z = Math.PI/2;
     }
 
     function updateStar3() {
         var paths = [];
-        var vertexColors = [];
-        var sideO = BABYLON.Mesh.BACKSIDE;
         var myColors = [];
 
         let dataIndex = 3; // index into the frDataArray
@@ -1322,8 +1203,6 @@ window.onload = function () {
 
     function updateStar4() {
         var paths = [];
-        var vertexColors = [];
-        var sideO = BABYLON.Mesh.BACKSIDE;
         var myColors = [];
 
         let dataIndex = 3; // index into the frDataArray
@@ -1333,7 +1212,6 @@ window.onload = function () {
         let endIndex = startIndex + Math.round(itemsDesired / 8);
 
         let r = 1;
-
 
         let path = [];
 
