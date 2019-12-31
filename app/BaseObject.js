@@ -1,10 +1,11 @@
 
 export class BaseObject{
-    constructor(name, parent, palette, material, scene) {
+    constructor(name, parent, palette, material, resolution, scene) {
         this.name = name;
         this.parent = parent;
         this.palette = palette;
         this.material = material;
+        this.resolution = resolution;
         this.scene = scene;
 
         this.mesh = null;

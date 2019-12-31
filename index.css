@@ -98,7 +98,7 @@ audio {
     z-index: 100;
 }
 
-#thefile,
+#fileInput,
 .new_Btn {
     position: absolute;
     width: 24.8vw;

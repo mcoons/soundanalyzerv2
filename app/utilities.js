@@ -63,13 +63,14 @@ function buildPalettes(palette, paletteGlow, paletteRed, paletteGreen, paletteBl
 // add a palette object to a given palette
 function addToPalette(r, g, b, palette, saturation = .6, wireframe = false, scene) {
 
+    let mat = new BABYLON.StandardMaterial("material("+r+","+g+","+b+")", scene);
+
     r = r * saturation;
     g = g * saturation;
     b = b * saturation;
 
     var color = new BABYLON.Color4(r / 255, g / 255, b / 255, 1, false);
 
-    let mat = new BABYLON.StandardMaterial("mat", scene);
     mat.diffuseColor = color;
     mat.specularColor = new BABYLON.Color3(r / 255 * .1, g / 255 * .1, b / 255 * .1);
     // mat.specularColor = new BABYLON.Color3(.25, .25, .25);

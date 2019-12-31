@@ -2,104 +2,126 @@ import {
     BaseObject
 } from './BaseObject.js';
 
-export class Star extends BaseObject{
-    constructor(name, parent, palette, material, scene, options) {
+export class Star extends BaseObject {
 
-        super(name, parent, palette, material, scene);
+    constructor(name, parent, palette, material, resolution, scene) {
 
-        this.innerStartIndex = options.innerStartIndex ? options.innerStartIndex : 0;
-        this.outerStartIndex = options.outerStartIndex ? options.outerStartIndex : 0;
+        super(name, parent, palette, material, resolution, scene);
 
-        this.innerSlices = options.innerSlices ? options.innerSlices : 8;
-        this.outerSlices = options.outerSlices ? options.outerSlices : 8;
+        ////////////////////////////
+        // user definable variables
+
+        this.innerStartIndex = 0;
+        this.outerStartIndex = 0;
+
+        this.innerSlices = 8;
+        this.outerSlices = 8;
+
+        this.innerRadius = 0;
+        this.outerRadius = 16;
+
         
-        this.innerR = options.innerR ? options.innerR : 0;
-        this.outerR = options.outerR ? options.outerR : 16;
-
+        this.xRotation = 0;
+        this.yRotation = 0;
+        this.zRotation = 0;
+        
+        /////////////////////////////
+        // class privat4 variables
+        
         this.innerPath = [];
         this.outerPath = [];
         
-        this.innerDirection = -1; 
-        this.outerDirection = -1; 
-
+        this.innerIndexDirection = -1;
+        this.outerIndexDirection = -1;
+        
         this.innerDataIndex = this.innerStartIndex; // index into the frDataArray
         this.outerDataIndex = this.outerStartIndex; // index into the frDataArray
-        
-        this.innerItemsDesired = 128/this.innerSlices;
-        this.outerItemsDesired = 128/this.outerSlices;
+
+        this.innerItemsDesired = 128 / this.innerSlices;
+        this.outerItemsDesired = 128 / this.outerSlices;
 
         this.innerEndIndex = this.innerStartIndex + Math.round(this.innerItemsDesired);
         this.outerEndIndex = this.outerStartIndex + Math.round(this.outerItemsDesired);
 
-        this.create();
 
+        this.create();
     }
 
-    create(){
-
-        let dataIndex = 3; // index into the frDataArray
-        let direction = -1; // direction to traverse the frDataArray, flips to positive at start
-        let itemsDesired = 32;
-        let startIndex = 0;
-        let endIndex = startIndex + Math.round(itemsDesired / 8);
+    create() {
 
         for (let r = 1; r <= 2; r++) {
             let path = [];
-            for (let theta = 0; theta < 2 * Math.PI; theta += Math.PI / 128) {
-                if (dataIndex >= endIndex || dataIndex <= startIndex) direction = -direction;
+            for (let theta = 0; theta < 2 * Math.PI; theta += 2 * Math.PI / this.resolution ) {
 
-                let x = 3 * r * Math.cos(theta) * dataIndex;
-                let z = 3 * r * Math.sin(theta) * dataIndex;
-                let y = -.01;
+                let x = r * Math.cos(theta);
+                let z = r * Math.sin(theta);
+                let y = 0;
 
+                
                 path.push(new BABYLON.Vector3(x, y, z));
-                dataIndex += direction;
             }
+            console.log("path added");
             this.paths.push(path);
         }
 
-        this.mesh = BABYLON.Mesh.CreateRibbon("ribbon", this.paths, false, true, 0, this.scene, true, this.sideO);
-        // this.mesh.parent = starMaster;
-
+        this.mesh = BABYLON.Mesh.CreateRibbon("ribbon", this.paths, true, true, 0, this.scene, true, this.sideO);
         this.mesh.material = this.material;
+
+        console.log("material created");
+        // console.log(this.material);
+
+        console.log("mesh created");
+        // console.log(this.mesh);
 
         return this.mesh;
     }
 
-    update(data, zindex){
+    update(data, zindex) {
+
+        // Rotation imposes the rotation order YXZ in local space using Euler angles.
+        this.mesh.rotation.y += this.yRotation;
+        this.mesh.rotation.x += this.xRotation;
+        this.mesh.rotation.z += this.zRotation;
 
         this.paths = [];
 
-        this.innerDirection = -1; // this.innerDirection to traverse the frDataArray, flips to positive at start
-        this.outerDirection = -1; // this.outerDirection to traverse the frDataArray, flips to positive at start
+        this.innerIndexDirection = -1; // this.innerIndexDirection to traverse the frDataArray, flips to positive at start
+        this.outerIndexDirection = -1; // this.outerIndexDirection to traverse the frDataArray, flips to positive at start
 
         this.innerPath = [];
         this.outerPath = [];
 
         this.innerDataIndex = this.innerStartIndex; // index into the frDataArray
         this.outerDataIndex = this.outerStartIndex; // index into the frDataArray
+ 
         
         for (let theta = 0; theta <= 2 * Math.PI; theta += 2 * Math.PI / 256) {
-
-            if (this.innerDataIndex >= this.innerEndIndex || this.innerDataIndex <= this.innerStartIndex) this.innerDirection = -this.innerDirection;
-            if (this.outerDataIndex >= this.outerEndIndex || this.outerDataIndex <= this.outerStartIndex) this.outerDirection = -this.outerDirection;
-
-            let innerX = data[this.innerDataIndex] * this.innerR * Math.cos(theta) / 100;
-            let innerZ = data[this.innerDataIndex] * this.innerR * Math.sin(theta) / 100;
-            let innerY = -.01*zindex;
-
-            let outerX = data[this.outerDataIndex] * this.outerR * Math.cos(theta) / 100;
-            let outerZ = data[this.outerDataIndex] * this.outerR * Math.sin(theta) / 100;
-            let outerY = -.01*zindex;
-
-            this.innerPath.push(new BABYLON.Vector3(innerX, innerY, innerZ));
-            this.outerPath.push(new BABYLON.Vector3(outerX, outerY, outerZ));
             
-            this.innerDataIndex += this.innerDirection;
-            this.outerDataIndex += this.outerDirection;
+            // console.log(this.innerDataIndex)
+            // console.log(data[this.innerDataIndex])
+            // inner range calculations
+            if (this.innerDataIndex >= this.innerEndIndex || this.innerDataIndex <= this.innerStartIndex) this.innerIndexDirection = -this.innerIndexDirection;
+            
 
+            let innerX = data[this.innerDataIndex] * this.innerRadius * Math.cos(theta) / 100;
+            let innerZ = data[this.innerDataIndex] * this.innerRadius * Math.sin(theta) / 100;
+            let innerY = -.01 * zindex;
+            this.innerDataIndex += this.innerIndexDirection;
+            
+            this.innerPath.push(new BABYLON.Vector3(innerX, innerY, innerZ));
+            
+            // outer range calculations
+            if (this.outerDataIndex >= this.outerEndIndex || this.outerDataIndex <= this.outerStartIndex) this.outerIndexDirection = -this.outerIndexDirection;
+            
+            let outerX = data[this.outerDataIndex] * this.outerRadius * Math.cos(theta) / 100;
+            let outerZ = data[this.outerDataIndex] * this.outerRadius * Math.sin(theta) / 100;
+            let outerY = -.01 * zindex;
+            this.outerDataIndex += this.outerIndexDirection;
+            
+            this.outerPath.push(new BABYLON.Vector3(outerX, outerY, outerZ));
         }
 
+        // console.log(this.innerPath);
         this.paths.push(this.innerPath);
         this.paths.push(this.outerPath);
 
@@ -111,7 +133,33 @@ export class Star extends BaseObject{
         return `${this.name} says updated from star.`;
     }
 
-    // destroy(){
-    //     return `${this.name} says destroyed from star.`;
-    // }
+    setOptions(p_innerStartIndex, p_outerStartIndex, p_innerSlices, p_outerSlices, p_innerRadius, p_outerRadius, p_resolution, p_xRotation, p_yRotation, p_zRotation) {
+        
+        this.innerStartIndex = p_innerStartIndex ? p_innerStartIndex : this.innerStartIndex;
+        this.outerStartIndex = p_outerStartIndex ? p_outerStartIndex : this.outerStartIndex;
+
+        this.innerSlices = p_innerSlices ? p_innerSlices : this.innerSlices;
+        this.outerSlices = p_outerSlices ? p_outerSlices : this.outerSlices;
+
+        this.innerRadius = p_innerRadius ? p_innerRadius : this.innerRadius;
+        this.outerRadius = p_outerRadius ? p_outerRadius : this.outerRadius;
+
+        this.resolution = p_resolution ? p_resolution : this.resolution;
+
+        this.xRotation = p_xRotation ? p_xRotation : this.xRotation;
+        this.yRotation = p_yRotation ? p_yRotation : this.yRotation;
+        this.zRotation = p_zRotation ? p_zRotation : this.zRotation;
+
+        /////////////////////////////////////////////////////////
+
+        this.innerDataIndex = this.innerStartIndex; // index into the frDataArray
+        this.outerDataIndex = this.outerStartIndex; // index into the frDataArray
+
+        this.innerItemsDesired = 128 / this.innerSlices;
+        this.outerItemsDesired = 128 / this.outerSlices;
+
+        this.innerEndIndex = this.innerStartIndex + Math.round(this.innerItemsDesired);
+        this.outerEndIndex = this.outerStartIndex + Math.round(this.outerItemsDesired);
+    }    
+
 }
