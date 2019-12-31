@@ -1,3 +1,7 @@
+What is Web Assembly?  WA
+What is Typescript?
+
+
 
 TODO
 

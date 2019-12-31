@@ -20,8 +20,8 @@ window.onload = function () {
         showBars: true,
         showTitle: false,
         showRipple: true,
-        showWater: false,
-        showSky: false
+        showWater: true,
+        showSky: true
     }
 
     // var meshDimensions = 256;
@@ -89,6 +89,7 @@ window.onload = function () {
     var canvas3D = document.getElementById('canvas3D');
     var engine = new BABYLON.Engine(canvas3D, true);
     var glowLayer;
+    var waterMaterial
 
     var camera;
 
@@ -105,7 +106,7 @@ window.onload = function () {
             radius: 121
         },
         {
-            lookat: new BABYLON.Vector3(0, -20, 0),
+            lookat: new BABYLON.Vector3(0, 0, 0),
             alpha: Math.PI / 2,
             beta: 0.01,
             radius: 980
@@ -330,7 +331,7 @@ window.onload = function () {
         // scene.createDefaultEnvironment();
 
         glowLayer = new BABYLON.GlowLayer("glow", scene);
-        glowLayer.intensity = .55;
+        glowLayer.intensity = 1.75;
 
         // default object grid material
         defaultGridMaterial = new BABYLON.GridMaterial("default", scene);
@@ -357,13 +358,13 @@ window.onload = function () {
 
         // Water material
         if (options.showWater) {
-            let waterMaterial = new BABYLON.WaterMaterial("waterMaterial", scene, new BABYLON.Vector2(512, 512));
+            waterMaterial = new BABYLON.WaterMaterial("waterMaterial", scene, new BABYLON.Vector2(512, 512));
             waterMaterial.bumpTexture = new BABYLON.Texture("//www.babylonjs.com/assets/waterbump.png", scene);
-            waterMaterial.windForce = -10;
-            waterMaterial.waveHeight = 0.5;
-            waterMaterial.bumpHeight = 0.09;
-            waterMaterial.waveLength = 0.09;
-            waterMaterial.waveSpeed = 50.0;
+            waterMaterial.windForce = -5;
+            waterMaterial.waveHeight = 0.4;
+            waterMaterial.bumpHeight = 0.06;
+            waterMaterial.waveLength = 0.12;
+            waterMaterial.waveSpeed = 30.0;
             waterMaterial.colorBlendFactor = .5;
             waterMaterial.windDirection = new BABYLON.Vector2(1, 1);
             waterMaterial.colorBlendFactor = 0;
@@ -371,7 +372,7 @@ window.onload = function () {
             // Configure water material
             waterMaterial.addToRenderList(skySphere);
             // Water mesh
-            var waterMesh = BABYLON.Mesh.CreateGround("waterMesh", 512, 512, 32, scene, false);
+            var waterMesh = BABYLON.Mesh.CreateGround("waterMesh", 50000, 50000, 32, scene, false);
             waterMesh.material = waterMaterial;
             waterMesh.position.y = -47;
         }
@@ -411,26 +412,29 @@ window.onload = function () {
 
     function createObjects() {
 
-        createStarGroup1();
-
+        
         masterTransform = new BABYLON.TransformNode("root");
-        masterTransform.position = new BABYLON.Vector3(0, 0, 0);
-
-        starMaster = new BABYLON.TransformNode("root");
-        starMaster.position = new BABYLON.Vector3(125, -40, -125);
+        // masterTransform.position = new BABYLON.Vector3(0, 0, 0);
+        
+        starMaster = new BABYLON.TransformNode("starMaster");
+        
+        createStarGroup1();
+        
+        starMaster.position = new BABYLON.Vector3(0, 0, 0);
         starMaster.parent = masterTransform;
-        starMaster.scaling.x = 2;
-        starMaster.scaling.z = 2;
-
+        starMaster.scaling.x = .1;
+        starMaster.scaling.y = .1;
+        starMaster.scaling.z = .1;
+        
     }
 
     function updateObjects() {
 
 
 
-        starMaster.rotation.x += .01;
-        starMaster.rotation.z += .004;
-        starMaster.rotation.y -= .008;
+        // starMaster.rotation.x += .01;
+        // starMaster.rotation.z += .004;
+        // starMaster.rotation.y -= .008;
 
     }
 
@@ -455,9 +459,9 @@ window.onload = function () {
 
     function createStarGroup1() {
 
-        console.log("creating star objects");
+        // console.log("creating star objects");
 
-        let test = new Star("test Star name", "test Star parent", paletteBlue, paletteGray[100].mat, pieResolution, scene);
+        let test = new Star("test Star name", "test Star parent", paletteBlue, paletteRed[200].mat, pieResolution, waterMaterial, scene);
         test.setOptions(
             0,
             0,
@@ -470,15 +474,17 @@ window.onload = function () {
 
             256,
 
-            -0.01,
+            waterMaterial,
+
+            0,
             0,
             0
         );
-        test.parent = starMaster;
+        test.mesh.parent = starMaster;
         starObjects.push(test);
 
 
-        let test2 = new Star("test Star name", "test Star parent", paletteBlue, paletteGray[100].mat, pieResolution, scene);
+        let test2 = new Star("test Star name", "test Star parent", paletteBlue, paletteGlow[100].mat, pieResolution, waterMaterial, scene);
         test2.setOptions(
             0,
             1,
@@ -490,16 +496,18 @@ window.onload = function () {
             21,
 
             256,
+
+            waterMaterial,
             
             0.01,
             0,
             0
         );
-        test2.parent = starMaster;
+        test2.mesh.parent = starMaster;
         starObjects.push(test2);
 
 
-        let test3 = new Star("test Star name", "test Star parent", paletteBlue, paletteGray[100].mat, pieResolution, scene);
+        let test3 = new Star("test Star name", "test Star parent", paletteBlue, paletteGlow[400].mat, pieResolution, waterMaterial, scene);
         test3.setOptions(
             0,
             2,
@@ -512,15 +520,17 @@ window.onload = function () {
 
             256,
 
+            waterMaterial,
+
             0,
             0.005,  // clockwise rotation
             0
         );
-        test3.parent = starMaster;
+        test3.mesh.parent = starMaster;
         starObjects.push(test3);
 
 
-        let test4 = new Star("test Star name", "test Star parent", paletteBlue, paletteGray[100].mat, pieResolution, scene);
+        let test4 = new Star("test Star name", "test Star parent", paletteBlue, paletteGlow[600].mat, pieResolution, waterMaterial, scene);
         test4.setOptions(
             3,
             4,
@@ -533,15 +543,17 @@ window.onload = function () {
 
             256,
 
+            waterMaterial,
+
             0,
             0,
             0.01
         );
-        test4.parent = starMaster;
+        test4.mesh.parent = starMaster;
         starObjects.push(test4);
 
 
-        let test5 = new Star("test Star name", "test Star parent", paletteBlue, paletteGray[100].mat, pieResolution, scene);
+        let test5 = new Star("test Star name", "test Star parent", paletteBlue, paletteGlow[800].mat, pieResolution, waterMaterial, scene);
         test5.setOptions(
             10,
             11,
@@ -554,15 +566,17 @@ window.onload = function () {
 
             256,
 
+            waterMaterial,
+
             0.01,
             0,
             0
         );
-        test5.parent = starMaster;
+        test5.mesh.parent = starMaster;
         starObjects.push(test5);
 
 
-        let test6 = new Star("test Star name", "test Star parent", paletteBlue, paletteGray[100].mat, pieResolution, scene);
+        let test6 = new Star("test Star name", "test Star parent", paletteBlue, paletteGlow[1000].mat, pieResolution, waterMaterial, scene);
         test6.setOptions(
             6,
             7,
@@ -575,15 +589,17 @@ window.onload = function () {
 
             256,
 
+            waterMaterial,
+
             0,
             -0.005,  // counter clockwise rotation
             0
         );
-        test6.parent = starMaster;
+        test6.mesh.parent = starMaster;
         starObjects.push(test6);
 
 
-        let test7 = new Star("test Star name", "test Star parent", paletteBlue, paletteGray[100].mat, pieResolution, scene);
+        let test7 = new Star("test Star name", "test Star parent", paletteBlue, paletteGlow[1200].mat, pieResolution, waterMaterial, scene);
         test7.setOptions(
             8,
             9,
@@ -596,14 +612,16 @@ window.onload = function () {
 
             256,
 
+            waterMaterial,
+
             0,
             0,
             -.01
         );
-        test7.parent = starMaster;
+        test7.mesh.parent = starMaster;
         starObjects.push(test7);
 
-        let test8 = new Star("test Star name", "test Star parent", paletteBlue, paletteGray[100].mat, pieResolution, scene);
+        let test8 = new Star("test Star name", "test Star parent", paletteBlue, paletteGlow[50].mat, pieResolution, waterMaterial, scene);
         test8.setOptions(
             10,
             11,
@@ -616,16 +634,18 @@ window.onload = function () {
 
             256,
 
+            waterMaterial,
+
             -0.01,
             0,
             0
         );
-        test8.parent = starMaster;
+        test8.mesh.parent = starMaster;
         starObjects.push(test8);
     
     
     
-        let test9 = new Star("test Star name", "test Star parent", paletteBlue, paletteGray[100].mat, pieResolution, scene);
+        let test9 = new Star("test Star name", "test Star parent", paletteBlue, paletteGlow[100].mat, pieResolution, waterMaterial, scene);
         test9.setOptions(
             0,
             0,
@@ -638,11 +658,13 @@ window.onload = function () {
 
             256,
 
+            waterMaterial,
+
             0,
             0.005,  // clockwise rotation
             0
         );
-        test9.parent = starMaster;
+        test9.mesh.parent = starMaster;
         starObjects.push(test9);
     
     

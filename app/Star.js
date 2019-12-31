@@ -4,9 +4,9 @@ import {
 
 export class Star extends BaseObject {
 
-    constructor(name, parent, palette, material, resolution, scene) {
+    constructor(name, parent, palette, material, resolution, reflect,  scene) {
 
-        super(name, parent, palette, material, resolution, scene);
+        super(name, parent, palette, material, resolution, reflect, scene);
 
         ////////////////////////////
         // user definable variables
@@ -20,7 +20,6 @@ export class Star extends BaseObject {
         this.innerRadius = 0;
         this.outerRadius = 16;
 
-        
         this.xRotation = 0;
         this.yRotation = 0;
         this.zRotation = 0;
@@ -45,6 +44,8 @@ export class Star extends BaseObject {
 
 
         this.create();
+
+        // return this.mesh;
     }
 
     create() {
@@ -60,17 +61,21 @@ export class Star extends BaseObject {
                 
                 path.push(new BABYLON.Vector3(x, y, z));
             }
-            console.log("path added");
+            // console.log("path added");
             this.paths.push(path);
         }
 
         this.mesh = BABYLON.Mesh.CreateRibbon("ribbon", this.paths, true, true, 0, this.scene, true, this.sideO);
         this.mesh.material = this.material;
 
-        console.log("material created");
+        if (this.reflect){
+            this.reflect.addToRenderList(this.mesh);
+        }
+
+        // console.log("material created");
         // console.log(this.material);
 
-        console.log("mesh created");
+        // console.log("mesh created");
         // console.log(this.mesh);
 
         return this.mesh;
@@ -79,9 +84,9 @@ export class Star extends BaseObject {
     update(data, zindex) {
 
         // Rotation imposes the rotation order YXZ in local space using Euler angles.
-        this.mesh.rotation.y += this.yRotation;
-        this.mesh.rotation.x += this.xRotation;
-        this.mesh.rotation.z += this.zRotation;
+        // this.mesh.rotation.y += this.yRotation;
+        // this.mesh.rotation.x += this.xRotation;
+        // this.mesh.rotation.z += this.zRotation;
 
         this.paths = [];
 
@@ -115,7 +120,7 @@ export class Star extends BaseObject {
             
             let outerX = data[this.outerDataIndex] * this.outerRadius * Math.cos(theta) / 100;
             let outerZ = data[this.outerDataIndex] * this.outerRadius * Math.sin(theta) / 100;
-            let outerY = -.01 * zindex;
+            let outerY = -.001 * zindex;
             this.outerDataIndex += this.outerIndexDirection;
             
             this.outerPath.push(new BABYLON.Vector3(outerX, outerY, outerZ));
@@ -133,7 +138,7 @@ export class Star extends BaseObject {
         return `${this.name} says updated from star.`;
     }
 
-    setOptions(p_innerStartIndex, p_outerStartIndex, p_innerSlices, p_outerSlices, p_innerRadius, p_outerRadius, p_resolution, p_xRotation, p_yRotation, p_zRotation) {
+    setOptions(p_innerStartIndex, p_outerStartIndex, p_innerSlices, p_outerSlices, p_innerRadius, p_outerRadius, p_resolution, p_reflect, p_xRotation, p_yRotation, p_zRotation) {
         
         this.innerStartIndex = p_innerStartIndex ? p_innerStartIndex : this.innerStartIndex;
         this.outerStartIndex = p_outerStartIndex ? p_outerStartIndex : this.outerStartIndex;
@@ -145,6 +150,8 @@ export class Star extends BaseObject {
         this.outerRadius = p_outerRadius ? p_outerRadius : this.outerRadius;
 
         this.resolution = p_resolution ? p_resolution : this.resolution;
+
+        this.reflect = p_reflect ? p_reflect : this.reflect;
 
         this.xRotation = p_xRotation ? p_xRotation : this.xRotation;
         this.yRotation = p_yRotation ? p_yRotation : this.yRotation;
