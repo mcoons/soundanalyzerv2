@@ -32,9 +32,9 @@
 
 window.onload = function () {
 
-    var showDancers = false;
-    var showInnerSnowflake = false;
-    var showOuterSnowflake = false;
+    var showDancers = true;
+    var showInnerSnowflake = true;
+    var showOuterSnowflake = true;
     var showFloor = true;
     var showBars = true;
     var showTitle = false;
