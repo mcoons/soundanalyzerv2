@@ -1,5 +1,5 @@
-What is Web Assembly?  WA
-What is Typescript?
+Web Assembly  WA
+Typescript
 
 Synth mode
 
@@ -14,7 +14,7 @@ TODO
 
 
 
-Autoplay / local storage
+Autoplay / local storage - BLOCKED
 Microphone support
 Support for different local players
 Support for streamed players

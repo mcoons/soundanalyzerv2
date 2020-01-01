@@ -85,8 +85,8 @@ export class Star extends BaseObject {
 
         // Rotation imposes the rotation order YXZ in local space using Euler angles.
         this.mesh.rotation.y += this.yRotation;
-        // this.mesh.rotation.x += this.xRotation;
-        // this.mesh.rotation.z += this.zRotation;
+        this.mesh.rotation.x += this.xRotation;
+        this.mesh.rotation.z += this.zRotation;
 
         this.paths = [];
 
