@@ -45,19 +45,23 @@ window.onload = function () {
     var frCurrentLow = 255
 
     var tdAnalyser = audioCtx.createAnalyser();
-    tdAnalyser.fftSize = 512;
+    tdAnalyser.fftSize = 4096;
     tdAnalyser.smoothingTimeConstant = 0.9;
     var tdBufferLength = tdAnalyser.frequencyBinCount;
     var tdDataLength = tdBufferLength - 64;
     var tdDataArray = new Uint8Array(tdBufferLength);
+    var tdDataArrayNormalized = new Uint8Array(frBufferLength);
+
     var tdHistory = [];
-    let arraySize = 256;
+    let arraySize = 4096;
     tdHistory = Array(arraySize).fill(0);
 
     audioSrc.connect(frAnalyser);
     frAnalyser.connect(tdAnalyser);
     tdAnalyser.connect(audioCtx.destination);
 
+    var tdPoints = [];
+    var tdSoundWave;
 
     function initAudio(elem) {
         // console.log(elem)
@@ -70,43 +74,33 @@ window.onload = function () {
         elem.addClass('active');
     }
 
-    // function stopAudio() {
-    //     audio.pause();
-    // }
-
     // show playlist
     $('.pl').click(function (e) {
         // e.preventDefault();
-        $('.playlist').fadeIn(300);
+        $('.playlist').fadeIn(500);
     });
     
     // playlist elements - click
     $('.playlist li').click(function () {
         isSiteTrack = true;
-        initAudio($(this));
-        console.log(this);
         siteIndex = Number( $(this).attr('index'));
-        $('.playlist').fadeOut(300);
+        initAudio($(this));
+        // console.log(this);
+        $('.playlist').fadeOut(500);
     });
     
     
-    var list = document.querySelectorAll(".playlist li");
+    // var list = document.querySelectorAll(".playlist li");
     // this.console.log(list);
     
-    var siteIndex = 21;
+    var siteIndex = Math.round( Math.random()*47)+1;
     var isSiteTrack = true;
     
     // initAudio($('.playlist li:first-child'));
-    let current = $('.playlist li:nth-child('+siteIndex+')');
+    // let current = $('.playlist li:nth-child('+siteIndex+')');
 
-    initAudio(current);
+    initAudio($('.playlist li:nth-child('+siteIndex+')'));
     
-
-
-
-
-
-
 
 
     // full scectrum ROYGBIV palettes [0..1529]
@@ -126,9 +120,7 @@ window.onload = function () {
     // 3D canvas variables
 
     // var scene;
-    var masterTransform;
 
-    var starMaster;
 
     var defaultGridMaterial;
 
@@ -140,34 +132,34 @@ window.onload = function () {
     var camera;
 
     var cameraPosition = [{
-            lookat: new BABYLON.Vector3(95, -40, -95),
-            alpha: 2.355,
-            beta: 0.01,
-            radius: 180
-        },
-        {
-            lookat: new BABYLON.Vector3(-95, -6, -95),
-            alpha: 0.809,
-            beta: .222,
-            radius: 121
-        },
-        {
-            lookat: new BABYLON.Vector3(0, 0, 0),
+            lookat: new BABYLON.Vector3(200, 0, -200),
             alpha: Math.PI / 2,
             beta: 0.01,
             radius: 300
         },
         {
-            lookat: new BABYLON.Vector3(95, -40, 95),
-            alpha: 3.927,
-            beta: 0.84,
-            radius: 70
+            lookat: new BABYLON.Vector3(-200, 0, -200),
+            alpha: Math.PI / 2,
+            beta: .01,
+            radius: 300
         },
         {
-            lookat: new BABYLON.Vector3(-95, -40, 95),
-            alpha: 5.524,
+            lookat: new BABYLON.Vector3(0, 0, 0),
+            alpha: Math.PI / 2,
             beta: 0.01,
-            radius: 179
+            radius: 930
+        },
+        {
+            lookat: new BABYLON.Vector3(200, 0, 200),
+            alpha: Math.PI / 2,
+            beta: 0.01,
+            radius: 300
+        },
+        {
+            lookat: new BABYLON.Vector3(-200, 0, 200),
+            alpha: Math.PI / 2,
+            beta: 0.01,
+            radius: 300
         },
     ];
 
@@ -218,8 +210,8 @@ window.onload = function () {
 
     audio.onended = function() {
         siteIndex++;
-        if (siteIndex > 47) {
-            siteIndex = 0;
+        if (siteIndex > 48) {
+            siteIndex = 1;
         }
 
         if (isSiteTrack){
@@ -297,6 +289,9 @@ window.onload = function () {
             if (d > highest) highest = d;
         });
 
+        // normalize the data   0..1
+        tdDataArrayNormalized = normalizeData(tdDataArray);
+
         // TODO: historical data for wave form       TODO:    TODO:
         tdHistory.push(highest);
         if (tdHistory.length > arraySize) {
@@ -331,10 +326,29 @@ window.onload = function () {
             draw2DBars();
         }
 
+        drawWaveform(canvas2D, tdDataArrayNormalized, canvas2D.width, 60)
+
         renderConsoleOutput();
 
         requestAnimationFrame(render2DFrame);
     }
+
+    function drawWaveform(canvas, drawData, width, height) {
+        let ctx = canvas.getContext('2d');
+        let drawHeight = height / 2;
+
+        ctx.lineWidth = 5;
+        ctx.moveTo(0, drawHeight);
+        ctx.beginPath();
+        for(let i = 0; i < width; i++) {
+           let minPixel = drawData[i]*.5 ;
+           ctx.lineTo(i, minPixel);
+        }
+
+        ctx.strokeStyle = 'white';
+
+        ctx.stroke(); 
+     } 
 
     function renderConsoleOutput(){
         let outputString = "<br><br><br><br><br><br>"; // = "camera pos:<br>"+scene.activeCamera.position + "<br>";
@@ -445,7 +459,7 @@ window.onload = function () {
 
         buildPalettes(palette, paletteGlow, paletteRed, paletteGreen, paletteBlue, paletteGray, paletteMetallic, scene);
 
-        camera = new BABYLON.ArcRotateCamera("camera1", 1.57, .01, 300, new BABYLON.Vector3(0, 0, 0), scene);
+        camera = new BABYLON.ArcRotateCamera("camera1", 1.57, .01, 930, new BABYLON.Vector3(0, 0, 0), scene);
         camera.upperRadiusLimit = 9400;
         camera.lowerRadiusLimit = 10;
         camera.lower
@@ -476,34 +490,87 @@ window.onload = function () {
         return scene;
     }
 
+    var masterTransform;
+
+    var starMaster1;
+    var starMaster2;
+    var starMaster3;
+    var starMaster4;
+    var starMaster5;
+    var starMaster6;
+    var starMaster7;
+
     function createObjects() {
 
-        
         masterTransform = new BABYLON.TransformNode("root");
         // masterTransform.position = new BABYLON.Vector3(0, 0, 0);
         
-        starMaster = new BABYLON.TransformNode("starMaster");
+        starMaster1 = new BABYLON.TransformNode("starMaster1");
         
         createStarGroup1();
         
-        starMaster.position = new BABYLON.Vector3(0, 0, 0);
-        starMaster.parent = masterTransform;
-        starMaster.scaling.x = .1;
-        starMaster.scaling.y = .1;
-        starMaster.scaling.z = .1;
+        starMaster1.position = new BABYLON.Vector3(0, 0, 0);
+        starMaster1.parent = masterTransform;
+        starMaster1.scaling.x = .1;
+        starMaster1.scaling.y = .1;
+        starMaster1.scaling.z = .1;
+
+        starMaster2 = new BABYLON.TransformNode("starMaster2");
+
+        createStarGroupRandom2();
+
+        starMaster2.position = new BABYLON.Vector3(200, 0, -200);
+        starMaster2.parent = masterTransform;
+        starMaster2.scaling.x = .2;
+        starMaster2.scaling.y = .2;
+        starMaster2.scaling.z = .2;
+        starMaster2.rotation.y = Math.PI/2;
         
+        starMaster3 = new BABYLON.TransformNode("starMaster2");
+
+        createStarGroupRandom3();
+
+        starMaster3.position = new BABYLON.Vector3(-200, 0, -200);
+        starMaster3.parent = masterTransform;
+        starMaster3.scaling.x = .2;
+        starMaster3.scaling.y = .2;
+        starMaster3.scaling.z = .2;
+        starMaster3.rotation.y = Math.PI/2;
+
+        starMaster4 = new BABYLON.TransformNode("starMaster2");
+
+        createStarGroupRandom4();
+
+        starMaster4.position = new BABYLON.Vector3(200, 0, 200);
+        starMaster4.parent = masterTransform;
+        starMaster4.scaling.x = .3;
+        starMaster4.scaling.y = .3;
+        starMaster4.scaling.z = .3;
+        starMaster4.rotation.y = Math.PI/2;
+
+        starMaster5 = new BABYLON.TransformNode("starMaster2");
+
+        createStarGroupRandom5();
+
+        starMaster5.position = new BABYLON.Vector3(-200, 0, 200);
+        starMaster5.parent = masterTransform;
+        starMaster5.scaling.x = .3;
+        starMaster5.scaling.y = .3;
+        starMaster5.scaling.z = .3;
+        starMaster5.rotation.y = Math.PI/2;
     }
 
     function updateObjects() {
 
 
 
-        // starMaster.rotation.x += .01;
-        // starMaster.rotation.z += .004;
-        // starMaster.rotation.y -= .008;
+        // starMaster1.rotation.x += .01;
+        // starMaster1.rotation.z += .004;
+        // starMaster1.rotation.y -= .008;
 
     }
 
+    
     // let testOptions = {
     //     innerStartIndex : 0,
     //     outerStartIndex : 0,
@@ -546,7 +613,7 @@ window.onload = function () {
             0,
             0
         );
-        test.mesh.parent = starMaster;
+        test.mesh.parent = starMaster1;
         starObjects.push(test);
 
 
@@ -569,7 +636,7 @@ window.onload = function () {
             0,
             0
         );
-        test2.mesh.parent = starMaster;
+        test2.mesh.parent = starMaster1;
         starObjects.push(test2);
 
 
@@ -592,7 +659,7 @@ window.onload = function () {
             0.005,  // clockwise rotation
             0
         );
-        test3.mesh.parent = starMaster;
+        test3.mesh.parent = starMaster1;
         starObjects.push(test3);
 
 
@@ -615,7 +682,7 @@ window.onload = function () {
             0,
             0.01
         );
-        test4.mesh.parent = starMaster;
+        test4.mesh.parent = starMaster1;
         starObjects.push(test4);
 
 
@@ -638,7 +705,7 @@ window.onload = function () {
             0,
             0
         );
-        test5.mesh.parent = starMaster;
+        test5.mesh.parent = starMaster1;
         starObjects.push(test5);
 
 
@@ -661,7 +728,7 @@ window.onload = function () {
             -0.005,  // counter clockwise rotation
             0
         );
-        test6.mesh.parent = starMaster;
+        test6.mesh.parent = starMaster1;
         starObjects.push(test6);
 
 
@@ -684,7 +751,7 @@ window.onload = function () {
             0,
             -.01
         );
-        test7.mesh.parent = starMaster;
+        test7.mesh.parent = starMaster1;
         starObjects.push(test7);
 
         let test8 = new Star("test Star name", "test Star parent", paletteBlue, paletteGlow[50].mat, pieResolution, waterMaterial, scene);
@@ -706,7 +773,7 @@ window.onload = function () {
             0,
             0
         );
-        test8.mesh.parent = starMaster;
+        test8.mesh.parent = starMaster1;
         starObjects.push(test8);
     
     
@@ -730,10 +797,156 @@ window.onload = function () {
             0.005,  // clockwise rotation
             0
         );
-        test9.mesh.parent = starMaster;
+        test9.mesh.parent = starMaster1;
         starObjects.push(test9);
     
     
     }
+
+    function createStarGroupRandom2() {
+
+        // console.log("creating star objects");
+
+        for (let index = 0; index < 9; index++) {
+            
+            let test = new Star("Random Star +index", "test Star parent", paletteBlue, palette[Math.round( Math.random()*1529)].mat, pieResolution, waterMaterial, scene);
+            let rad = 20*index+10;
+            test.setOptions(
+                Math.round(Math.random()*20),
+                Math.round(Math.random()*20),
+    
+                Math.pow(2,Math.round( Math.random()*6)),
+                Math.pow(2,Math.round( Math.random()*6)),
+    
+                rad,
+                rad + Math.round(Math.random()*6)-3,
+    
+                256,
+    
+                waterMaterial,
+    
+                0,
+                0,
+                0
+            );
+            test.mesh.parent = starMaster2;
+            starObjects.push(test);
+        }
+    }
+
+    function createStarGroupRandom3() {
+
+        // console.log("creating star objects");
+
+        for (let index = 0; index < 9; index++) {
+            
+            let test = new Star("Random Star +index", "test Star parent", paletteBlue, palette[Math.round( Math.random()*1529)].mat, pieResolution, waterMaterial, scene);
+            let rad = 20*index+10;
+            let i = Math.round(Math.random()*10)
+            test.setOptions(
+                i,
+                i+Math.round(Math.random()*2+1),
+    
+                Math.pow(2,Math.round( Math.random()*6)+1),
+                Math.pow(2,Math.round( Math.random()*6)+1),
+    
+                rad,
+                rad,
+    
+                256,
+    
+                waterMaterial,
+    
+                0,
+                0,
+                0
+            );
+            test.mesh.parent = starMaster3;
+            starObjects.push(test);
+        }
+    }
+
+    // setOptions(
+    //     p_innerStartIndex, 
+    //     p_outerStartIndex, 
+        
+    //     p_innerSlices, 
+    //     p_outerSlices, 
+        
+    //     p_innerRadius, 
+    //     p_outerRadius, 
+        
+    //     p_resolution, 
+        
+    //     p_reflect, 
+        
+    //     p_xRotation, 
+    //     p_yRotation, 
+    //     p_zRotation
+    // ) 
+
+
+    function createStarGroupRandom4() {
+
+        for (let index = 0; index < 9; index++) {
+            
+            let test = new Star("Random Star +index", "test Star parent", paletteBlue, palette[Math.round( Math.random()*1529)].mat, pieResolution, waterMaterial, scene);
+            let rad = 5*index+50;
+            let i = Math.round(Math.random()*10)
+            test.setOptions(
+                i,
+                i*i,
+    
+                Math.pow(2,Math.round( Math.random()*1)+2),
+                Math.pow(2,Math.round( Math.random()*1)+4),
+    
+                rad,
+                rad,
+    
+                256,
+    
+                waterMaterial,
+    
+                0,
+                0,
+                0
+            );
+            test.mesh.parent = starMaster4;
+            starObjects.push(test);
+        }
+    }
+
+
+    function createStarGroupRandom5() {
+
+        for (let index = 0; index < 9; index++) {
+            
+            let test = new Star("Random Star +index", "test Star parent", paletteBlue, palette[Math.round( Math.random()*1529)].mat, pieResolution, waterMaterial, scene);
+            let rad = 5*index+50;
+            let i = Math.round(Math.random()*10);
+            let s = Math.pow(2,Math.round( Math.random()*1));
+            test.setOptions(
+                i,
+                i+1,
+    
+                s,
+                s,
+    
+                rad,
+                rad+5*i,
+    
+                256,
+    
+                waterMaterial,
+    
+                0,
+                0,
+                0
+            );
+            test.mesh.parent = starMaster5;
+            starObjects.push(test);
+        }
+    }
+
 
 };
