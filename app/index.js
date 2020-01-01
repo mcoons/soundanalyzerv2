@@ -11,8 +11,6 @@ import {
 } from './Star.js';
 
 var scene;
-var localStorage;
-var playList;
 
 window.onload = function () {
 
@@ -20,8 +18,8 @@ window.onload = function () {
         showBars: true,
         showTitle: false,
         showRipple: true,
-        showWater: true,
-        showSky: true
+        showWater: false,
+        showSky: false
     }
 
     // var meshDimensions = 256;
@@ -29,7 +27,8 @@ window.onload = function () {
     //////////////////////////////
     // AUDIO variables
 
-    var file;
+
+    // var file;
     var fileInput = document.getElementById("fileInput");
     var audio = document.getElementById("audio");
     var audioCtx = new AudioContext();
@@ -59,9 +58,56 @@ window.onload = function () {
     frAnalyser.connect(tdAnalyser);
     tdAnalyser.connect(audioCtx.destination);
 
-    // var playList;
-    localStorage = window.localStorage;
-    playList = localStorage.getItem("playlist");
+
+    function initAudio(elem) {
+        // console.log(elem)
+        var url = elem.attr('audiourl');
+
+        audio.src = "app/assets/tracks/"+url;
+        audio.load();
+
+        $('.playlist li').removeClass('active');
+        elem.addClass('active');
+    }
+
+    // function stopAudio() {
+    //     audio.pause();
+    // }
+
+    // show playlist
+    $('.pl').click(function (e) {
+        // e.preventDefault();
+        $('.playlist').fadeIn(300);
+    });
+    
+    // playlist elements - click
+    $('.playlist li').click(function () {
+        isSiteTrack = true;
+        initAudio($(this));
+        console.log(this);
+        siteIndex = Number( $(this).attr('index'));
+        $('.playlist').fadeOut(300);
+    });
+    
+    
+    var list = document.querySelectorAll(".playlist li");
+    // this.console.log(list);
+    
+    var siteIndex = 21;
+    var isSiteTrack = true;
+    
+    // initAudio($('.playlist li:first-child'));
+    let current = $('.playlist li:nth-child('+siteIndex+')');
+
+    initAudio(current);
+    
+
+
+
+
+
+
+
 
     // full scectrum ROYGBIV palettes [0..1529]
     var palette = []; // global ROYGBIV palette [0..1529]
@@ -109,7 +155,7 @@ window.onload = function () {
             lookat: new BABYLON.Vector3(0, 0, 0),
             alpha: Math.PI / 2,
             beta: 0.01,
-            radius: 980
+            radius: 300
         },
         {
             lookat: new BABYLON.Vector3(95, -40, 95),
@@ -148,17 +194,14 @@ window.onload = function () {
         engine.resize();
     });
 
+
+    // local file selection that is hidden
     fileInput.onchange = function () {
         var files = this.files;
-        // console.log(files);
-        // console.log(playList);
-        // // playList.push(...files);
+        
 
-        // playList = Object.assign(playList, files);
-
-        // console.log(playList);
-        // localStorage.setItem("playlist", playList);
-        // console.log(playList);
+       console.log(files[0])
+        isSiteTrack = false;
 
         if (options.showTitle) {
             title.innerHTML = files[0].name;
@@ -168,9 +211,25 @@ window.onload = function () {
         audio.load();
     };
 
-    $('.new_Btn').bind("click", function () {
+    // custom button that calls click on hidden fileInput element
+    $('.local_Btn').bind("click", function () {
         $('#fileInput').click();
     });
+
+    audio.onended = function() {
+        siteIndex++;
+        if (siteIndex > 47) {
+            siteIndex = 0;
+        }
+
+        if (isSiteTrack){
+            let current = $('.playlist li:nth-child('+siteIndex+')');
+
+            initAudio(current);
+        }
+
+
+    };
 
     //////////////////////////////
     // start the 3D render loop
@@ -193,16 +252,18 @@ window.onload = function () {
             sObject.update(frDataArrayNormalized, index);
         });
 
-
         updateObjects();
 
         scene.render();
     });
 
+
+
     ///////////////////////////////
     // start the 2D render loop
 
     render2DFrame();
+
 
 
     //////////////////////////////////////////////////////////////////////
@@ -270,13 +331,18 @@ window.onload = function () {
             draw2DBars();
         }
 
-        let outputString = ""; // = "camera pos:<br>"+scene.activeCamera.position + "<br>";
-        outputString += "alpha: <br>" + scene.activeCamera.alpha + "<br>";
-        outputString += "beta:  <br>" + scene.activeCamera.beta + "<br>";
-        outputString += "radius:<br>" + scene.activeCamera.radius + "<br>";
-        logToScreen(outputString);
+        renderConsoleOutput();
 
         requestAnimationFrame(render2DFrame);
+    }
+
+    function renderConsoleOutput(){
+        let outputString = "<br><br><br><br><br><br>"; // = "camera pos:<br>"+scene.activeCamera.position + "<br>";
+        outputString += "&nbsp alpha: <br> &nbsp " + Math.round( scene.activeCamera.alpha *1000)/1000+ "<br><br>";
+        outputString += "&nbsp beta:  <br> &nbsp " + Math.round( scene.activeCamera.beta *1000)/1000+ "<br><br>";
+        outputString += "&nbsp radius:<br> &nbsp " + Math.round( scene.activeCamera.radius *1000)/1000+ "<br><br>";
+        outputString += "&nbsp site index:<br> &nbsp " + siteIndex + "<br><br>";
+        logToScreen(outputString);
     }
 
     function draw2DBars() {
@@ -374,14 +440,14 @@ window.onload = function () {
             // Water mesh
             var waterMesh = BABYLON.Mesh.CreateGround("waterMesh", 50000, 50000, 32, scene, false);
             waterMesh.material = waterMaterial;
-            waterMesh.position.y = -47;
+            waterMesh.position.y = -80;
         }
 
         buildPalettes(palette, paletteGlow, paletteRed, paletteGreen, paletteBlue, paletteGray, paletteMetallic, scene);
 
-        camera = new BABYLON.ArcRotateCamera("camera1", 1.57, .01, 4000, new BABYLON.Vector3(0, 0, 0), scene);
+        camera = new BABYLON.ArcRotateCamera("camera1", 1.57, .01, 300, new BABYLON.Vector3(0, 0, 0), scene);
         camera.upperRadiusLimit = 9400;
-        camera.lowerRadiusLimit = 30;
+        camera.lowerRadiusLimit = 10;
         camera.lower
 
         // attach the camera to the canvas3D
@@ -532,14 +598,14 @@ window.onload = function () {
 
         let test4 = new Star("test Star name", "test Star parent", paletteBlue, paletteGlow[600].mat, pieResolution, waterMaterial, scene);
         test4.setOptions(
-            3,
-            4,
+            30,
+            40,
 
             4,
             4,
 
             60,
-            60,
+            61,
 
             256,
 
@@ -578,14 +644,14 @@ window.onload = function () {
 
         let test6 = new Star("test Star name", "test Star parent", paletteBlue, paletteGlow[1000].mat, pieResolution, waterMaterial, scene);
         test6.setOptions(
-            6,
-            7,
+            60,
+            70,
 
             16,
             16,
 
             140,
-            140,
+            141,
 
             256,
 

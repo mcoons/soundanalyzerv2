@@ -1,21 +1,35 @@
 What is Web Assembly?  WA
 What is Typescript?
 
+Synth mode
 
+Polar - Parametric
 
 TODO
 
  REFACTOR AND OPTIMIZE  --  ALWAYS
      Look into using clones for 3D optimization
      Look into fallbacks
-    
 
+
+
+
+Autoplay / local storage
+Microphone support
+Support for different local players
+Support for streamed players
+Save Screenshot
+Add CSS for different sizes
+
+
+
+
+    
 1) Create a custom player
      a) Use custom buttons and graphics
      b) Allow for a play list
      c) Allow saving options and playlist to local storage for ease of use
 
-2) Add microphone support
 
 3) Add external player support (grab the audio from anywhere)
 
