@@ -11,16 +11,7 @@ import {
     Star
 } from './Star.js';
 
-<<<<<<< HEAD
-    var showDancers = true;
-    var showInnerSnowflake = true;
-    var showOuterSnowflake = true;
-    var showFloor = true;
-    var showBars = true;
-    var showTitle = false;
-=======
 var scene;
->>>>>>> 2a88d21f0e22156e8ab4f96446d37ce4f6bb8f56
 
 window.onload = function () {
 
