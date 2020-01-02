@@ -1,0 +1,90 @@
+Web Assembly  WA
+Typescript
+
+Synth mode
+
+Polar - Parametric
+
+TODO
+
+ REFACTOR AND OPTIMIZE  --  ALWAYS
+     Look into using clones for 3D optimization
+     Look into fallbacks
+
+
+
+
+Autoplay / local storage - BLOCKED
+Microphone support
+Support for different local players
+Support for streamed players
+Save Screenshot
+Add CSS for different sizes
+
+
+
+
+    
+1) Create a custom player
+     a) Use custom buttons and graphics
+     b) Allow for a play list
+     c) Allow saving options and playlist to local storage for ease of use
+
+
+3) Add external player support (grab the audio from anywhere)
+
+4) Add error checking for everything
+
+5) Add Options popup
+     a) Which objects to display
+     b) Palette selection and creation
+
+
+ --  multiple gradients within the Index Range (0..255)
+let paletteObject = {
+    name: "Custom Palette",
+    gradients: [gradientObject, gradientObject, ...],
+    paletteColors: []
+}
+
+let gradientObject = {
+    startIndex: 0, 
+    endIndex: 255, 
+    startColor: {r:0, g:0, g:0, a:1}, 
+    endColor: {r:250, g:75, g:130, a:1}
+}
+
+
+     c) 2D title, 3D title or no title
+
+6) Add the ability to save the current screen (2D and 3D)
+
+7) 
+
+8) 
+
+Can I determine what key a song is played in and what is out of key
+
+Color scheme that is created from the current image of slideshow
+
+“skybox_nx.png”, left
+“skybox_ny.png”, down
+“skybox_nz.png”, back
+“skybox_px.png”, right
+“skybox_py.png”, up
+“skybox_pz.png” front
+
+
+
+
+
+
+
+
+TYPES
+
+no rotation
+2d rotation
+3d rotation
+
+camera rotation  alpha++, beta = Math.sin(t)

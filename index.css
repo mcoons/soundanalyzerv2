@@ -17,10 +17,10 @@ body {
 #canvas2D {
     pointer-events: none;
     position: absolute;
-    top: 10%;
+    top: 0;
     left: 10%;
     width: 80%;
-    height: 80%;
+    height: 90%;
     touch-action: none;
 }
 
@@ -75,13 +75,12 @@ td {
 }
 
 #consoleElement {
+    position: absolute;
     pointer-events: none;
     
     font-family: courier;
     font-size: 10px;
-    position: absolute;
-    margin: 0;
-    padding: 0;
+    margin: 0px;
     width: 100%;
     height: 100%;
     color: white;
@@ -91,38 +90,90 @@ td {
 
 audio {
     position: absolute;
-    width: 50vw;
+    width: 60vw;
     height: 25px;
-    left: 25vw;
+    left: 20vw;
     bottom: 35px;
     z-index: 100;
 }
 
-#thefile,
-.new_Btn {
+#fileInput,
+.local_Btn {
     position: absolute;
-    width: 24.8vw;
+    width: 14.7vw;
     height: 25px;
     bottom: 5px;
-    left: 25vw;
+    left: 20vw;
     border-radius: 30px;
     z-index: 100;
 }
 
+.site_Btn {
+    position: absolute;
+    width: 14.7vw;
+    height: 25px;
+    bottom: 5px;
+    left: 35.25vw;
+    border-radius: 30px;
+    z-index: 100;
+}
+
+.mic_Btn {
+    position: absolute;
+    width: 14.7vw;
+    height: 25px;
+    bottom: 5px;
+    left: 50.25vw;
+    border-radius: 30px;
+    z-index: 100;
+}
 .options_Btn {
     position: absolute;
-    width: 24.8vw;
+    width: 14.7vw;
     height: 25px;
     bottom: 5px;
-    left: 50.2vw;
+    left: 65.3vw;
     border-radius: 30px;
     z-index: 100;
 }
 
-.new_Btn {
+
+.local_Btn, .site_Btn {
     color: black;
 }
 
 #thefile {
     display: none;
+}
+
+.hidden {
+    display: none;
+}
+   
+
+.playlist {
+    position: absolute;
+    background-color: #333333;
+    border-radius: 5px 5px 5px 5px;
+    list-style-type: none;
+    left: 5px;
+    top: 35px;
+
+    width: 326px;
+    z-index: 150;
+}
+.playlist li {
+    color: #EEEEEE;
+    cursor: pointer;
+    margin: 0 0 0 15px;
+    font-family: courier;
+    font-size: 10px;
+}
+.playlist li.active {
+    font-weight: bold;
+    color:green;
+}
+
+#cameraLegend{
+    text-align: center;
 }

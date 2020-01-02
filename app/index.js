@@ -1,332 +1,697 @@
-////////////////////////////////////
-// TODO
-//
-//  REFACTOR AND OPTIMIZE  --  ALWAYS
-//      Look into using clones for 3D optimization
-//      Look into fallbacks
-//     
-//
-// 1) Create a custom player
-//      a) Use custom buttons and graphics
-//      b) Allow for a play list
-//      c) Allow saving options and playlist to local storage for ease of use
-//
-// 2) Add microphone support
-//
-// 3) Add external player support (grab the audio from anywhere)
-//
-// 4) Add error checking for everything
-//
-// 5) Add Options popup
-//      a) Which objects to display
-//      b) Palette selection and creation
-
-
-//  --  multiple gradients within the Index Range (0..255)
-// let paletteObject = {
-//     name: "Custom Palette",
-//     gradients: [gradientObject, gradientObject, ...],
-//     paletteColors: []
-// }
-
-// let gradientObject = {
-//     startIndex: 0, 
-//     endIndex: 255, 
-//     startColor: {r:0, g:0, g:0, a:1}, 
-//     endColor: {r:250, g:75, g:130, a:1}
-// }
-
-
-//      c) 2D title, 3D title or no title
-//
-// 6) Add the ability to save the current screen (2D and 3D)
-//
-// 7) 
-//
-// 8) 
-//
-// Can I determine what key a song is played in and what is out of key
-//
-// Color scheme that is created from the current image of slideshow
-//
-// “skybox_nx.png”, left
-// “skybox_ny.png”, down
-// “skybox_nz.png”, back
-// “skybox_px.png”, right
-// “skybox_py.png”, up
-// “skybox_pz.png” front
-//
-//
-
 import {
-    // addToGlowPalette,
-    // addToPalette,
-    buildPalettes,
-    map,
     logToScreen
 } from './utilities.js';
+
+import {
+    AudioManager
+} from './AudioManager.js';
+
+
+import {
+    Star
+} from './Star.js';
 
 var scene;
 
 window.onload = function () {
 
     var options = {
-        showDancers: true,
-        showInnerSnowflake: true,
-        showOuterSnowflake: true,
-        showFrame: true,
         showBars: true,
         showTitle: false,
-        showFloor: false,
-        showRipple: true
+        showRipple: true,
+        showWater: false,
+        showSky: false
     }
 
-    var title = document.getElementById("title");
+    var siteIndex = Math.round(Math.random() * 47) + 1;
+    var isSiteTrack = true;
+    var audioManager = new AudioManager();
+    audioManager.initAudio($('.playlist li:nth-child(' + siteIndex + ')'));
 
-    //////////////////////////////
-    // AUDIO variables
-
-    var file = document.getElementById("thefile");
-    var audio = document.getElementById("audio");
-    var audioCtx = new AudioContext();
-    var audioSrc = audioCtx.createMediaElementSource(audio);
-
-    var frAnalyser = audioCtx.createAnalyser();
-    frAnalyser.fftSize = 1024;
-    frAnalyser.smoothingTimeConstant = 0.9;
-    var frBufferLength = frAnalyser.frequencyBinCount;
-    var frDataLength = frBufferLength - 64;
-    var frDataArray = new Uint8Array(frBufferLength);
-    var frDataArrayNormalized = new Uint8Array(frBufferLength);
-    var frCurrentHigh = 0;
-    var frCurrentLow = 255
-
-    var tdAnalyser = audioCtx.createAnalyser();
-    tdAnalyser.fftSize = 512;
-    tdAnalyser.smoothingTimeConstant = 0.9;
-    var tdBufferLength = tdAnalyser.frequencyBinCount;
-    var tdDataLength = tdBufferLength - 64;
-    var tdDataArray = new Uint8Array(tdBufferLength);
-    var tdHistory = [];
-    let arraySize = 256;
-    tdHistory = Array(arraySize).fill(0);
-
-    audioSrc.connect(frAnalyser);
-    frAnalyser.connect(tdAnalyser);
-    tdAnalyser.connect(audioCtx.destination);
-
-
-    /////////////////////////////////
-    //  PALETTES
-    // 
-    // palette element object
-    // {
-    //     r,
-    //     g,
-    //     b,
-    //     color,
-    //     mat
-    // }
-
-    // full scectrum ROYGBIV palettes [0..1529]
-    var palette = []; // global ROYGBIV palette [0..1529]
-    var paletteGlow = []; // global ROYGBIV glow palette [0..1529]
-    var paletteMetallic = []; // global ROYGBIV metallic palette [0..1529]
-
-    // single color palettes [0..255]
-    var paletteGray = []; // global gray palette [0..255]
-    var paletteRed = []; // global red palette [0..255]
-    var paletteGreen = []; // global green palette [0..255]
-    var paletteBlue = []; // global blue palette [0..255]
-
-    var paletteScroller = 0; // scrolling index modifier for palette scrolling
-
-    //////////////////////////////
-    // 3D canvas variables
-
-    // var scene;
-    var masterTransform;
-    var dancersObjects = [];
-    var dancersMaster;
-    var innerSnowflakeObjects = [];
-    var innerSnowflakeMaster;
-    var outerSnowflakeObjects = [];
-    var outerSnowflakeMaster;
-    var frameObjects = [];
-    var frameMaster;
-    var floorObjects = [];
-    var floorMaster;
-    var starMaster;
-
-    var ripple;
-    var star2;
-    var star3;
-    var star4;
-    var waterMaterial;
-
-    var instanceMaster;
-
-    var defaultGridMaterial;
+    
+    //////////////////////////////////////////////////////////////////////
+    // start the 3D render loop
 
     var canvas3D = document.getElementById('canvas3D');
     var engine = new BABYLON.Engine(canvas3D, true);
     var glowLayer;
-
-    // var highlightLayer;
-
+    var waterMaterial
+    var defaultGridMaterial;
     var camera;
-
     var cameraPosition = [{
-            lookat: new BABYLON.Vector3(95, -40, -95),
-            alpha: 2.355,
-            beta: 0.01,
-            radius: 180
-        },
-        {
-            lookat: new BABYLON.Vector3(-95, -6, -95),
-            alpha: 0.809,
-            beta: .222,
-            radius: 121
-        },
-        {
-            lookat: new BABYLON.Vector3(0, -20, 0),
+            lookat: new BABYLON.Vector3(200, 0, -200),
             alpha: Math.PI / 2,
             beta: 0.01,
-            radius: 980
+            radius: 400
         },
         {
-            lookat: new BABYLON.Vector3(95, -40, 95),
-            alpha: 3.927,
-            beta: 0.84,
-            radius: 70
+            lookat: new BABYLON.Vector3(-200, 0, -200),
+            alpha: Math.PI / 2,
+            beta: .01,
+            radius: 400
         },
         {
-            lookat: new BABYLON.Vector3(-95, -40, 95),
-            alpha: 5.524,
+            lookat: new BABYLON.Vector3(0, 0, 0),
+            alpha: Math.PI / 2,
             beta: 0.01,
-            radius: 179
+            radius: 930
+        },
+        {
+            lookat: new BABYLON.Vector3(200, 0, 200),
+            alpha: Math.PI / 2,
+            beta: 0.01,
+            radius: 400
+        },
+        {
+            lookat: new BABYLON.Vector3(-200, 0, 200),
+            alpha: Math.PI / 2,
+            beta: 0.01,
+            radius: 400
         },
     ];
+    var starObjects = [];
+    var pieResolution = 256;
 
-    $('td').bind("click", function () {
-        scene.cameras[0].target = cameraPosition[this.id - 1].lookat
-        scene.cameras[0].alpha = cameraPosition[this.id - 1].alpha
-        scene.cameras[0].beta = cameraPosition[this.id - 1].beta
-        scene.cameras[0].radius = cameraPosition[this.id - 1].radius
+    var masterTransform;
+
+    var starMaster1;
+    var starMaster2;
+    var starMaster3;
+    var starMaster4;
+    var starMaster5;
+    var starMaster6;    
+    var starMaster7;
+    var starMaster8;
+    var starMaster9;
+    var starMaster10;
+    var starMaster11;
+    var starMaster12;
+
+    scene = createScene();
+    createObjects();
+
+    engine.runRenderLoop(function () {
+        updateObjects();
+        scene.render();
     });
 
-    //////////////////////////////
-    // 2D canvas variables
+    function createScene() {
+        // create a basic BJS Scene object
+        let scene = new BABYLON.Scene(engine);
+        scene.clearColor = BABYLON.Color3.Black();
+        scene.ambientColor = new BABYLON.Color3(0.4, 0.3, 0.5);
+
+        glowLayer = new BABYLON.GlowLayer("glow", scene);
+        glowLayer.intensity = 2.75;
+
+        // default object grid material
+        defaultGridMaterial = new BABYLON.GridMaterial("default", scene);
+        defaultGridMaterial.majorUnitFrequency = 10;
+        defaultGridMaterial.minorUnitVisibility = .33;
+        defaultGridMaterial.gridRatio = 0.75;
+        defaultGridMaterial.mainColor = new BABYLON.Color3(0.8, 0.75, 0.6);
+        defaultGridMaterial.lineColor = new BABYLON.Color3(0, .30, .30);
+        defaultGridMaterial.backFaceCulling = false;
+
+        // sky grid material
+        if (options.showSky) {
+            var skyMaterial = new BABYLON.GridMaterial("skyMaterial", scene);
+            skyMaterial.majorUnitFrequency = 5;
+            skyMaterial.minorUnitVisibility = .43;
+            skyMaterial.gridRatio = 20.0;
+            skyMaterial.mainColor = new BABYLON.Color3(0, 0.05, 0.2);
+            skyMaterial.lineColor = new BABYLON.Color3(0, .30, .30);
+            skyMaterial.backFaceCulling = false;
+
+            var skySphere = BABYLON.Mesh.CreateSphere("skySphere", 32, 19200, scene);
+            skySphere.material = skyMaterial;
+        }
+
+        // Water material
+        if (options.showWater) {
+            waterMaterial = new BABYLON.WaterMaterial("waterMaterial", scene, new BABYLON.Vector2(512, 512));
+            waterMaterial.bumpTexture = new BABYLON.Texture("//www.babylonjs.com/assets/waterbump.png", scene);
+            waterMaterial.windForce = -5;
+            waterMaterial.waveHeight = 0.4;
+            waterMaterial.bumpHeight = 0.06;
+            waterMaterial.waveLength = 0.12;
+            waterMaterial.waveSpeed = 30.0;
+            waterMaterial.colorBlendFactor = .5;
+            waterMaterial.windDirection = new BABYLON.Vector2(1, 1);
+            waterMaterial.colorBlendFactor = 0;
+
+            // Configure water material
+            waterMaterial.addToRenderList(skySphere);
+            // Water mesh
+            var waterMesh = BABYLON.Mesh.CreateGround("waterMesh", 50000, 50000, 32, scene, false);
+            waterMesh.material = waterMaterial;
+            waterMesh.position.y = -80;
+        }
+
+        // buildPalettes(palette, paletteGlow, paletteRed, paletteGreen, null, paletteGray, paletteMetallic, scene);
+
+        camera = new BABYLON.ArcRotateCamera("camera1", 1.59, .678, 930, new BABYLON.Vector3(0, 0, 0), scene);
+        camera.upperRadiusLimit = 9400;
+        camera.lowerRadiusLimit = 10;
+        camera.lower
+
+        // attach the camera to the canvas3D
+        camera.attachControl(canvas3D, true);
+
+        // create a basic light, aiming 0,1,0 - meaning, to the sky
+        var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(-1, -1, 0), scene);
+        light.intensity = 1.6;
+        // light.groundColor = null[255].color;
+
+        // var pointLight1 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(20, 20, -10), scene);
+        // pointLight1.intensity = 1.2;
+
+        // var pointLight2 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(0, -80, 0), scene);
+        // pointLight2.intensity = 1.2;
+
+        var pointLight3 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(0, 80, 0), scene);
+        pointLight3.intensity = .8;
+
+        var pointLight4 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(40, 580, -180), scene);
+        pointLight4.intensity = 1.0;
+
+        return scene;
+    }
+
+    function createObjects() {
+
+        masterTransform = new BABYLON.TransformNode("root");
+        masterTransform.position = new BABYLON.Vector3(0, 0, 0);
+
+        // starMaster1 = new BABYLON.TransformNode("starMaster1");
+
+        // createStarGroup1(starMaster1);
+
+        // starMaster1.position = new BABYLON.Vector3(400, 0, 0);
+        // starMaster1.parent = masterTransform;
+        // starMaster1.scaling.x = .1;
+        // starMaster1.scaling.y = .1;
+        // starMaster1.scaling.z = .1;
+
+        starMaster2 = new BABYLON.TransformNode("starMaster2");
+
+        createStarGroupRandom2({
+            r: .75,
+            g: .25,
+            b: .25
+        }, {
+            x: 0,
+            y: 1,
+            z: 0
+        }, starMaster2);
+
+        starMaster2.position = new BABYLON.Vector3(200, 0, -200);
+        starMaster2.parent = masterTransform;
+        starMaster2.scaling.x = .2;
+        starMaster2.scaling.y = .2;
+        starMaster2.scaling.z = .2;
+        starMaster2.rotation.y = Math.PI / 2;
+
+        starMaster3 = new BABYLON.TransformNode("starMaster2");
+
+        createStarGroupRandom3({
+            r: .25,
+            g: .65,
+            b: .25
+        }, {
+            x: 0,
+            y: 1,
+            z: 0
+        }, starMaster3);
+
+        starMaster3.position = new BABYLON.Vector3(-200, 0, -200);
+        starMaster3.parent = masterTransform;
+        starMaster3.scaling.x = .2;
+        starMaster3.scaling.y = .2;
+        starMaster3.scaling.z = .2;
+        starMaster3.rotation.y = Math.PI / 2;
+
+        starMaster4 = new BABYLON.TransformNode("starMaster2");
+
+        createStarGroupRandom4({
+            r: .25,
+            g: .25,
+            b: .75
+        }, {
+            x: 1,
+            y: 1,
+            z: 1
+        }, starMaster4);
+
+        starMaster4.position = new BABYLON.Vector3(200, 0, 200);
+        starMaster4.parent = masterTransform;
+        starMaster4.scaling.x = .3;
+        starMaster4.scaling.y = .3;
+        starMaster4.scaling.z = .3;
+        starMaster4.rotation.y = Math.PI / 2;
+
+        starMaster5 = new BABYLON.TransformNode("starMaster2");
+
+        createStarGroupRandom5({
+            r: .95,
+            g: .25,
+            b: .95
+        }, {
+            x: 1,
+            y: 0,
+            z: 1
+        }, starMaster5);
+
+        starMaster5.position = new BABYLON.Vector3(-200, 0, 200);
+        starMaster5.parent = masterTransform;
+        starMaster5.scaling.x = .2;
+        starMaster5.scaling.y = .2;
+        starMaster5.scaling.z = .2;
+        starMaster5.rotation.y = Math.PI / 2;
+
+        starMaster6 = new BABYLON.TransformNode("starMaster2");
+
+        createStarGroupRandom6({
+            r: .5,
+            g: .5,
+            b: .5
+        }, {
+            x: 0,
+            y: 1,
+            z: 0
+        }, starMaster6);
+
+        starMaster6.position = new BABYLON.Vector3(0, 0, 0);
+        starMaster6.parent = masterTransform;
+        starMaster6.scaling.x = .2;
+        starMaster6.scaling.y = .2;
+        starMaster6.scaling.z = .2;
+        starMaster6.rotation.y = Math.PI / 2;
+
+        ////////////////////////////////////////////////////////
+
+        starMaster7 = new BABYLON.TransformNode("starMaster7");
+
+        createStarGroupRandom2({
+            r: .75,
+            g: .25,
+            b: .25
+        }, {
+            x: 0,
+            y: 1,
+            z: 0
+        }, starMaster7);
+
+        starMaster7.position = new BABYLON.Vector3(400, 0, -200);
+        starMaster7.parent = masterTransform;
+        starMaster7.scaling.x = .2;
+        starMaster7.scaling.y = .2;
+        starMaster7.scaling.z = .2;
+        starMaster7.rotation.y = Math.PI / 2;
+
+        starMaster8 = new BABYLON.TransformNode("starMaster2");
+
+        createStarGroupRandom3({
+            r: .25,
+            g: .65,
+            b: .25
+        }, {
+            x: 0,
+            y: 1,
+            z: 0
+        }, starMaster8);
+
+        starMaster8.position = new BABYLON.Vector3(-400, 0, -200);
+        starMaster8.parent = masterTransform;
+        starMaster8.scaling.x = .2;
+        starMaster8.scaling.y = .2;
+        starMaster8.scaling.z = .2;
+        starMaster8.rotation.y = Math.PI / 2;
+
+        starMaster9 = new BABYLON.TransformNode("starMaster2");
+
+        createStarGroupRandom4({
+            r: .25,
+            g: .25,
+            b: .75
+        }, {
+            x: 1,
+            y: 1,
+            z: 1
+        }, starMaster9);
+
+        starMaster9.position = new BABYLON.Vector3(400, 0, 200);
+        starMaster9.parent = masterTransform;
+        starMaster9.scaling.x = .3;
+        starMaster9.scaling.y = .3;
+        starMaster9.scaling.z = .3;
+        starMaster9.rotation.y = Math.PI / 2;
+
+        starMaster10 = new BABYLON.TransformNode("starMaster2");
+
+        createStarGroupRandom5({
+            r: .95,
+            g: .25,
+            b: .95
+        }, {
+            x: 1,
+            y: 0,
+            z: 1
+        }, starMaster10);
+
+        starMaster10.position = new BABYLON.Vector3(-400, 0, 200);
+        starMaster10.parent = masterTransform;
+        starMaster10.scaling.x = .2;
+        starMaster10.scaling.y = .2;
+        starMaster10.scaling.z = .2;
+        starMaster10.rotation.y = Math.PI / 2;
+
+        starMaster11 = new BABYLON.TransformNode("starMaster2");
+
+        createStarGroupRandom6({
+            r: .5,
+            g: .5,
+            b: .5
+        }, {
+            x: 0,
+            y: 1,
+            z: 0
+        }, starMaster11);
+
+        starMaster11.position = new BABYLON.Vector3(0, 200, 0);
+        starMaster11.parent = masterTransform;
+        starMaster11.scaling.x = .2;
+        starMaster11.scaling.y = .2;
+        starMaster11.scaling.z = .2;
+        starMaster11.rotation.y = Math.PI / 2;
+        // drawRandomStars();
+    }
+
+    function updateObjects() {
+        // call update on all objects
+        starObjects.forEach((sObject, index) => {
+            sObject.update(audioManager.frDataArrayNormalized, index);
+        });
+    }
+
+    function drawRandomStars() {
+        masterTransform = new BABYLON.TransformNode("root");
+        for (let i = 0; i < 6; i += 6) {
+
+            let masters = [];
+
+            masters[i] = new BABYLON.TransformNode("masters[i+1]");
+            // // masters.push(starMaster);                
+            // createStarGroup1(masters[i]);
+
+            // masters[i].position = new BABYLON.Vector3(Math.random() * 1000 - 500, Math.random() * 1000 + 1500, Math.random() * 1000 - 500);
+            // masters[i].parent = masterTransform;
+            // masters[i].scaling.x = .1;
+            // masters[i].scaling.y = .1;
+            // masters[i].scaling.z = .1;
+
+
+            masters[i + 1] = new BABYLON.TransformNode("masters[i+1]");
+            // masters.push(masters[i+1]);            
+            createStarGroupRandom2({
+                r: .75,
+                g: .25,
+                b: .25
+            }, {
+                x: 1,
+                y: 1,
+                z: 1
+            }, masters[i + 1]);
+
+            masters[i + 1].position = new BABYLON.Vector3(Math.random() * 1000 - 500, Math.random() * 1000 + 1500, Math.random() * 1000 - 500);
+            masters[i + 1].parent = masterTransform;
+            masters[i + 1].scaling.x = .2;
+            masters[i + 1].scaling.y = .2;
+            masters[i + 1].scaling.z = .2;
+            masters[i + 1].rotation.y = Math.PI / 2;
+
+            masters[i + 2] = new BABYLON.TransformNode("masters[i+2]");
+            // masters.push(masters[i+2]);            
+            createStarGroupRandom3({
+                r: .25,
+                g: .65,
+                b: .25
+            }, {
+                x: 0,
+                y: 1,
+                z: 0
+            }, masters[i + 2]);
+
+            masters[i + 2].position = new BABYLON.Vector3(Math.random() * 1000 - 500, Math.random() * 1000 + 1500, Math.random() * 1000 - 500);
+            masters[i + 2].parent = masterTransform;
+            masters[i + 2].scaling.x = .2;
+            masters[i + 2].scaling.y = .2;
+            masters[i + 2].scaling.z = .2;
+            masters[i + 2].rotation.y = Math.PI / 2;
+
+            masters[i + 3] = new BABYLON.TransformNode("masters[i+3]");
+            // masters.push(masters[i+3]);            
+            createStarGroupRandom4({
+                r: .25,
+                g: .25,
+                b: .75
+            }, {
+                x: 1,
+                y: 1,
+                z: 1
+            }, masters[i + 3]);
+
+            masters[i + 3].position = new BABYLON.Vector3(Math.random() * 1000 - 500, Math.random() * 1000 + 1500, Math.random() * 1000 - 500);
+            masters[i + 3].parent = masterTransform;
+            masters[i + 3].scaling.x = .3;
+            masters[i + 3].scaling.y = .3;
+            masters[i + 3].scaling.z = .3;
+            masters[i + 3].rotation.y = Math.PI / 2;
+
+            masters[i + 4] = new BABYLON.TransformNode("masters[i+4]");
+            // masters.push(starMaster);            
+            createStarGroupRandom5({
+                r: .95,
+                g: .25,
+                b: .95
+            }, {
+                x: 1,
+                y: 0,
+                z: 1
+            }, masters[i + 4]);
+
+            masters[i + 4].position = new BABYLON.Vector3(Math.random() * 1000 - 500, Math.random() * 1000 + 1500, Math.random() * 1000 - 500);
+            masters[i + 4].parent = masterTransform;
+            masters[i + 4].scaling.x = .2;
+            masters[i + 4].scaling.y = .2;
+            masters[i + 4].scaling.z = .2;
+            masters[i + 4].rotation.y = Math.PI / 2;
+
+            masters[i + 5] = new BABYLON.TransformNode("masters[i+5]");
+            // masters.push(masters[i+5]);            
+            createStarGroupRandom6({
+                r: 1,
+                g: 1,
+                b: 1
+            }, {
+                x: 0,
+                y: 1,
+                z: 0
+            }, masters[i + 5]);
+
+            masters[i + 5].position = new BABYLON.Vector3(Math.random() * 1000 - 500, Math.random() * 1000 + 1500, Math.random() * 1000 - 500);
+            masters[i + 5].parent = masterTransform;
+            masters[i + 5].scaling.x = .2;
+            masters[i + 5].scaling.y = .2;
+            masters[i + 5].scaling.z = .2;
+            masters[i + 5].rotation.y = Math.PI / 2;
+        }
+    }
+
+    function createStarGroupRandom2(colorBias, rotationBias, parent, location) {
+
+        for (let index = 0; index < 9; index++) {
+
+            let test = new Star("Random Star +index", "test Star parent", null, getBiasedGlowMaterial(colorBias), pieResolution, waterMaterial, scene);
+            let rad = 20 * index + 10;
+            test.setOptions(
+                Math.round(Math.random() * 20),
+                Math.round(Math.random() * 20),
+
+                Math.pow(2, Math.round(Math.random() * 6)),
+                Math.pow(2, Math.round(Math.random() * 6)),
+
+                rad,
+                rad + Math.round(Math.random() * 6) - 3,
+
+                256,
+
+                waterMaterial,
+
+                rotationBias.x ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.y ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.z ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+            );
+            test.mesh.parent = parent;
+            starObjects.push(test);
+        }
+    }
+
+    function createStarGroupRandom3(colorBias, rotationBias, parent, location) {
+
+        for (let index = 0; index < 9; index++) {
+
+            let test = new Star("Random Star +index", "test Star parent", null, getBiasedGlowMaterial(colorBias), pieResolution, waterMaterial, scene);
+            let rad = 20 * index + 10;
+            let i = Math.round(Math.random() * 10)
+            test.setOptions(
+                i,
+                i + Math.round(Math.random() * 2 + 1),
+
+                Math.pow(2, Math.round(Math.random() * 6) + 1),
+                Math.pow(2, Math.round(Math.random() * 6) + 1),
+
+                rad,
+                rad,
+
+                256,
+
+                waterMaterial,
+
+                rotationBias.x ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.y ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.z ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+            );
+            test.mesh.parent = parent;
+            starObjects.push(test);
+        }
+    }
+
+    function createStarGroupRandom4(colorBias, rotationBias, parent, location) {
+
+        for (let index = 0; index < 9; index++) {
+
+            let test = new Star("Random Star +index", "test Star parent", null, getBiasedGlowMaterial(colorBias), pieResolution, waterMaterial, scene);
+            let rad = 8 * (9 - index) + 40;
+            let i = Math.round(Math.random() * 10)
+            test.setOptions(
+                i,
+                i,
+
+                Math.pow(2, Math.round(Math.random() * 1) + 2),
+                Math.pow(2, Math.round(Math.random() * 1) + 4),
+
+                rad,
+                rad + 2,
+
+                256,
+
+                waterMaterial,
+
+                rotationBias.x ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.y ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.z ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+            );
+            test.mesh.parent = parent;
+            starObjects.push(test);
+        }
+    }
+
+    function createStarGroupRandom5(colorBias, rotationBias, parent, location) {
+
+        for (let index = 0; index < 9; index++) {
+
+            let test = new Star("Random Star +index", "test Star parent", null, getBiasedGlowMaterial(colorBias), pieResolution, waterMaterial, scene);
+            let rad = 10 * index + 80;
+            let i = Math.round(Math.random() * 10 + 2);
+            let s = Math.pow(2, Math.round(Math.random() * 1));
+            test.setOptions(
+                i,
+                i - 1,
+
+                Math.pow(2, index),
+                Math.pow(2, index),
+
+                rad,
+                rad + 1,
+
+                256,
+
+                waterMaterial,
+
+                rotationBias.x ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.y ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.z ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+            );
+            test.mesh.parent = parent;
+            starObjects.push(test);
+        }
+    }
+
+    function createStarGroupRandom6(colorBias, rotationBias, parent, location) {
+
+        for (let index = 0; index < 9; index++) {
+
+            let test = new Star("Random Star +index", "test Star parent", null, getBiasedGlowMaterial(colorBias), pieResolution, waterMaterial, scene);
+            let rad = 10 * index + 80;
+            let i = Math.round(Math.random() * 10 + 2);
+            let s = Math.pow(2, Math.round(Math.random() * 1));
+            test.setOptions(
+                18 - i * 2,
+                i + 1,
+
+                Math.pow(2, (index + 2)),
+                Math.pow(2, (index + 2)),
+
+                rad,
+                rad + 1,
+
+                256,
+
+                waterMaterial,
+
+                rotationBias.x ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.y ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.z ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+            );
+            test.mesh.parent = parent;
+            starObjects.push(test);
+        }
+    }
+
+    function getBiasedGlowMaterial(colorBias) {
+        
+        let dimmer = 1.0;
+        let r = Math.random() * colorBias.r;
+        let g = Math.random() * colorBias.g;
+        let b = Math.random() * colorBias.b;
+        let color = new BABYLON.Color4(r * dimmer, g * dimmer, b * dimmer, 1, false);
+
+        let mat = new BABYLON.StandardMaterial("mat", scene);
+        mat.diffuseColor = color;
+        mat.specularColor = new BABYLON.Color3(r * .1, g * .1, b * .1);
+        mat.ambientColor = new BABYLON.Color3(r * .25, g * .25, b * .25);
+        mat.emissiveColor = new BABYLON.Color3(r, g, b);
+        mat.backFaceCulling = true;
+        mat.alpha = .5;
+
+        return mat;
+    }
+
+    //////////////////////////////////////////////////////////////////////
+    // start the 2D render loop
 
     var canvas2D = document.getElementById("canvas2D");
     canvas2D.style.width = canvas2D.width;
     canvas2D.style.height = canvas2D.height;
     var ctx2D = canvas2D.getContext("2d");
     ctx2D.globalAlpha = .5;
-    // var WIDTH = canvas2D.width;
-    // var HEIGHT = canvas2D.height;
-
-    //////////////////////////////
-    // event listeners
-
-    window.addEventListener('resize', function () {
-        engine.resize();
-    });
-
-    file.onchange = function () {
-        var files = this.files;
-        // console.log(files);
-
-        if (options.showTitle) {
-            title.innerHTML = files[0].name;
-        }
-
-        audio.src = URL.createObjectURL(files[0]);
-        audio.load();
-    };
-
-    $('.new_Btn').bind("click", function () {
-        $('#thefile').click();
-    });
-
-    //////////////////////////////
-    // start the 3D render loop
-
-    scene = createScene();
-    engine.runRenderLoop(function () {
-
-        // Scrolling index modifier for palette scrolling
-        paletteScroller += .125;
-        if (paletteScroller > 1529) {
-            paletteScroller = 0;
-        }
-
-        analyzeData();
-        updateObjects();
-
-        scene.render();
-
-    });
-
-    ///////////////////////////////
-    // start the 2D render loop
-
+    
     render2DFrame();
 
-    //////////////////////////////////////////////////////////////////////
-
-    function analyzeData() {
-
-        ////////////////////////////////////
-        // get FREQUENCY data for this frame
-
-        frAnalyser.getByteFrequencyData(frDataArray);
-
-        // get highest and lowest FREQUENCY for this frame
-        frCurrentHigh = 0;
-        frCurrentLow = 255;
-        frDataArray.forEach(f => {
-            if (f > frCurrentHigh) frCurrentHigh = f;
-            if (f < frCurrentLow) frCurrentLow = f;
-        });
-
-        // normalize the data   0..1
-        frDataArrayNormalized = normalizeData(frDataArray);
-
-        //////////////////////////////////////
-        // get TIME DOMAIN data for this frame
-
-        tdAnalyser.getByteTimeDomainData(tdDataArray);
-
-        // get the highest for this frame
-        let highest = 0;
-        tdDataArray.forEach(d => {
-            if (d > highest) highest = d;
-        });
-
-        // TODO: historical data for wave form       TODO:    TODO:
-        tdHistory.push(highest);
-        if (tdHistory.length > arraySize) {
-            tdHistory.shift();
-        }
-    }
-
-    function normalizeData(sourceData) {
-        const multiplier = Math.pow(Math.max(...sourceData), -1);
-        return sourceData.map(n => n * multiplier * 255);
-    }
-
-    function sampleData(source, start, end, samplesDesired) {
-        let sampledData = [];
-
-        let interval = Math.round((end - start) / samplesDesired);
-        for (let i = start; i < end && i < source.length; i += interval) {
-            sampledData.push(source[i]);
-        }
-        return sampledData;
-    }
-
     function render2DFrame() {
+
+        audioManager.analyzeData();
 
         fix_dpi();
 
@@ -334,34 +699,54 @@ window.onload = function () {
             draw2DBars();
         }
 
-        if (options.showTitle) {
-            title.style.color = textColor;
-        }
+        drawWaveform(canvas2D, audioManager.tdDataArrayNormalized, canvas2D.width, 60);
 
-        let outputString = ""; // = "camera pos:<br>"+scene.activeCamera.position + "<br>";
-        outputString += "alpha: <br>" + scene.activeCamera.alpha + "<br>";
-        outputString += "beta:  <br>" + scene.activeCamera.beta + "<br>";
-        outputString += "radius:<br>" + scene.activeCamera.radius + "<br>";
-        logToScreen(outputString);
+        renderConsoleOutput();
 
         requestAnimationFrame(render2DFrame);
+    }
+
+    function drawWaveform(canvas, drawData, width, height) {
+        let ctx = canvas.getContext('2d');
+        let drawHeight = height / 2;
+
+        ctx.lineWidth = 5;
+        ctx.moveTo(0, drawHeight);
+        ctx.beginPath();
+        for (let i = 0; i < width; i++) {
+            let minPixel = drawData[i] * .5;
+            ctx.lineTo(i, minPixel);
+        }
+
+        ctx.strokeStyle = 'white';
+
+        ctx.stroke();
+    }
+
+    function renderConsoleOutput() {
+        let outputString = "<br><br><br><br><br><br>"; // = "camera pos:<br>"+scene.activeCamera.position + "<br>";
+        outputString += "&nbsp alpha: <br> &nbsp " + Math.round(scene.activeCamera.alpha * 1000) / 1000 + "<br><br>";
+        outputString += "&nbsp beta:  <br> &nbsp " + Math.round(scene.activeCamera.beta * 1000) / 1000 + "<br><br>";
+        outputString += "&nbsp radius:<br> &nbsp " + Math.round(scene.activeCamera.radius * 1000) / 1000 + "<br><br>";
+        outputString += "&nbsp site index:<br> &nbsp " + siteIndex + "<br><br>";
+        logToScreen(outputString);
     }
 
     function draw2DBars() {
         if (options.showBars) {
             let WIDTH = canvas2D.width;
             let HEIGHT = canvas2D.height;
-            let barWidth = (WIDTH / (frDataLength));
+            let barWidth = (WIDTH / (audioManager.frDataLength));
 
             ctx2D.clearRect(0, 0, WIDTH, HEIGHT);
 
             let x = 0;
 
-            for (var i = 0; i < frBufferLength; i++) {
-                let barHeight = frDataArray[i] * 1 + 1;
+            for (var i = 0; i < audioManager.frBufferLength; i++) {
+                let barHeight = audioManager.frDataArray[i] * 1 + 1;
 
-                var r = barHeight + (55.52 * (i / frDataLength));
-                var g = 255 * (55 * i / frDataLength);
+                var r = barHeight + (55.52 * (i / audioManager.frDataLength));
+                var g = 255 * (55 * i / audioManager.frDataLength);
                 var b = 255;
 
                 ctx2D.fillStyle = "rgba(" + r + "," + g + "," + b + ",.7)";
@@ -389,883 +774,301 @@ window.onload = function () {
         canvas2D.setAttribute('height', style.height() * dpi);
     }
 
-    function createScene() {
-        // create a basic BJS Scene object
-        let scene = new BABYLON.Scene(engine);
-        scene.clearColor = BABYLON.Color3.Black();
-        scene.ambientColor = new BABYLON.Color3(0.4, 0.3, 0.5);
-        // scene.createDefaultEnvironment();
+    //////////////////////////////////////////////////////////////////////
+    // event listeners
+    
+    $('td').bind("click", function () {
+        scene.cameras[0].target = cameraPosition[this.id - 1].lookat
+        scene.cameras[0].alpha = cameraPosition[this.id - 1].alpha
+        scene.cameras[0].beta = cameraPosition[this.id - 1].beta
+        scene.cameras[0].radius = cameraPosition[this.id - 1].radius
+    });
+        
+    // show playlist
+    $('.pl').click(function (e) {
+        // e.preventDefault();
+        $('.playlist').fadeIn(500);
+    });
 
-        glowLayer = new BABYLON.GlowLayer("glow", scene);
-        glowLayer.intensity = .55;
+    // playlist elements - click
+    $('.playlist li').click(function () {
+        isSiteTrack = true;
+        siteIndex = Number($(this).attr('index'));
+        audioManager.initAudio($(this));
+        $('.playlist').fadeOut(500);
+    });
+    
+    // custom button that calls click on hidden fileInput element
+    $('.local_Btn').bind("click", function () {
+        $('#fileInput').click();
+    });
 
-        // default object grid material
-        defaultGridMaterial = new BABYLON.GridMaterial("default", scene);
-        defaultGridMaterial.majorUnitFrequency = 10;
-        defaultGridMaterial.minorUnitVisibility = .33;
-        defaultGridMaterial.gridRatio = 0.75;
-        defaultGridMaterial.mainColor = new BABYLON.Color3(0.8, 0.75, 0.6);
-        defaultGridMaterial.lineColor = new BABYLON.Color3(0, .30, .30);
-        defaultGridMaterial.backFaceCulling = false;
+    // local file selection that is hidden
+    fileInput.onchange = function () {
+        var files = this.files;
 
-        // sky grid material
-        var skyMaterial = new BABYLON.GridMaterial("skyMaterial", scene);
-        skyMaterial.majorUnitFrequency = 5;
-        skyMaterial.minorUnitVisibility = .43;
-        skyMaterial.gridRatio = 20.0;
-        skyMaterial.mainColor = new BABYLON.Color3(0, 0.05, 0.2);
-        skyMaterial.lineColor = new BABYLON.Color3(0, .30, .30);
-        skyMaterial.backFaceCulling = false;
+        // console.log(files[0]);
+        isSiteTrack = false;
 
-        var skySphere = BABYLON.Mesh.CreateSphere("skySphere", 32, 2600, scene);
-        skySphere.material = skyMaterial;
-
-        // Water material
-        waterMaterial = new BABYLON.WaterMaterial("waterMaterial", scene, new BABYLON.Vector2(512, 512));
-        waterMaterial.bumpTexture = new BABYLON.Texture("//www.babylonjs.com/assets/waterbump.png", scene);
-        waterMaterial.windForce = -10;
-        waterMaterial.waveHeight = 0.5;
-        waterMaterial.bumpHeight = 0.09;
-        waterMaterial.waveLength = 0.09;
-        waterMaterial.waveSpeed = 50.0;
-        waterMaterial.colorBlendFactor = .5;
-        waterMaterial.windDirection = new BABYLON.Vector2(1, 1);
-        waterMaterial.colorBlendFactor = 0;
-
-        // Configure water material
-        waterMaterial.addToRenderList(skySphere);
-        // Water mesh
-        var waterMesh = BABYLON.Mesh.CreateGround("waterMesh", 512, 512, 32, scene, false);
-        waterMesh.material = waterMaterial;
-        waterMesh.position.y = -47;
-
-        buildPalettes(palette, paletteGlow, paletteRed, paletteGreen, paletteBlue, paletteGray, paletteMetallic, scene);
-
-        camera = new BABYLON.ArcRotateCamera("camera1", 1.57, .01, 980, new BABYLON.Vector3(0, 0, 0), scene);
-        camera.upperRadiusLimit = 1000;
-        camera.lowerRadiusLimit = -1000;
-
-        // attach the camera to the canvas3D
-        camera.attachControl(canvas3D, true);
-
-        // create a basic light, aiming 0,1,0 - meaning, to the sky
-        var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(-1, -1, 0), scene);
-        light.intensity = 1.6;
-        // light.groundColor = paletteBlue[255].color;
-
-        // var pointLight1 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(20, 20, -10), scene);
-        // pointLight1.intensity = 1.2;
-
-        // var pointLight2 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(0, -80, 0), scene);
-        // pointLight2.intensity = 1.2;
-
-        var pointLight3 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(0, 80, 0), scene);
-        pointLight3.intensity = .8;
-
-        var pointLight4 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(40, 580, -180), scene);
-        pointLight4.intensity = 1.0;
-
-
-        createObjects();
-
-        return scene;
-    }
-
-    function createObjects() {
-        masterTransform = new BABYLON.TransformNode("root");
-        masterTransform.position = new BABYLON.Vector3(0, 0, 0);
-
-        if (options.showDancers) createDancers();
-        if (options.showInnerSnowflake) createInnerSnowflake();
-        if (options.showFrame) createFrame();
-        if (options.showOuterSnowflake) createOuterSnowflake()
-        if (options.showFloor) createFloor();
-        if (options.showRipple) createRipple();
-
-        starMaster = new BABYLON.TransformNode("root");
-        starMaster.position = new BABYLON.Vector3(95, -40, -95);
-        starMaster.parent = masterTransform;
-        starMaster.scaling.x = 2;
-        starMaster.scaling.z = 2;
-
-        createStar2();
-        createStar3();
-        createStar4();
-        // createBillboard();
-
-    }
-
-    function updateObjects() {
-
-        if (options.showDancers) updateDancers();
-        if (options.showInnerSnowflake) updateInnerSnowflake();
-        if (options.showOuterSnowflake) updateOuterSnowflake();
-        if (options.showFrame) updateFrame();
-        if (options.showFloor) updateFloor();
-        if (options.showRipple) updateRipple();
-
-        star2.rotation.y -= .005;
-        star3.rotation.y -= .0045;
-        star4.rotation.y -= .005;
-
-        updateStar2();
-        updateStar3();
-        updateStar4();
-
-    }
-
-    function createDancers() {
-        //create a Center of Transformation
-        dancersMaster = new BABYLON.TransformNode("root");
-        dancersMaster.position = new BABYLON.Vector3(0, 0, 0);
-        dancersMaster.parent = masterTransform;
-
-        let radius = 40;
-        for (let theta = 0; theta < 2 * Math.PI - Math.PI / 36; theta += Math.PI / 15) {
-
-            let thing = BABYLON.MeshBuilder.CreateCylinder("cylinder1", {
-                height: 1,
-                diameterTop: 6,
-                diameterBottom: 8,
-                tessellation: 8,
-                subdivisons: 1
-            }, scene, true);
-            thing.convertToFlatShadedMesh();
-
-            thing.parent = dancersMaster; //apply to Box
-            thing.position.x = radius * Math.cos(theta);
-            thing.position.z = radius * Math.sin(theta);
-            thing.rotation.y = -theta;
-
-            dancersObjects.push(thing);
-        }
-    }
-
-    function updateDancers() {
-
-        dancersMaster.rotation.y += .005;
-
-        dancersObjects.forEach((object, index) => {
-            let y;
-            object.material = paletteGlow[Math.round(map(frDataArrayNormalized[index], 0, 255, 1529, 0))].mat;
-            y = frDataArrayNormalized[index] * .15 + .25;
-
-            object.scaling.y = y;
-            object.position.y = y / 2;
-        });
-
-    }
-
-    function createInnerSnowflake() {
-        innerSnowflakeMaster = new BABYLON.TransformNode("root");
-        innerSnowflakeMaster.position = new BABYLON.Vector3(-95, -40, 95);
-        innerSnowflakeMaster.parent = masterTransform;
-        innerSnowflakeMaster.scaling.x = .5;
-        innerSnowflakeMaster.scaling.z = .5;
-
-        let width = 2.0;
-        let depth = 2.0;
-        let height = 4;
-        let radius = 40.1;
-
-        let itemsDesired = 320;
-
-        let startIndex = 0;
-        let endIndex = startIndex + Math.round(itemsDesired / 32);
-        // 0 - 20 Index
-
-        let dataIndex = 0;
-        let direction = -1;
-
-        for (let theta = 0; theta < 2 * Math.PI; theta += Math.PI / (itemsDesired / 4)) {
-
-            if (dataIndex >= endIndex || dataIndex <= startIndex) direction = -direction;
-
-            let thing = BABYLON.MeshBuilder.CreateBox(("box"), {
-                width: width,
-                depth: depth,
-                height: height
-            }, scene);
-            thing.parent = innerSnowflakeMaster; //apply to Box
-
-            thing.position.x = radius * Math.cos(theta);
-            thing.position.z = radius * Math.sin(theta);
-            thing.rotation.y = -theta;
-            innerSnowflakeObjects.push(thing);
-
-            dataIndex += direction;
+        if (options.showTitle) {
+            title.innerHTML = files[0].name;
         }
 
-    }
+        audio.src = URL.createObjectURL(files[0]);
+        audio.load();
+    };
 
-    function updateInnerSnowflake() {
-        let radius = 40.1;
-        let dataIndex = 3; // index into the frDataArray
-        let direction = -1; // direction to traverse the frDataArray, flips to positive at start
-        let itemsDesired = 320;
-        let startIndex = 0;
-        let endIndex = startIndex + Math.round(itemsDesired / 32);
-
-        innerSnowflakeMaster.rotation.y -= .005;
-
-        innerSnowflakeObjects.forEach((object, index) => {
-            if (dataIndex >= endIndex || dataIndex <= startIndex) direction = -direction;
-
-            let y = frDataArrayNormalized[dataIndex + 25] * frDataArrayNormalized[dataIndex + 25] * .0012;
-            object.material = paletteRed[frDataArrayNormalized[dataIndex + 25]].mat;
-            object.scaling.x = y;
-
-            let theta = Math.PI / (itemsDesired / 4) * index;
-            object.position.x = (radius + y / 2) * Math.cos(theta);
-            object.position.z = (radius + y / 2) * Math.sin(theta);
-
-            dataIndex += direction;
-        });
-    }
-
-    function createOuterSnowflake() {
-        outerSnowflakeMaster = new BABYLON.TransformNode("root");
-        outerSnowflakeMaster.position = new BABYLON.Vector3(-95, -40, 95);
-        outerSnowflakeMaster.parent = masterTransform;
-        outerSnowflakeMaster.scaling.x = .5;
-        outerSnowflakeMaster.scaling.z = .5;
-
-        let diameterTop = 2;
-        var diameterBottom = 6;
-        let radius = 60;
-
-        let itemsDesired = 320;
-
-        let startIndex = 0;
-        let endIndex = startIndex + Math.round(itemsDesired / 16);
-        // 0 - 20 Index
-
-        let dataIndex = 0;
-        let direction = -1;
-
-        for (let theta = 0; theta < 2 * Math.PI; theta += Math.PI / (itemsDesired / 4)) {
-
-            if (dataIndex >= endIndex || dataIndex <= startIndex) direction = -direction;
-
-            let thing = BABYLON.MeshBuilder.CreateCylinder("cone", {
-                diameterTop: diameterTop,
-                diameterBottom: diameterBottom,
-                tessellation: 20
-            }, scene);
-
-            thing.parent = outerSnowflakeMaster; //apply to Box
-
-            thing.position.x = radius * Math.cos(theta);
-            thing.position.z = radius * Math.sin(theta);
-            thing.rotation.z = -Math.PI / 2;
-            thing.rotation.y = -theta;
-            outerSnowflakeObjects.push(thing);
-
-            dataIndex += direction;
-        }
-    }
-
-    function updateOuterSnowflake() {
-        let radius = 45;
-        let dataIndex = 3; // index into the frDataArray
-        let direction = -1; // direction to traverse the frDataArray, flips to positive at start
-        let itemsDesired = 320;
-        let startIndex = 0;
-        let endIndex = startIndex + Math.round(itemsDesired / 8);
-
-        outerSnowflakeMaster.rotation.y -= .005;
-
-        outerSnowflakeObjects.forEach((object, index) => {
-            if (dataIndex >= endIndex || dataIndex <= startIndex) direction = -direction;
-
-            let y = frDataArrayNormalized[dataIndex + 25] * frDataArrayNormalized[dataIndex + 25] * .0013;
-            object.material = paletteBlue[frDataArrayNormalized[dataIndex + 25]].mat;
-            object.scaling.y = y;
-
-            let theta = Math.PI / (itemsDesired / 4) * index;
-            object.position.x = (radius + y / 2) * Math.cos(theta);
-            object.position.z = (radius + y / 2) * Math.sin(theta);
-
-            dataIndex += direction;
-        });
-    }
-
-    function createFrame() {
-        frameMaster = new BABYLON.TransformNode("root");
-        frameMaster.position = new BABYLON.Vector3(0, -40, 0);
-        frameMaster.parent = masterTransform;
-
-        let width = 40;
-        let depth = 40;
-        let spacing = 25;
-        let frameWidth = spacing / 2;
-        let frameLength = width + spacing;
-        let frameHeight = 12;
-
-        for (let x = -5; x < 5; x++) {
-            let thing = BABYLON.MeshBuilder.CreateBox(("box"), {
-                width: width,
-                depth: depth,
-                height: 1
-            }, scene);
-
-            let px = x * (width + spacing) + (width + spacing) / 2;
-            let py = -40;
-            let pz = -5 * (depth + spacing) + (depth + spacing) / 2;
-
-            thing.position = new BABYLON.Vector3(px, py, pz);
-
-            frameObjects.push(thing);
-
-            createBorder(px, py, pz);
+    audio.onended = function () {
+        siteIndex++;
+        if (siteIndex > 48) {
+            siteIndex = 1;
         }
 
-        for (let z = -4; z < 4; z++) {
-            let thing = BABYLON.MeshBuilder.CreateBox(("box"), {
-                width: width,
-                depth: depth,
-                height: 1
-            }, scene);
-
-            let px = 4 * (depth + spacing) + (width + spacing) / 2;
-            let py = -40;
-            let pz = z * (depth + spacing) + (depth + spacing) / 2;
-
-            thing.position = new BABYLON.Vector3(px, py, pz);
-
-            frameObjects.push(thing);
-
-            createBorder(px, py, pz);
+        if (isSiteTrack) {
+            let current = $('.playlist li:nth-child(' + siteIndex + ')');
+            audioManager.initAudio(current);
         }
 
-        for (let x = 4; x >= -5; x--) {
-            let thing = BABYLON.MeshBuilder.CreateBox(("box"), {
-                width: width,
-                depth: depth,
-                height: 1
-            }, scene);
 
-            let px = x * (width + spacing) + (width + spacing) / 2;
-            let py = -40;
-            let pz = 4 * (depth + spacing) + (depth + spacing) / 2;
+    };
 
-            thing.position = new BABYLON.Vector3(px, py, pz);
+    window.addEventListener('resize', function () {
+        engine.resize();
+    });
 
-            frameObjects.push(thing);
+    // let testOptions = {
+    //     innerStartIndex : 0,
+    //     outerStartIndex : 0,
 
-            createBorder(px, py, pz);
-        }
+    //     innerSlices : .5,
+    //     outerSlices : .5,
 
-        for (let z = 4; z > -4; z--) {
-            let thing = BABYLON.MeshBuilder.CreateBox(("box"), {
-                width: width,
-                depth: depth,
-                height: 1
-            }, scene);
+    //     innerRadius : 1,
+    //     outerRadius : 4,
 
-            let px = -5 * (depth + spacing) + (width + spacing) / 2;
-            let py = -40;
-            let pz = z * (depth + spacing) - (depth + spacing) / 2;
+    //     resolution: 256,
 
-            thing.position = new BABYLON.Vector3(px, py, pz);
-
-            frameObjects.push(thing);
-
-            createBorder(px, py, pz);
-        }
-
-        function createBorder(x, y, z) {
-
-            let materialIndex = 20;
-
-            let back = BABYLON.MeshBuilder.CreateBox(("box"), {
-                width: frameWidth,
-                depth: frameLength,
-                height: frameHeight
-            }, scene);
-
-            back.position = new BABYLON.Vector3(x + (width / 2 + frameWidth / 2), y, z);
-            back.material = paletteMetallic[materialIndex].mat;
-
-            let front = BABYLON.MeshBuilder.CreateBox(("box"), {
-                width: frameWidth,
-                depth: frameLength,
-                height: frameHeight
-            }, scene);
-
-            front.position = new BABYLON.Vector3(x - (width / 2 + frameWidth / 2), y, z);
-            front.material = paletteMetallic[materialIndex].mat;
-
-            let left = BABYLON.MeshBuilder.CreateBox(("box"), {
-                width: frameWidth,
-                depth: frameLength - 2 * frameWidth,
-                height: frameHeight
-            }, scene);
-
-            left.position = new BABYLON.Vector3(x, y, z + (width / 2 + frameWidth / 2));
-            left.rotation.y = Math.PI / 2;
-            left.material = paletteMetallic[materialIndex].mat;
-
-            let right = BABYLON.MeshBuilder.CreateBox(("box"), {
-                width: frameWidth,
-                depth: frameLength - 2 * frameWidth,
-                height: frameHeight
-            }, scene);
-
-            right.position = new BABYLON.Vector3(x, y, z - (width / 2 + frameWidth / 2));
-            right.rotation.y = Math.PI / 2;
-            right.material = paletteMetallic[materialIndex].mat;
-        }
-    }
-
-    function updateFrame() {
-        frameObjects.forEach((o, i) => {
-            let y = frDataArrayNormalized[i] / 35 + .1;
-            o.scaling.y = y;
-            o.position.y = -40 + y / 2;
-            o.material = paletteGlow[Math.round(map((frDataArrayNormalized[(i + 5) % 9] * 1.3) % 128 || 0, 0, 128, 0, 900))].mat;
-        });
-    }
-
-    function createFloor() {
-
-        let xOffset = -95;
-        let zOffset = -95;
-
-        floorMaster = new BABYLON.TransformNode("root");
-        floorMaster.position = new BABYLON.Vector3(0, -40, 0);
-        floorMaster.parent = masterTransform;
-
-        let width = 8;
-        let depth = 8;
-        let spacing = 2;
-        let frameWidth = spacing / 2;
-        let frameLength = width + spacing;
-        let frameHeight = 7.5;
-        let frameColorIndex = 50;
-
-        for (let x = 0; x < 8; x++) {
-            for (let z = 0; z < 8; z++) {
-
-                let thing = BABYLON.MeshBuilder.CreateBox(("floor(" + x + "," + z + ")"), {
-                    width: width,
-                    depth: depth,
-                    height: 1
-                }, scene);
-
-                let px = x * (width + spacing) - 3.5 * (width + spacing) + xOffset;
-                let py = -40;
-                let pz = z * (depth + spacing) - 3.5 * (depth + spacing) + zOffset;
-
-                thing.position = new BABYLON.Vector3(px, py, pz);
-
-                floorObjects.push(thing);
-                createBorder(px, py, pz);
-            }
-
-        }
-
-        function createBorder(x, y, z) {
-            let back = BABYLON.MeshBuilder.CreateBox(("box"), {
-                width: frameWidth,
-                depth: frameLength,
-                height: frameHeight
-            }, scene);
-
-            back.position = new BABYLON.Vector3(x + (width / 2 + frameWidth / 2), y, z);
-            back.material = paletteGray[frameColorIndex].mat;
-
-            let front = BABYLON.MeshBuilder.CreateBox(("box"), {
-                width: frameWidth,
-                depth: frameLength,
-                height: frameHeight
-            }, scene);
-
-            front.position = new BABYLON.Vector3(x - (width / 2 + frameWidth / 2), y, z);
-            front.material = paletteGray[frameColorIndex].mat;
-
-            let left = BABYLON.MeshBuilder.CreateBox(("box"), {
-                width: frameWidth,
-                depth: frameLength,
-                height: frameHeight
-            }, scene);
-
-            left.position = new BABYLON.Vector3(x, y, z + (width / 2 + frameWidth / 2));
-            left.rotation.y = Math.PI / 2;
-            left.material = paletteGray[frameColorIndex].mat;
-
-            let right = BABYLON.MeshBuilder.CreateBox(("box"), {
-                width: frameWidth,
-                depth: frameLength,
-                height: frameHeight
-            }, scene);
-
-            right.position = new BABYLON.Vector3(x, y, z - (width / 2 + frameWidth / 2));
-            right.rotation.y = Math.PI / 2;
-            right.material = paletteGray[frameColorIndex].mat;
-        }
-
-    }
-
-    function updateFloor() {
-        floorObjects.forEach((o, i) => {
-            let y = frDataArrayNormalized[i] / 35 + .1;
-            o.scaling.y = y;
-            o.position.y = -40 + y / 2;
-            o.material = paletteGlow[Math.round(map((frDataArrayNormalized[(i * 2)] * 2) % 255, 0, 255, 0, 1529))].mat;
-        });
-    }
+    //     xRotation: 0,
+    //     yRotation: -.01,
+    //     yRotation: 0
+    // }
 
     // Ribbon 256*256
 
-    function createRipple() {
-        let xOffset = 95 * 4;
-        let zOffset = 95 * 4;
-        var paths = [];
-        var sideO = BABYLON.Mesh.BACKSIDE;
-
-        for (let r = 0; r < 256; r++) {
-            let path = [];
-            for (let theta = 0; theta < 2 * Math.PI; theta += Math.PI / 128) {
-
-                let x = .8 * r * Math.cos(theta) + xOffset;
-                let z = .8 * r * Math.sin(theta) + zOffset;
-                let y = -40 * 2;
-
-                path.push(new BABYLON.Vector3(x, y, z));
-            }
-            paths.push(path);
-
-        }
-
-        ripple = BABYLON.Mesh.CreateRibbon("ripple", paths, false, false, 0, scene, true, sideO);
-
-        ripple.material = paletteGray[140].mat;
-        ripple.scaling.x = .25;
-        ripple.scaling.z = .25;
-        ripple.scaling.y = .5;
-    }
-
-    function updateRipple() {
-
-        let xOffset = 95 * 4;
-        let zOffset = 95 * 4;
-        var paths = [];
-
-        for (let r = 0; r < 255; r++) {
-            var path = [];
-            for (let theta = 0; theta < 2 * Math.PI; theta += Math.PI / 128) {
-
-                let x = .8 * r * Math.cos(theta) + xOffset;
-                let z = .8 * r * Math.sin(theta) + zOffset;
-                let y = frDataArrayNormalized[r] / 18 - 40 * 2; // + 20.1;
-                ripple.material = paletteGray[Math.round(map(frDataArrayNormalized[(0)], 0, 255, 100, 200))].mat;
-                // ripple.material = defaultGridMaterial;
-
-                path.push(new BABYLON.Vector3(x, y, z));
-            }
-
-            paths.push(path);
-        };
-
-        ripple = BABYLON.MeshBuilder.CreateRibbon(null, {
-            pathArray: paths,
-            instance: ripple,
-            sideOrientation: 1
-        });
-
-    }
-
-    function createStar2() {
-        var paths = [];
-        var sideO = BABYLON.Mesh.BACKSIDE;
-
-        let dataIndex = 3; // index into the frDataArray
-        let direction = -1; // direction to traverse the frDataArray, flips to positive at start
-        let itemsDesired = 32;
-        let startIndex = 0;
-        let endIndex = startIndex + Math.round(itemsDesired / 8);
-
-        for (let r = 1; r <= 2; r++) {
-            let path = [];
-            for (let theta = 0; theta <= 2 * Math.PI; theta += Math.PI / 32) {
-                if (dataIndex >= endIndex || dataIndex <= startIndex) direction = -direction;
-
-                let x = 3 * r * Math.cos(theta) * dataIndex;
-                let z = 3 * r * Math.sin(theta) * dataIndex;
-                let y = -.01;
-
-                path.push(new BABYLON.Vector3(x, y, z));
-                dataIndex += direction;
-            }
-            paths.push(path);
-        }
-
-        star2 = BABYLON.Mesh.CreateRibbon("ribbon", paths, false, true, 0, scene, true, sideO);
-        star2.parent = starMaster;
-
-        star2.material = paletteGray[140].mat;
-
-        instanceMaster = new BABYLON.TransformNode("root");
-        instanceMaster.scaling.x = 7;
-        instanceMaster.scaling.y = 7;
-        instanceMaster.scaling.z = 7;
-        instanceMaster.position = new BABYLON.Vector3(-95, -40, -95);
-
-        instanceMaster.parent = masterTransform;
-
-        for (let theta = 0; theta <= 4 * Math.PI / 2; theta += Math.PI / 64) {
-            let newTestInstance = star2.createInstance("clone");
-            newTestInstance.parent = instanceMaster;
-            newTestInstance.rotation.z = theta
-        }
-
-        for (let theta = 0; theta <= 4 * Math.PI / 2; theta += Math.PI / 64) {
-            let newTestInstance = star2.createInstance("clone");
-            newTestInstance.parent = instanceMaster;
-            newTestInstance.rotation.x = theta
-        }
-
-    }
-
-    function updateStar2() {
-        var paths = [];
-        var myColors = [];
-
-        let dataIndex = 3; // index into the frDataArray
-        let direction = -1; // direction to traverse the frDataArray, flips to positive at start
-        let itemsDesired = 32;
-        let startIndex = 0;
-        let endIndex = startIndex + Math.round(itemsDesired / 8);
-
-        for (let r = 1; r <= 2; r++) {
-            let path = [];
-            for (let theta = 0; theta <= 2 * Math.PI; theta += Math.PI / 32) {
-                if (dataIndex >= endIndex || dataIndex <= startIndex) direction = -direction;
-
-                let x = frDataArrayNormalized[dataIndex * r] * r * Math.cos(theta) / 100;
-                let z = frDataArrayNormalized[dataIndex * r] * r * Math.sin(theta) / 100;
-
-                myColors.push(paletteGlow[Math.round(map((frDataArrayNormalized[(dataIndex * 2)] * 2) % 255, 0, 255, 0, 1529))].color);
-                myColors.push(paletteGlow[Math.round(map((frDataArrayNormalized[(dataIndex * 2)] * 2) % 255, 0, 255, 0, 1529))].color);
-
-                let y = -.01;
-
-                path.push(new BABYLON.Vector3(x, y, z));
-
-                dataIndex += direction;
-            }
-            paths.push(path);
-        }
-
-        star2 = BABYLON.MeshBuilder.CreateRibbon(null, {
-            pathArray: paths,
-            instance: star2
-        });
-
-    }
-
-    function createStar3() {
-        var paths = [];
-        var sideO = BABYLON.Mesh.BACKSIDE;
-
-        let dataIndex = 3; // index into the frDataArray
-        let direction = -1; // direction to traverse the frDataArray, flips to positive at start
-        let itemsDesired = 64;
-        let startIndex = 0;
-        let endIndex = startIndex + Math.round(itemsDesired / 8);
-
-        for (let r = 1; r <= 2; r++) {
-            let path = [];
-            for (let theta = 0; theta <= 2 * Math.PI; theta += Math.PI / 64) {
-                if (dataIndex >= endIndex || dataIndex <= startIndex) direction = -direction;
-
-                let x = 3 * r * Math.cos(theta) * dataIndex;
-                let z = 3 * r * Math.sin(theta) * dataIndex;
-                let y = -.01;
-
-                path.push(new BABYLON.Vector3(x, y, z));
-                dataIndex += direction;
-
-            }
-            paths.push(path);
-        }
-        star3 = BABYLON.Mesh.CreateRibbon("ribbon", paths, false, true, 0, scene, true, sideO);
-        star3.parent = starMaster;
-
-        star3.material = paletteGray[140].mat;
-
-        for (let theta = 0; theta <= 4 * Math.PI / 2; theta += Math.PI / 64) {
-            let newTestInstance = star3.createInstance("clone");
-            newTestInstance.parent = instanceMaster;
-            newTestInstance.rotation.z = theta
-            newTestInstance.position.y = 6;
-            newTestInstance.scaling.x = .2
-            newTestInstance.scaling.y = .2
-            newTestInstance.scaling.z = .2
-        }
-
-
-        for (let theta = 0; theta <= 4 * Math.PI / 2; theta += Math.PI / 64) {
-            let newTestInstance = star3.createInstance("clone");
-            newTestInstance.parent = instanceMaster;
-            newTestInstance.rotation.x = theta
-            newTestInstance.position.y = 6;
-            newTestInstance.scaling.x = .2
-            newTestInstance.scaling.y = .2
-            newTestInstance.scaling.z = .2
-        }
-    }
-
-    function updateStar3() {
-        var paths = [];
-        var myColors = [];
-
-        let dataIndex = 3; // index into the frDataArray
-        let direction = -1; // direction to traverse the frDataArray, flips to positive at start
-        let itemsDesired = 64;
-        let startIndex = 0;
-        let endIndex = startIndex + Math.round(itemsDesired / 8);
-
-        for (let r = 1; r <= 2; r++) {
-            let path = [];
-            for (let theta = 0; theta <= 2 * Math.PI; theta += Math.PI / 64) {
-                if (dataIndex >= endIndex || dataIndex <= startIndex) direction = -direction;
-
-                let x = frDataArrayNormalized[dataIndex * r] * r * 4 * Math.cos(theta) / 100;
-                let z = frDataArrayNormalized[dataIndex * r] * r * 4 * Math.sin(theta) / 100;
-                let y = -.01;
-
-                path.push(new BABYLON.Vector3(x, y, z));
-                dataIndex += direction;
-            }
-            paths.push(path);
-        }
-        star3 = BABYLON.MeshBuilder.CreateRibbon(null, {
-            pathArray: paths,
-            instance: star3,
-            myColors: myColors,
-            sideOrientation: 1
-        });
-    }
-
-    function createStar4() {
-        var paths = [];
-        var sideO = BABYLON.Mesh.BACKSIDE;
-
-        let dataIndex = 3; // index into the frDataArray
-        let direction = -1; // direction to traverse the frDataArray, flips to positive at start
-        let itemsDesired = 128;
-        let startIndex = 0;
-        let endIndex = startIndex + Math.round(itemsDesired / 8);
-
-        for (let r = 1; r <= 2; r++) {
-            let path = [];
-            for (let theta = 0; theta <= 2 * Math.PI; theta += Math.PI / 128) {
-                if (dataIndex >= endIndex || dataIndex <= startIndex) direction = -direction;
-
-                let x = 3 * r * Math.cos(theta) * dataIndex;
-                let z = 3 * r * Math.sin(theta) * dataIndex;
-                let y = -.01;
-
-                path.push(new BABYLON.Vector3(x, y, z));
-                dataIndex += direction;
-
-            }
-            paths.push(path);
-        }
-        star4 = BABYLON.Mesh.CreateRibbon("ribbon", paths, false, true, 0, scene, true, sideO);
-        star4.parent = starMaster;
-
-        star4.material = paletteGray[140].mat;
-
-        for (let theta = 0; theta <= 4 * Math.PI / 2; theta += Math.PI / 64) {
-            let newTestInstance = star4.createInstance("clone");
-            newTestInstance.parent = instanceMaster;
-            newTestInstance.rotation.z = theta
-            newTestInstance.position.y = 11;
-            newTestInstance.scaling.x = .1
-            newTestInstance.scaling.y = .1
-            newTestInstance.scaling.z = .1
-        }
-
-        for (let theta = 0; theta <= 4 * Math.PI / 2; theta += Math.PI / 64) {
-            let newTestInstance = star4.createInstance("clone");
-            newTestInstance.parent = instanceMaster;
-            newTestInstance.rotation.x = theta
-            newTestInstance.position.y = 11;
-            newTestInstance.scaling.x = .1
-            newTestInstance.scaling.y = .1
-            newTestInstance.scaling.z = .1
-        }
-
-    }
-
-    function updateStar4() {
-        var paths = [];
-        var myColors = [];
-
-        let dataIndex = 3; // index into the frDataArray
-        let direction = -1; // direction to traverse the frDataArray, flips to positive at start
-        let itemsDesired = 128;
-        let startIndex = 0;
-        let endIndex = startIndex + Math.round(itemsDesired / 8);
-
-        let r = 1;
-
-        let path = [];
-
-        // inner points ofstar
-        for (let theta = 0; theta <= 2 * Math.PI; theta += Math.PI / 128) {
-            if (dataIndex >= endIndex || dataIndex <= startIndex) direction = -direction;
-
-            let x = frDataArrayNormalized[dataIndex * r] * r * 8.5 * Math.cos(theta) / 100;
-            let z = frDataArrayNormalized[dataIndex * r] * r * 8.5 * Math.sin(theta) / 100;
-            let y = -.01;
-
-            path.push(new BABYLON.Vector3(x, y, z));
-            dataIndex += direction;
-        }
-        paths.push(path);
-
-        r = 3;
-
-        path = [];
-
-        // outer points of star
-        for (let theta = 0; theta <= 2 * Math.PI; theta += Math.PI / 128) {
-            if (dataIndex >= endIndex || dataIndex <= startIndex) direction = -direction;
-
-            let x = frDataArrayNormalized[dataIndex * r] * r * 4 * Math.cos(theta) / 100;
-            let z = frDataArrayNormalized[dataIndex * r] * r * 4 * Math.sin(theta) / 100;
-            let y = -.01;
-
-            path.push(new BABYLON.Vector3(x, y, z));
-            dataIndex += direction;
-        }
-        paths.push(path);
-
-        star4 = BABYLON.MeshBuilder.CreateRibbon(null, {
-            pathArray: paths,
-            instance: star4,
-            myColors: myColors,
-            sideOrientation: 1
-        });
-
-    }
-
-    function createBillboard() {
-        //Creation of a repeated textured material
-        var materialPlane = new BABYLON.StandardMaterial("texturePlane", scene);
-        materialPlane.diffuseTexture = new BABYLON.Texture("app/assets/images/img.jpg", scene);
-
-        materialPlane.specularColor = new BABYLON.Color3(0, 0, 0);
-        materialPlane.backFaceCulling = false; //Allways show the front and the back of an element
-
-        //Creation of a plane
-        var plane = BABYLON.Mesh.CreatePlane("plane", 120, scene);
-        plane.position.z = 220;
-        plane.material = materialPlane;
-    }
+
+
+
+    // function createStarGroup1(parent) {
+
+    //     // console.log("creating star objects");
+
+    //     let test = new Star("test Star name", "test Star parent", null, paletteRed[200].mat, pieResolution, waterMaterial, scene);
+    //     test.setOptions(
+    //         0,
+    //         0,
+
+    //         .5,
+    //         .5,
+
+    //         1,
+    //         4,
+
+    //         256,
+
+    //         waterMaterial,
+
+    //         0,
+    //         0,
+    //         0
+    //     );
+    //     test.mesh.parent = parent;
+    //     starObjects.push(test);
+
+
+    //     let test2 = new Star("test Star name", "test Star parent", null, paletteGlow[100].mat, pieResolution, waterMaterial, scene);
+    //     test2.setOptions(
+    //         0,
+    //         1,
+
+    //         1,
+    //         1,
+
+    //         20,
+    //         21,
+
+    //         256,
+
+    //         waterMaterial,
+
+    //         0.01,
+    //         0,
+    //         0
+    //     );
+    //     test2.mesh.parent = parent;
+    //     starObjects.push(test2);
+
+
+    //     let test3 = new Star("test Star name", "test Star parent", null, paletteGlow[400].mat, pieResolution, waterMaterial, scene);
+    //     test3.setOptions(
+    //         0,
+    //         2,
+
+    //         2,
+    //         2,
+
+    //         40,
+    //         41,
+
+    //         256,
+
+    //         waterMaterial,
+
+    //         0,
+    //         0.005, // clockwise rotation
+    //         0
+    //     );
+    //     test3.mesh.parent = parent;
+    //     starObjects.push(test3);
+
+
+    //     let test4 = new Star("test Star name", "test Star parent", null, paletteGlow[600].mat, pieResolution, waterMaterial, scene);
+    //     test4.setOptions(
+    //         30,
+    //         40,
+
+    //         4,
+    //         4,
+
+    //         60,
+    //         61,
+
+    //         256,
+
+    //         waterMaterial,
+
+    //         0,
+    //         0,
+    //         0.01
+    //     );
+    //     test4.mesh.parent = parent;
+    //     starObjects.push(test4);
+
+
+    //     let test5 = new Star("test Star name", "test Star parent", null, paletteGlow[800].mat, pieResolution, waterMaterial, scene);
+    //     test5.setOptions(
+    //         10,
+    //         11,
+
+    //         8,
+    //         8,
+
+    //         100,
+    //         100,
+
+    //         256,
+
+    //         waterMaterial,
+
+    //         0.01,
+    //         0,
+    //         0
+    //     );
+    //     test5.mesh.parent = parent;
+    //     starObjects.push(test5);
+
+
+    //     let test6 = new Star("test Star name", "test Star parent", null, paletteGlow[1000].mat, pieResolution, waterMaterial, scene);
+    //     test6.setOptions(
+    //         60,
+    //         70,
+
+    //         16,
+    //         16,
+
+    //         140,
+    //         141,
+
+    //         256,
+
+    //         waterMaterial,
+
+    //         0,
+    //         -0.005, // counter clockwise rotation
+    //         0
+    //     );
+    //     test6.mesh.parent = parent;
+    //     starObjects.push(test6);
+
+
+    //     let test7 = new Star("test Star name", "test Star parent", null, paletteGlow[1200].mat, pieResolution, waterMaterial, scene);
+    //     test7.setOptions(
+    //         8,
+    //         9,
+
+    //         32,
+    //         32,
+
+    //         180,
+    //         180,
+
+    //         256,
+
+    //         waterMaterial,
+
+    //         0,
+    //         0,
+    //         -.01
+    //     );
+    //     test7.mesh.parent = parent;
+    //     starObjects.push(test7);
+
+    //     let test8 = new Star("test Star name", "test Star parent", null, paletteGlow[50].mat, pieResolution, waterMaterial, scene);
+    //     test8.setOptions(
+    //         10,
+    //         11,
+
+    //         64,
+    //         64,
+
+    //         240,
+    //         240,
+
+    //         256,
+
+    //         waterMaterial,
+
+    //         -0.01,
+    //         0,
+    //         0
+    //     );
+    //     test8.mesh.parent = parent;
+    //     starObjects.push(test8);
+
+
+
+    //     let test9 = new Star("test Star name", "test Star parent", null, paletteGlow[100].mat, pieResolution, waterMaterial, scene);
+    //     test9.setOptions(
+    //         0,
+    //         0,
+
+    //         128,
+    //         16,
+
+    //         280,
+    //         285,
+
+    //         256,
+
+    //         waterMaterial,
+
+    //         0,
+    //         0.005, // clockwise rotation
+    //         0
+    //     );
+    //     test9.mesh.parent = parent;
+    //     starObjects.push(test9);
+
+
+    // }
 
 };
