@@ -73,6 +73,19 @@ export class AudioManager {
         }
     }
 
+
+    initAudio(elem) {
+        // console.log(elem)
+        var url = elem.attr('audiourl');
+
+        this.audio.src = "app/assets/tracks/" + url;
+        this.audio.load();
+
+        $('.playlist li').removeClass('active');
+        elem.addClass('active');
+    }
+    
+
     normalizeData(sourceData) {
         const multiplier = Math.pow(Math.max(...sourceData), -1);
         return sourceData.map(n => n * multiplier * 255);

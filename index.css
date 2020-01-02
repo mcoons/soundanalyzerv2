@@ -173,3 +173,7 @@ audio {
     font-weight: bold;
     color:green;
 }
+
+#cameraLegend{
+    text-align: center;
+}
