@@ -1,10 +1,12 @@
 import {
-    // addToGlowPalette,
-    // addToPalette,
     buildPalettes,
-    map,
     logToScreen
 } from './utilities.js';
+
+import {
+    AudioManager
+} from './AudioManager.js';
+
 
 import {
     Star
@@ -22,43 +24,44 @@ window.onload = function () {
         showSky: false
     }
 
-    // var meshDimensions = 256;
+
+    var audioManager = new AudioManager();
 
     //////////////////////////////
     // AUDIO variables
 
 
     // var file;
-    var fileInput = document.getElementById("fileInput");
-    var audio = document.getElementById("audio");
-    var audioCtx = new AudioContext();
-    var audioSrc = audioCtx.createMediaElementSource(audio);
+    // var fileInput = document.getElementById("fileInput");
+    // var audio = document.getElementById("audio");
+    // var audioCtx = new AudioContext();
+    // var audioSrc = audioCtx.createMediaElementSource(audio);
 
-    var frAnalyser = audioCtx.createAnalyser();
-    frAnalyser.fftSize = 1024;
-    frAnalyser.smoothingTimeConstant = 0.9;
-    var frBufferLength = frAnalyser.frequencyBinCount;
-    var frDataLength = frBufferLength - 64;
-    var frDataArray = new Uint8Array(frBufferLength);
-    var frDataArrayNormalized = new Uint8Array(frBufferLength);
-    var frCurrentHigh = 0;
-    var frCurrentLow = 255
+    // var frAnalyser = audioCtx.createAnalyser();
+    // frAnalyser.fftSize = 1024;
+    // frAnalyser.smoothingTimeConstant = 0.9;
+    // var frBufferLength = frAnalyser.frequencyBinCount;
+    // var frDataLength = frBufferLength - 64;
+    // var frDataArray = new Uint8Array(frBufferLength);
+    // var audioManager.frDataArrayNormalized = new Uint8Array(frBufferLength);
+    // var frCurrentHigh = 0;
+    // var frCurrentLow = 255
 
-    var tdAnalyser = audioCtx.createAnalyser();
-    tdAnalyser.fftSize = 4096;
-    tdAnalyser.smoothingTimeConstant = 0.9;
-    var tdBufferLength = tdAnalyser.frequencyBinCount;
-    var tdDataLength = tdBufferLength - 64;
-    var tdDataArray = new Uint8Array(tdBufferLength);
-    var tdDataArrayNormalized = new Uint8Array(frBufferLength);
+    // var tdAnalyser = audioCtx.createAnalyser();
+    // tdAnalyser.fftSize = 4096;
+    // tdAnalyser.smoothingTimeConstant = 0.9;
+    // var tdBufferLength = tdAnalyser.frequencyBinCount;
+    // var tdDataLength = tdBufferLength - 64;
+    // var tdDataArray = new Uint8Array(tdBufferLength);
+    // var tdDataArrayNormalized = new Uint8Array(frBufferLength);
 
-    var tdHistory = [];
-    let arraySize = 4096;
-    tdHistory = Array(arraySize).fill(0);
+    // var tdHistory = [];
+    // let arraySize = 4096;
+    // tdHistory = Array(arraySize).fill(0);
 
-    audioSrc.connect(frAnalyser);
-    frAnalyser.connect(tdAnalyser);
-    tdAnalyser.connect(audioCtx.destination);
+    // audioSrc.connect(frAnalyser);
+    // frAnalyser.connect(tdAnalyser);
+    // tdAnalyser.connect(audioCtx.destination);
 
     var tdPoints = [];
     var tdSoundWave;
@@ -251,65 +254,65 @@ window.onload = function () {
 
     //////////////////////////////////////////////////////////////////////
 
-    function analyzeData() {
+    // function analyzeData() {
 
-        ////////////////////////////////////
-        // get FREQUENCY data for this frame
+    //     ////////////////////////////////////
+    //     // get FREQUENCY data for this frame
 
-        frAnalyser.getByteFrequencyData(frDataArray);
+    //     frAnalyser.getByteFrequencyData(frDataArray);
 
-        // get highest and lowest FREQUENCY for this frame
-        frCurrentHigh = 0;
-        frCurrentLow = 255;
-        frDataArray.forEach(f => {
-            if (f > frCurrentHigh) frCurrentHigh = f;
-            if (f < frCurrentLow) frCurrentLow = f;
-        });
+    //     // get highest and lowest FREQUENCY for this frame
+    //     frCurrentHigh = 0;
+    //     frCurrentLow = 255;
+    //     frDataArray.forEach(f => {
+    //         if (f > frCurrentHigh) frCurrentHigh = f;
+    //         if (f < frCurrentLow) frCurrentLow = f;
+    //     });
 
-        // normalize the data   0..1
-        frDataArrayNormalized = normalizeData(frDataArray);
+    //     // normalize the data   0..1
+    //     audioManager.frDataArrayNormalized = normalizeData(frDataArray);
 
-        //////////////////////////////////////
-        // get TIME DOMAIN data for this frame
+    //     //////////////////////////////////////
+    //     // get TIME DOMAIN data for this frame
 
-        tdAnalyser.getByteTimeDomainData(tdDataArray);
+    //     tdAnalyser.getByteTimeDomainData(tdDataArray);
 
-        // get the highest for this frame
-        let highest = 0;
-        tdDataArray.forEach(d => {
-            if (d > highest) highest = d;
-        });
+    //     // get the highest for this frame
+    //     let highest = 0;
+    //     tdDataArray.forEach(d => {
+    //         if (d > highest) highest = d;
+    //     });
 
-        // normalize the data   0..1
-        tdDataArrayNormalized = normalizeData(tdDataArray);
+    //     // normalize the data   0..1
+    //     tdDataArrayNormalized = normalizeData(tdDataArray);
 
-        // TODO: historical data for wave form       TODO:    TODO:
-        tdHistory.push(highest);
-        if (tdHistory.length > arraySize) {
-            tdHistory.shift();
-        }
-    }
+    //     // TODO: historical data for wave form       TODO:    TODO:
+    //     tdHistory.push(highest);
+    //     if (tdHistory.length > arraySize) {
+    //         tdHistory.shift();
+    //     }
+    // }
 
-    function normalizeData(sourceData) {
-        const multiplier = Math.pow(Math.max(...sourceData), -1);
-        return sourceData.map(n => n * multiplier * 255);
-    }
+    // function normalizeData(sourceData) {
+    //     const multiplier = Math.pow(Math.max(...sourceData), -1);
+    //     return sourceData.map(n => n * multiplier * 255);
+    // }
 
-    function sampleData(source, start, end, samplesDesired) {
-        let sampledData = [];
+    // function sampleData(source, start, end, samplesDesired) {
+    //     let sampledData = [];
 
-        let interval = Math.round((end - start) / samplesDesired);
-        for (let i = start; i < end && i < source.length; i += interval) {
-            sampledData.push(source[i]);
-        }
-        return sampledData;
-    }
+    //     let interval = Math.round((end - start) / samplesDesired);
+    //     for (let i = start; i < end && i < source.length; i += interval) {
+    //         sampledData.push(source[i]);
+    //     }
+    //     return sampledData;
+    // }
 
     //////////////////////////////////////////////////////////////////////
 
     function render2DFrame() {
 
-        analyzeData();
+        audioManager.analyzeData();
 
         fix_dpi();
 
@@ -317,7 +320,7 @@ window.onload = function () {
             draw2DBars();
         }
 
-        drawWaveform(canvas2D, tdDataArrayNormalized, canvas2D.width, 60)
+        drawWaveform(canvas2D, audioManager.tdDataArrayNormalized, canvas2D.width, 60)
 
         renderConsoleOutput();
 
@@ -354,17 +357,17 @@ window.onload = function () {
         if (options.showBars) {
             let WIDTH = canvas2D.width;
             let HEIGHT = canvas2D.height;
-            let barWidth = (WIDTH / (frDataLength));
+            let barWidth = (WIDTH / (audioManager.frDataLength));
 
             ctx2D.clearRect(0, 0, WIDTH, HEIGHT);
 
             let x = 0;
 
-            for (var i = 0; i < frBufferLength; i++) {
-                let barHeight = frDataArray[i] * 1 + 1;
+            for (var i = 0; i < audioManager.frBufferLength; i++) {
+                let barHeight = audioManager.frDataArray[i] * 1 + 1;
 
-                var r = barHeight + (55.52 * (i / frDataLength));
-                var g = 255 * (55 * i / frDataLength);
+                var r = barHeight + (55.52 * (i / audioManager.frDataLength));
+                var g = 255 * (55 * i / audioManager.frDataLength);
                 var b = 255;
 
                 ctx2D.fillStyle = "rgba(" + r + "," + g + "," + b + ",.7)";
@@ -567,17 +570,9 @@ window.onload = function () {
 
     function drawRandomStars(){
         masterTransform = new BABYLON.TransformNode("root");
-        for (let i = 0; i < 12; i+=6) {
+        for (let i = 0; i < 6; i+=6) {
 
             let masters = [];
-
-            // let starMaster;
-            
-            // masters[i] = new BABYLON.TransformNode("starMaster"+i);
-            // masters.push(starMaster);            
-
-
-            // masterTransform.position = new BABYLON.Vector3(0, 0, 0);
             
             masters[i] = new BABYLON.TransformNode("masters[i+1]");
             // masters.push(starMaster);                
@@ -680,13 +675,8 @@ window.onload = function () {
 
         // call update on all objects
         starObjects.forEach((sObject, index) => {
-            sObject.update(frDataArrayNormalized, index);
+            sObject.update(audioManager.frDataArrayNormalized, index);
         });
-
-        // starMaster1.rotation.x += .01;
-        // starMaster1.rotation.z += .004;
-        // starMaster1.rotation.y -= .008;
-
     }
 
     
