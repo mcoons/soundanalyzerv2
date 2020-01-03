@@ -3,9 +3,12 @@ import {
 } from './utilities.js';
 
 import {
+    EventBus
+} from './EventBus.js';
+
+import {
     AudioManager
 } from './AudioManager.js';
-
 
 import {
     Star
@@ -14,6 +17,13 @@ import {
 var scene;
 
 window.onload = function () {
+
+    var eventBus = new EventBus();
+    eventBus.subscribe("eventTest", eventTestCallback);
+    function eventTestCallback(){
+        console.log("Event Received");
+    }
+    eventBus.post("eventTest");
 
     var options = {
         showBars: true,
@@ -25,10 +35,10 @@ window.onload = function () {
 
     var siteIndex = Math.round(Math.random() * 47) + 1;
     var isSiteTrack = true;
+    var isMic = false;
     var audioManager = new AudioManager();
     audioManager.initAudio($('.playlist li:nth-child(' + siteIndex + ')'));
 
-    
     //////////////////////////////////////////////////////////////////////
     // start the 3D render loop
 
@@ -150,7 +160,7 @@ window.onload = function () {
 
         // buildPalettes(palette, paletteGlow, paletteRed, paletteGreen, null, paletteGray, paletteMetallic, scene);
 
-        camera = new BABYLON.ArcRotateCamera("camera1", 1.59, .678, 930, new BABYLON.Vector3(0, 0, 0), scene);
+        camera = new BABYLON.ArcRotateCamera("camera1", 1.59, .977, 756, new BABYLON.Vector3(0, 0, 0), scene);
         camera.upperRadiusLimit = 9400;
         camera.lowerRadiusLimit = 10;
         camera.lower
@@ -238,9 +248,9 @@ window.onload = function () {
             g: .25,
             b: .75
         }, {
-            x: 1,
+            x: 0,
             y: 1,
-            z: 1
+            z: 0
         }, starMaster4);
 
         starMaster4.position = new BABYLON.Vector3(200, 0, 200);
@@ -257,9 +267,9 @@ window.onload = function () {
             g: .25,
             b: .95
         }, {
-            x: 1,
-            y: 0,
-            z: 1
+            x: 0,
+            y: 1,
+            z: 0
         }, starMaster5);
 
         starMaster5.position = new BABYLON.Vector3(-200, 0, 200);
@@ -272,9 +282,9 @@ window.onload = function () {
         starMaster6 = new BABYLON.TransformNode("starMaster2");
 
         createStarGroupRandom6({
-            r: .5,
-            g: .5,
-            b: .5
+            r: .25,
+            g: .25,
+            b: .25
         }, {
             x: 0,
             y: 1,
@@ -283,9 +293,9 @@ window.onload = function () {
 
         starMaster6.position = new BABYLON.Vector3(0, 0, 0);
         starMaster6.parent = masterTransform;
-        starMaster6.scaling.x = .2;
-        starMaster6.scaling.y = .2;
-        starMaster6.scaling.z = .2;
+        starMaster6.scaling.x = .1;
+        starMaster6.scaling.y = .1;
+        starMaster6.scaling.z = .1;
         starMaster6.rotation.y = Math.PI / 2;
 
         ////////////////////////////////////////////////////////
@@ -297,9 +307,9 @@ window.onload = function () {
             g: .25,
             b: .25
         }, {
-            x: 0,
+            x: 1,
             y: 1,
-            z: 0
+            z: 1
         }, starMaster7);
 
         starMaster7.position = new BABYLON.Vector3(400, 0, -200);
@@ -316,9 +326,9 @@ window.onload = function () {
             g: .65,
             b: .25
         }, {
-            x: 0,
+            x: 1,
             y: 1,
-            z: 0
+            z: 1
         }, starMaster8);
 
         starMaster8.position = new BABYLON.Vector3(-400, 0, -200);
@@ -369,22 +379,25 @@ window.onload = function () {
         starMaster11 = new BABYLON.TransformNode("starMaster2");
 
         createStarGroupRandom6({
-            r: .5,
-            g: .5,
-            b: .5
+            r: .25,
+            g: .25,
+            b: .25
         }, {
-            x: 0,
+            x: 1,
             y: 1,
-            z: 0
+            z: 1
         }, starMaster11);
 
         starMaster11.position = new BABYLON.Vector3(0, 200, 0);
         starMaster11.parent = masterTransform;
-        starMaster11.scaling.x = .2;
-        starMaster11.scaling.y = .2;
-        starMaster11.scaling.z = .2;
+        starMaster11.scaling.x = .1;
+        starMaster11.scaling.y = .1;
+        starMaster11.scaling.z = .1;
         starMaster11.rotation.y = Math.PI / 2;
+
         // drawRandomStars();
+        eventBus.post("eventTest",'argument');
+
     }
 
     function updateObjects() {
@@ -508,11 +521,28 @@ window.onload = function () {
         }
     }
 
+    let exampleStarOptions = {
+        innerStartIndex : 0,
+        outerStartIndex : 0,
+
+        innerSlices : .5,
+        outerSlices : .5,
+
+        innerRadius : 1,
+        outerRadius : 4,
+
+        resolution: 256,
+
+        xRotation: 0,
+        yRotation: 1,
+        yRotation: 0
+    }
+
     function createStarGroupRandom2(colorBias, rotationBias, parent, location) {
 
         for (let index = 0; index < 9; index++) {
 
-            let test = new Star("Random Star +index", "test Star parent", null, getBiasedGlowMaterial(colorBias), pieResolution, waterMaterial, scene);
+            let test = new Star("Random Star "+index, "test Star parent", null, getBiasedGlowMaterial(colorBias), pieResolution, waterMaterial, eventBus, scene);
             let rad = 20 * index + 10;
             test.setOptions(
                 Math.round(Math.random() * 20),
@@ -528,9 +558,9 @@ window.onload = function () {
 
                 waterMaterial,
 
-                rotationBias.x ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-                rotationBias.y ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-                rotationBias.z ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.x == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.y == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.z == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
             );
             test.mesh.parent = parent;
             starObjects.push(test);
@@ -541,7 +571,7 @@ window.onload = function () {
 
         for (let index = 0; index < 9; index++) {
 
-            let test = new Star("Random Star +index", "test Star parent", null, getBiasedGlowMaterial(colorBias), pieResolution, waterMaterial, scene);
+            let test = new Star("Random Star "+index, "test Star parent", null, getBiasedGlowMaterial(colorBias), pieResolution, waterMaterial, eventBus, scene);
             let rad = 20 * index + 10;
             let i = Math.round(Math.random() * 10)
             test.setOptions(
@@ -558,9 +588,9 @@ window.onload = function () {
 
                 waterMaterial,
 
-                rotationBias.x ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-                rotationBias.y ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-                rotationBias.z ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.x == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.y == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.z == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
             );
             test.mesh.parent = parent;
             starObjects.push(test);
@@ -571,7 +601,7 @@ window.onload = function () {
 
         for (let index = 0; index < 9; index++) {
 
-            let test = new Star("Random Star +index", "test Star parent", null, getBiasedGlowMaterial(colorBias), pieResolution, waterMaterial, scene);
+            let test = new Star("Random Star "+index, "test Star parent", null, getBiasedGlowMaterial(colorBias), pieResolution, waterMaterial, eventBus, scene);
             let rad = 8 * (9 - index) + 40;
             let i = Math.round(Math.random() * 10)
             test.setOptions(
@@ -588,9 +618,9 @@ window.onload = function () {
 
                 waterMaterial,
 
-                rotationBias.x ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-                rotationBias.y ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-                rotationBias.z ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.x == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.y == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.z == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
             );
             test.mesh.parent = parent;
             starObjects.push(test);
@@ -601,7 +631,7 @@ window.onload = function () {
 
         for (let index = 0; index < 9; index++) {
 
-            let test = new Star("Random Star +index", "test Star parent", null, getBiasedGlowMaterial(colorBias), pieResolution, waterMaterial, scene);
+            let test = new Star("Random Star "+index, "test Star parent", null, getBiasedGlowMaterial(colorBias), pieResolution, waterMaterial, eventBus, scene);
             let rad = 10 * index + 80;
             let i = Math.round(Math.random() * 10 + 2);
             let s = Math.pow(2, Math.round(Math.random() * 1));
@@ -619,9 +649,9 @@ window.onload = function () {
 
                 waterMaterial,
 
-                rotationBias.x ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-                rotationBias.y ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-                rotationBias.z ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.x == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.y == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.z == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
             );
             test.mesh.parent = parent;
             starObjects.push(test);
@@ -630,18 +660,18 @@ window.onload = function () {
 
     function createStarGroupRandom6(colorBias, rotationBias, parent, location) {
 
-        for (let index = 0; index < 9; index++) {
+        for (let index = 0; index < 25; index++) {
 
-            let test = new Star("Random Star +index", "test Star parent", null, getBiasedGlowMaterial(colorBias), pieResolution, waterMaterial, scene);
-            let rad = 10 * index + 80;
+            let test = new Star("Random Star "+index, "test Star parent", null, getBiasedGlowMaterial(colorBias), pieResolution, waterMaterial, eventBus, scene);
+            let rad = 30 * index+20;
             let i = Math.round(Math.random() * 10 + 2);
             let s = Math.pow(2, Math.round(Math.random() * 1));
             test.setOptions(
-                18 - i * 2,
+                i + 2,
                 i + 1,
 
-                Math.pow(2, (index + 2)),
-                Math.pow(2, (index + 2)),
+                Math.pow(2, Math.round(Math.random()*4)+1),
+                Math.pow(2, Math.round(Math.random()*4)+1),
 
                 rad,
                 rad + 1,
@@ -650,9 +680,9 @@ window.onload = function () {
 
                 waterMaterial,
 
-                rotationBias.x ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-                rotationBias.y ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-                rotationBias.z ? (Math.round(Math.random()) ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.x == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.y == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
+                rotationBias.z == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
             );
             test.mesh.parent = parent;
             starObjects.push(test);
@@ -828,247 +858,10 @@ window.onload = function () {
             let current = $('.playlist li:nth-child(' + siteIndex + ')');
             audioManager.initAudio(current);
         }
-
-
     };
 
     window.addEventListener('resize', function () {
         engine.resize();
     });
-
-    // let testOptions = {
-    //     innerStartIndex : 0,
-    //     outerStartIndex : 0,
-
-    //     innerSlices : .5,
-    //     outerSlices : .5,
-
-    //     innerRadius : 1,
-    //     outerRadius : 4,
-
-    //     resolution: 256,
-
-    //     xRotation: 0,
-    //     yRotation: -.01,
-    //     yRotation: 0
-    // }
-
-    // Ribbon 256*256
-
-
-
-
-    // function createStarGroup1(parent) {
-
-    //     // console.log("creating star objects");
-
-    //     let test = new Star("test Star name", "test Star parent", null, paletteRed[200].mat, pieResolution, waterMaterial, scene);
-    //     test.setOptions(
-    //         0,
-    //         0,
-
-    //         .5,
-    //         .5,
-
-    //         1,
-    //         4,
-
-    //         256,
-
-    //         waterMaterial,
-
-    //         0,
-    //         0,
-    //         0
-    //     );
-    //     test.mesh.parent = parent;
-    //     starObjects.push(test);
-
-
-    //     let test2 = new Star("test Star name", "test Star parent", null, paletteGlow[100].mat, pieResolution, waterMaterial, scene);
-    //     test2.setOptions(
-    //         0,
-    //         1,
-
-    //         1,
-    //         1,
-
-    //         20,
-    //         21,
-
-    //         256,
-
-    //         waterMaterial,
-
-    //         0.01,
-    //         0,
-    //         0
-    //     );
-    //     test2.mesh.parent = parent;
-    //     starObjects.push(test2);
-
-
-    //     let test3 = new Star("test Star name", "test Star parent", null, paletteGlow[400].mat, pieResolution, waterMaterial, scene);
-    //     test3.setOptions(
-    //         0,
-    //         2,
-
-    //         2,
-    //         2,
-
-    //         40,
-    //         41,
-
-    //         256,
-
-    //         waterMaterial,
-
-    //         0,
-    //         0.005, // clockwise rotation
-    //         0
-    //     );
-    //     test3.mesh.parent = parent;
-    //     starObjects.push(test3);
-
-
-    //     let test4 = new Star("test Star name", "test Star parent", null, paletteGlow[600].mat, pieResolution, waterMaterial, scene);
-    //     test4.setOptions(
-    //         30,
-    //         40,
-
-    //         4,
-    //         4,
-
-    //         60,
-    //         61,
-
-    //         256,
-
-    //         waterMaterial,
-
-    //         0,
-    //         0,
-    //         0.01
-    //     );
-    //     test4.mesh.parent = parent;
-    //     starObjects.push(test4);
-
-
-    //     let test5 = new Star("test Star name", "test Star parent", null, paletteGlow[800].mat, pieResolution, waterMaterial, scene);
-    //     test5.setOptions(
-    //         10,
-    //         11,
-
-    //         8,
-    //         8,
-
-    //         100,
-    //         100,
-
-    //         256,
-
-    //         waterMaterial,
-
-    //         0.01,
-    //         0,
-    //         0
-    //     );
-    //     test5.mesh.parent = parent;
-    //     starObjects.push(test5);
-
-
-    //     let test6 = new Star("test Star name", "test Star parent", null, paletteGlow[1000].mat, pieResolution, waterMaterial, scene);
-    //     test6.setOptions(
-    //         60,
-    //         70,
-
-    //         16,
-    //         16,
-
-    //         140,
-    //         141,
-
-    //         256,
-
-    //         waterMaterial,
-
-    //         0,
-    //         -0.005, // counter clockwise rotation
-    //         0
-    //     );
-    //     test6.mesh.parent = parent;
-    //     starObjects.push(test6);
-
-
-    //     let test7 = new Star("test Star name", "test Star parent", null, paletteGlow[1200].mat, pieResolution, waterMaterial, scene);
-    //     test7.setOptions(
-    //         8,
-    //         9,
-
-    //         32,
-    //         32,
-
-    //         180,
-    //         180,
-
-    //         256,
-
-    //         waterMaterial,
-
-    //         0,
-    //         0,
-    //         -.01
-    //     );
-    //     test7.mesh.parent = parent;
-    //     starObjects.push(test7);
-
-    //     let test8 = new Star("test Star name", "test Star parent", null, paletteGlow[50].mat, pieResolution, waterMaterial, scene);
-    //     test8.setOptions(
-    //         10,
-    //         11,
-
-    //         64,
-    //         64,
-
-    //         240,
-    //         240,
-
-    //         256,
-
-    //         waterMaterial,
-
-    //         -0.01,
-    //         0,
-    //         0
-    //     );
-    //     test8.mesh.parent = parent;
-    //     starObjects.push(test8);
-
-
-
-    //     let test9 = new Star("test Star name", "test Star parent", null, paletteGlow[100].mat, pieResolution, waterMaterial, scene);
-    //     test9.setOptions(
-    //         0,
-    //         0,
-
-    //         128,
-    //         16,
-
-    //         280,
-    //         285,
-
-    //         256,
-
-    //         waterMaterial,
-
-    //         0,
-    //         0.005, // clockwise rotation
-    //         0
-    //     );
-    //     test9.mesh.parent = parent;
-    //     starObjects.push(test9);
-
-
-    // }
 
 };

@@ -34,6 +34,7 @@ export class AudioManager {
         this.tdAnalyser.connect(this.audioCtx.destination);
     }
 
+    
     analyzeData() {
 
         ////////////////////////////////////
@@ -84,12 +85,13 @@ export class AudioManager {
         $('.playlist li').removeClass('active');
         elem.addClass('active');
     }
-    
+
 
     normalizeData(sourceData) {
         const multiplier = Math.pow(Math.max(...sourceData), -1);
         return sourceData.map(n => n * multiplier * 255);
     }
+
 
     sampleData(source, start, end, samplesDesired) {
         let sampledData = [];

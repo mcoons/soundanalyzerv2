@@ -1,6 +1,6 @@
 
 export class BaseObject{
-    constructor(name, parent, palette, material, resolution, reflect, scene) {
+    constructor(name, parent, palette, material, resolution, reflect, eventBus, scene) {
         this.name = name;
         this.parent = parent;
         this.palette = palette;
@@ -12,6 +12,9 @@ export class BaseObject{
         this.mesh = null;
         this.paths = [];
         this.sideO = BABYLON.Mesh.BACKSIDE;
+
+        this.eventBus = eventBus;
+
     }
 
     create(){

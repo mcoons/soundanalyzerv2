@@ -4,35 +4,35 @@ import {
 
 export class Star extends BaseObject {
 
-    constructor(name, parent, palette, material, resolution, reflect,  scene) {
+    constructor(name, parent, palette, material, resolution, reflect, eventBus, scene) {
 
-        super(name, parent, palette, material, resolution, reflect, scene);
+        super(name, parent, palette, material, resolution, reflect, eventBus, scene);
 
         ////////////////////////////
         // user definable variables
 
         this.innerStartIndex = 0;
-        this.outerStartIndex = 0;
+        this.outerStartIndex = 1;
 
         this.innerSlices = 8;
         this.outerSlices = 8;
 
-        this.innerRadius = 0;
+        this.innerRadius = 15;
         this.outerRadius = 16;
 
         this.xRotation = 0;
         this.yRotation = 0;
         this.zRotation = 0;
-        
+
         /////////////////////////////
-        // class privat4 variables
-        
+        // class private variables
+
         this.innerPath = [];
         this.outerPath = [];
-        
+
         this.innerIndexDirection = -1;
         this.outerIndexDirection = -1;
-        
+
         this.innerDataIndex = this.innerStartIndex; // index into the frDataArray
         this.outerDataIndex = this.outerStartIndex; // index into the frDataArray
 
@@ -44,21 +44,33 @@ export class Star extends BaseObject {
 
 
         this.create();
+        
+        var self = this;
+        this.eventBus.subscribe("eventTest", eventTestCallback);
+        function eventTestCallback() {
+            // console.log("Event Received from " + self.name);
+            // console.log("My position is " + self.mesh.position);
+            self.test();
+        }
 
-        // return this.mesh;
     }
+
+    test() {
+        console.log("method test from: " + this.name);
+    }
+
 
     create() {
 
         for (let r = 1; r <= 2; r++) {
             let path = [];
-            for (let theta = 0; theta < 2 * Math.PI; theta += 2 * Math.PI / this.resolution ) {
+            for (let theta = 0; theta < 2 * Math.PI; theta += 2 * Math.PI / this.resolution) {
 
                 let x = r * Math.cos(theta);
                 let z = r * Math.sin(theta);
                 let y = 0;
 
-                
+
                 path.push(new BABYLON.Vector3(x, y, z));
             }
             // console.log("path added");
@@ -68,7 +80,7 @@ export class Star extends BaseObject {
         this.mesh = BABYLON.Mesh.CreateRibbon("ribbon", this.paths, true, true, 0, this.scene, true, this.sideO);
         this.mesh.material = this.material;
 
-        if (this.reflect){
+        if (this.reflect) {
             this.reflect.addToRenderList(this.mesh);
         }
 
@@ -98,31 +110,31 @@ export class Star extends BaseObject {
 
         this.innerDataIndex = this.innerStartIndex; // index into the frDataArray
         this.outerDataIndex = this.outerStartIndex; // index into the frDataArray
- 
-        
+
+
         for (let theta = 0; theta <= 2 * Math.PI; theta += 2 * Math.PI / 256) {
-            
+
             // console.log(this.innerDataIndex)
             // console.log(data[this.innerDataIndex])
             // inner range calculations
             if (this.innerDataIndex >= this.innerEndIndex || this.innerDataIndex <= this.innerStartIndex) this.innerIndexDirection = -this.innerIndexDirection;
-            
+
 
             let innerX = data[this.innerDataIndex] * this.innerRadius * Math.cos(theta) / 100;
             let innerZ = data[this.innerDataIndex] * this.innerRadius * Math.sin(theta) / 100;
             let innerY = -.01 * zindex;
             this.innerDataIndex += this.innerIndexDirection;
-            
+
             this.innerPath.push(new BABYLON.Vector3(innerX, innerY, innerZ));
-            
+
             // outer range calculations
             if (this.outerDataIndex >= this.outerEndIndex || this.outerDataIndex <= this.outerStartIndex) this.outerIndexDirection = -this.outerIndexDirection;
-            
+
             let outerX = data[this.outerDataIndex] * this.outerRadius * Math.cos(theta) / 100;
             let outerZ = data[this.outerDataIndex] * this.outerRadius * Math.sin(theta) / 100;
             let outerY = -.001 * zindex;
             this.outerDataIndex += this.outerIndexDirection;
-            
+
             this.outerPath.push(new BABYLON.Vector3(outerX, outerY, outerZ));
         }
 
@@ -139,7 +151,9 @@ export class Star extends BaseObject {
     }
 
     setOptions(p_innerStartIndex, p_outerStartIndex, p_innerSlices, p_outerSlices, p_innerRadius, p_outerRadius, p_resolution, p_reflect, p_xRotation, p_yRotation, p_zRotation) {
-        
+        // reset other things in here too like color, reset rotations
+
+
         this.innerStartIndex = p_innerStartIndex ? p_innerStartIndex : this.innerStartIndex;
         this.outerStartIndex = p_outerStartIndex ? p_outerStartIndex : this.outerStartIndex;
 
@@ -167,6 +181,6 @@ export class Star extends BaseObject {
 
         this.innerEndIndex = this.innerStartIndex + Math.round(this.innerItemsDesired);
         this.outerEndIndex = this.outerStartIndex + Math.round(this.outerItemsDesired);
-    }    
+    }
 
 }
