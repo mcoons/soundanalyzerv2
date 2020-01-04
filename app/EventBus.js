@@ -4,7 +4,6 @@
 // MANAGER
 // var eventBus = new EventBus();
 
-
 // OBJECTs USE
 // eventBus.subscribe('clear', clearBusCallback);
 // eventBus.subscribe(my.id, myChannelBusCallback);
@@ -14,17 +13,19 @@
 // eventBus.post('droppingEnded');
 // eventBus.post("newGem", my.material, my.object.position, worldPosition);
 
-
 /**
  * [EventObject Class representing an association between an event type and its list of callbacks]
  * @param {[string]} type [event name]
  */
 class EventObject {
+
     constructor(type){
 
         this.eventType = type;
         this.callbacks = new Array();
+
     }
+
 }
 
 export class EventBus {
@@ -84,9 +85,7 @@ export class EventBus {
         var eventObject = this.eventObjects.filter(function (eventObject) { return eventObject.eventType === eventType; })[0];
         if (eventObject.callbacks.length === 0){
             this.eventObjects = this.eventObjects.filter(function (eventObject) { return eventObject.eventType != eventType; })
-
         }
-
     }
-
+    
 }

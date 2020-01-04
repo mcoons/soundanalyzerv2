@@ -1,7 +1,6 @@
 export class AudioManager {
 
     constructor() {
-
         this.fileInput = document.getElementById("fileInput");
         this.audio = document.getElementById("audio");
         this.audioCtx = new AudioContext();
@@ -34,9 +33,17 @@ export class AudioManager {
         this.tdAnalyser.connect(this.audioCtx.destination);
     }
 
-    
-    analyzeData() {
+    initAudio(elem) {
+        var url = elem.attr('audiourl');
 
+        this.audio.src = "app/assets/tracks/" + url;
+        this.audio.load();
+
+        $('.playlist li').removeClass('active');
+        elem.addClass('active');
+    }
+
+    analyzeData() {
         ////////////////////////////////////
         // get FREQUENCY data for this frame
 
@@ -74,24 +81,10 @@ export class AudioManager {
         }
     }
 
-
-    initAudio(elem) {
-        // console.log(elem)
-        var url = elem.attr('audiourl');
-
-        this.audio.src = "app/assets/tracks/" + url;
-        this.audio.load();
-
-        $('.playlist li').removeClass('active');
-        elem.addClass('active');
-    }
-
-
     normalizeData(sourceData) {
         const multiplier = Math.pow(Math.max(...sourceData), -1);
         return sourceData.map(n => n * multiplier * 255);
     }
-
 
     sampleData(source, start, end, samplesDesired) {
         let sampledData = [];
@@ -102,6 +95,5 @@ export class AudioManager {
         }
         return sampledData;
     }
-
 
 }

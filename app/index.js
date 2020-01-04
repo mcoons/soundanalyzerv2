@@ -11,16 +11,20 @@ import {
 } from './AudioManager.js';
 
 import {
-    Star
-} from './Star.js';
+    StarManager
+} from './StarManager.js';
 
-var scene;
+import {
+    Clock
+} from './objects/Clock.js';
+
 
 window.onload = function () {
 
     var eventBus = new EventBus();
     eventBus.subscribe("eventTest", eventTestCallback);
-    function eventTestCallback(){
+
+    function eventTestCallback() {
         console.log("Event Received");
     }
     eventBus.post("eventTest");
@@ -30,10 +34,16 @@ window.onload = function () {
         showTitle: false,
         showRipple: true,
         showWater: false,
-        showSky: false
+        showSky: false,
+        showConsole: true,
+        showWaveform: true
     }
 
-    var siteIndex = Math.round(Math.random() * 47) + 1;
+    //////////////////////////////////////////////////////////////////////
+    // start the audio
+    //////////////////////////////////////////////////////////////////////
+
+    var siteIndex = Math.round(Math.random() * 12) + 1;
     var isSiteTrack = true;
     var isMic = false;
     var audioManager = new AudioManager();
@@ -41,63 +51,53 @@ window.onload = function () {
 
     //////////////////////////////////////////////////////////////////////
     // start the 3D render loop
+    //////////////////////////////////////////////////////////////////////
 
-    var canvas3D = document.getElementById('canvas3D');
-    var engine = new BABYLON.Engine(canvas3D, true);
+    var canvas3D = $('#canvas3D')[0];
+    var engine = new BABYLON.Engine(canvas3D, true, {
+        preserveDrawingBuffer: true,
+        stencil: true
+    });
     var glowLayer;
     var waterMaterial
     var defaultGridMaterial;
     var camera;
+    var scene = createScene();
+    var starManager = new StarManager(scene, eventBus, audioManager);
+    var clock = new Clock(scene);
     var cameraPosition = [{
-            lookat: new BABYLON.Vector3(200, 0, -200),
-            alpha: Math.PI / 2,
+            lookat: new BABYLON.Vector3(-200, 0, 200),
+            alpha: -Math.PI / 2,
             beta: 0.01,
-            radius: 400
-        },
-        {
-            lookat: new BABYLON.Vector3(-200, 0, -200),
-            alpha: Math.PI / 2,
-            beta: .01,
-            radius: 400
-        },
-        {
-            lookat: new BABYLON.Vector3(0, 0, 0),
-            alpha: Math.PI / 2,
-            beta: 0.01,
-            radius: 930
+            radius: 115
         },
         {
             lookat: new BABYLON.Vector3(200, 0, 200),
-            alpha: Math.PI / 2,
+            alpha: -Math.PI / 2,
             beta: 0.01,
-            radius: 400
+            radius: 115
         },
         {
-            lookat: new BABYLON.Vector3(-200, 0, 200),
-            alpha: Math.PI / 2,
+            lookat: new BABYLON.Vector3(0, 0, 0),
+            alpha: 4.711,
+            beta: 1.096,
+            radius: 831
+        },
+        {
+            lookat: new BABYLON.Vector3(-200, 0, -200),
+            alpha: -Math.PI / 2,
+            beta: .01,
+            radius: 115
+        },
+        {
+            lookat: new BABYLON.Vector3(200, 0, -200),
+            alpha: -Math.PI / 2,
             beta: 0.01,
-            radius: 400
+            radius: 115
         },
     ];
-    var starObjects = [];
-    var pieResolution = 256;
-
     var masterTransform;
 
-    var starMaster1;
-    var starMaster2;
-    var starMaster3;
-    var starMaster4;
-    var starMaster5;
-    var starMaster6;    
-    var starMaster7;
-    var starMaster8;
-    var starMaster9;
-    var starMaster10;
-    var starMaster11;
-    var starMaster12;
-
-    scene = createScene();
     createObjects();
 
     engine.runRenderLoop(function () {
@@ -160,7 +160,7 @@ window.onload = function () {
 
         // buildPalettes(palette, paletteGlow, paletteRed, paletteGreen, null, paletteGray, paletteMetallic, scene);
 
-        camera = new BABYLON.ArcRotateCamera("camera1", 1.59, .977, 756, new BABYLON.Vector3(0, 0, 0), scene);
+        camera = new BABYLON.ArcRotateCamera("camera1", 4.7, 1.1, 815, new BABYLON.Vector3(0, 0, 0), scene);
         camera.upperRadiusLimit = 9400;
         camera.lowerRadiusLimit = 10;
         camera.lower
@@ -190,6 +190,8 @@ window.onload = function () {
 
     function createObjects() {
 
+
+        let starMaster;
         masterTransform = new BABYLON.TransformNode("root");
         masterTransform.position = new BABYLON.Vector3(0, 0, 0);
 
@@ -203,520 +205,254 @@ window.onload = function () {
         // starMaster1.scaling.y = .1;
         // starMaster1.scaling.z = .1;
 
-        starMaster2 = new BABYLON.TransformNode("starMaster2");
+        ////////////////////////////////////////////////////////
 
-        createStarGroupRandom2({
+        starMaster = new BABYLON.TransformNode("starMaster");
+
+        starManager.createStarGroupRandom2({
             r: .75,
-            g: .25,
-            b: .25
+            g: .45,
+            b: .45
         }, {
             x: 0,
             y: 1,
             z: 0
-        }, starMaster2);
+        }, starMaster);
 
-        starMaster2.position = new BABYLON.Vector3(200, 0, -200);
-        starMaster2.parent = masterTransform;
-        starMaster2.scaling.x = .2;
-        starMaster2.scaling.y = .2;
-        starMaster2.scaling.z = .2;
-        starMaster2.rotation.y = Math.PI / 2;
+        starMaster.position = new BABYLON.Vector3(200, 0, -200);
+        starMaster.parent = masterTransform;
+        starMaster.scaling.x = .2;
+        starMaster.scaling.y = .2;
+        starMaster.scaling.z = .2;
+        starMaster.rotation.y = Math.PI / 2;
 
-        starMaster3 = new BABYLON.TransformNode("starMaster2");
+        starManager.starMasters.push(starMaster);
 
-        createStarGroupRandom3({
-            r: .25,
+        ////////////////////////////////////////////////////////
+
+        starMaster = new BABYLON.TransformNode("starMaster");
+
+        starManager.createStarGroupRandom3({
+            r: .45,
             g: .65,
-            b: .25
+            b: .45
         }, {
             x: 0,
             y: 1,
             z: 0
-        }, starMaster3);
+        }, starMaster);
 
-        starMaster3.position = new BABYLON.Vector3(-200, 0, -200);
-        starMaster3.parent = masterTransform;
-        starMaster3.scaling.x = .2;
-        starMaster3.scaling.y = .2;
-        starMaster3.scaling.z = .2;
-        starMaster3.rotation.y = Math.PI / 2;
+        starMaster.position = new BABYLON.Vector3(-200, 0, -200);
+        starMaster.parent = masterTransform;
+        starMaster.scaling.x = .2;
+        starMaster.scaling.y = .2;
+        starMaster.scaling.z = .2;
+        starMaster.rotation.y = Math.PI / 2;
 
-        starMaster4 = new BABYLON.TransformNode("starMaster2");
+        starManager.starMasters.push(starMaster);
 
-        createStarGroupRandom4({
-            r: .25,
-            g: .25,
+        ////////////////////////////////////////////////////////
+
+        starMaster = new BABYLON.TransformNode("starMaster");
+
+        starManager.createStarGroupRandom4({
+            r: .45,
+            g: .45,
             b: .75
         }, {
             x: 0,
             y: 1,
             z: 0
-        }, starMaster4);
+        }, starMaster);
 
-        starMaster4.position = new BABYLON.Vector3(200, 0, 200);
-        starMaster4.parent = masterTransform;
-        starMaster4.scaling.x = .3;
-        starMaster4.scaling.y = .3;
-        starMaster4.scaling.z = .3;
-        starMaster4.rotation.y = Math.PI / 2;
+        starMaster.position = new BABYLON.Vector3(200, 0, 200);
+        starMaster.parent = masterTransform;
+        starMaster.scaling.x = .3;
+        starMaster.scaling.y = .3;
+        starMaster.scaling.z = .3;
+        starMaster.rotation.y = Math.PI / 2;
 
-        starMaster5 = new BABYLON.TransformNode("starMaster2");
+        starManager.starMasters.push(starMaster);
 
-        createStarGroupRandom5({
+        ////////////////////////////////////////////////////////
+
+        starMaster = new BABYLON.TransformNode("starMaster");
+
+        starManager.createStarGroupRandom5({
             r: .95,
-            g: .25,
+            g: .45,
             b: .95
         }, {
             x: 0,
             y: 1,
             z: 0
-        }, starMaster5);
+        }, starMaster);
 
-        starMaster5.position = new BABYLON.Vector3(-200, 0, 200);
-        starMaster5.parent = masterTransform;
-        starMaster5.scaling.x = .2;
-        starMaster5.scaling.y = .2;
-        starMaster5.scaling.z = .2;
-        starMaster5.rotation.y = Math.PI / 2;
+        starMaster.position = new BABYLON.Vector3(-200, 0, 200);
+        starMaster.parent = masterTransform;
+        starMaster.scaling.x = .2;
+        starMaster.scaling.y = .2;
+        starMaster.scaling.z = .2;
+        starMaster.rotation.y = Math.PI / 2;
 
-        starMaster6 = new BABYLON.TransformNode("starMaster2");
+        starManager.starMasters.push(starMaster);
 
-        createStarGroupRandom6({
-            r: .25,
-            g: .25,
-            b: .25
+        ////////////////////////////////////////////////////////
+
+        starMaster = new BABYLON.TransformNode("starMaster");
+
+        starManager.createStarGroupRandom6({
+            r: .45,
+            g: .45,
+            b: .45
         }, {
             x: 0,
             y: 1,
             z: 0
-        }, starMaster6);
+        }, starMaster);
 
-        starMaster6.position = new BABYLON.Vector3(0, 0, 0);
-        starMaster6.parent = masterTransform;
-        starMaster6.scaling.x = .1;
-        starMaster6.scaling.y = .1;
-        starMaster6.scaling.z = .1;
-        starMaster6.rotation.y = Math.PI / 2;
+        starMaster.position = new BABYLON.Vector3(0, 0, 0);
+        starMaster.parent = masterTransform;
+        starMaster.scaling.x = .1;
+        starMaster.scaling.y = .1;
+        starMaster.scaling.z = .1;
+        starMaster.rotation.y = Math.PI / 2;
+
+        starManager.starMasters.push(starMaster);
 
         ////////////////////////////////////////////////////////
 
-        starMaster7 = new BABYLON.TransformNode("starMaster7");
+        starMaster = new BABYLON.TransformNode("starMaster");
 
-        createStarGroupRandom2({
+        starManager.createStarGroupRandom2({
             r: .75,
-            g: .25,
-            b: .25
+            g: .45,
+            b: .45
         }, {
             x: 1,
             y: 1,
             z: 1
-        }, starMaster7);
+        }, starMaster);
 
-        starMaster7.position = new BABYLON.Vector3(400, 0, -200);
-        starMaster7.parent = masterTransform;
-        starMaster7.scaling.x = .2;
-        starMaster7.scaling.y = .2;
-        starMaster7.scaling.z = .2;
-        starMaster7.rotation.y = Math.PI / 2;
+        starMaster.position = new BABYLON.Vector3(400, 0, -200);
+        starMaster.parent = masterTransform;
+        starMaster.scaling.x = .2;
+        starMaster.scaling.y = .2;
+        starMaster.scaling.z = .2;
+        starMaster.rotation.y = Math.PI / 2;
 
-        starMaster8 = new BABYLON.TransformNode("starMaster2");
+        starManager.starMasters.push(starMaster);
 
-        createStarGroupRandom3({
-            r: .25,
+        ////////////////////////////////////////////////////////
+
+        starMaster = new BABYLON.TransformNode("starMaster");
+
+        starManager.createStarGroupRandom3({
+            r: .45,
             g: .65,
-            b: .25
+            b: .45
         }, {
             x: 1,
             y: 1,
             z: 1
-        }, starMaster8);
+        }, starMaster);
 
-        starMaster8.position = new BABYLON.Vector3(-400, 0, -200);
-        starMaster8.parent = masterTransform;
-        starMaster8.scaling.x = .2;
-        starMaster8.scaling.y = .2;
-        starMaster8.scaling.z = .2;
-        starMaster8.rotation.y = Math.PI / 2;
+        starMaster.position = new BABYLON.Vector3(-400, 0, -200);
+        starMaster.parent = masterTransform;
+        starMaster.scaling.x = .2;
+        starMaster.scaling.y = .2;
+        starMaster.scaling.z = .2;
+        starMaster.rotation.y = Math.PI / 2;
 
-        starMaster9 = new BABYLON.TransformNode("starMaster2");
+        starManager.starMasters.push(starMaster);
 
-        createStarGroupRandom4({
-            r: .25,
-            g: .25,
+        ////////////////////////////////////////////////////////
+
+        starMaster = new BABYLON.TransformNode("starMaster");
+
+        starManager.createStarGroupRandom4({
+            r: .45,
+            g: .45,
             b: .75
         }, {
             x: 1,
             y: 1,
             z: 1
-        }, starMaster9);
+        }, starMaster);
 
-        starMaster9.position = new BABYLON.Vector3(400, 0, 200);
-        starMaster9.parent = masterTransform;
-        starMaster9.scaling.x = .3;
-        starMaster9.scaling.y = .3;
-        starMaster9.scaling.z = .3;
-        starMaster9.rotation.y = Math.PI / 2;
+        starMaster.position = new BABYLON.Vector3(400, 0, 200);
+        starMaster.parent = masterTransform;
+        starMaster.scaling.x = .3;
+        starMaster.scaling.y = .3;
+        starMaster.scaling.z = .3;
+        starMaster.rotation.y = Math.PI / 2;
 
-        starMaster10 = new BABYLON.TransformNode("starMaster2");
+        starManager.starMasters.push(starMaster);
 
-        createStarGroupRandom5({
+        ////////////////////////////////////////////////////////
+
+        starMaster = new BABYLON.TransformNode("starMaster");
+
+        starManager.createStarGroupRandom5({
             r: .95,
-            g: .25,
+            g: .45,
             b: .95
         }, {
             x: 1,
             y: 0,
             z: 1
-        }, starMaster10);
+        }, starMaster);
 
-        starMaster10.position = new BABYLON.Vector3(-400, 0, 200);
-        starMaster10.parent = masterTransform;
-        starMaster10.scaling.x = .2;
-        starMaster10.scaling.y = .2;
-        starMaster10.scaling.z = .2;
-        starMaster10.rotation.y = Math.PI / 2;
+        starMaster.position = new BABYLON.Vector3(-400, 0, 200);
+        starMaster.parent = masterTransform;
+        starMaster.scaling.x = .2;
+        starMaster.scaling.y = .2;
+        starMaster.scaling.z = .2;
+        starMaster.rotation.y = Math.PI / 2;
 
-        starMaster11 = new BABYLON.TransformNode("starMaster2");
+        starManager.starMasters.push(starMaster);
 
-        createStarGroupRandom6({
-            r: .25,
-            g: .25,
-            b: .25
+        ////////////////////////////////////////////////////////
+
+        starMaster = new BABYLON.TransformNode("starMaster");
+
+        starManager.createStarGroupRandom6({
+            r: .45,
+            g: .45,
+            b: .45
         }, {
             x: 1,
             y: 1,
             z: 1
-        }, starMaster11);
+        }, starMaster);
 
-        starMaster11.position = new BABYLON.Vector3(0, 200, 0);
-        starMaster11.parent = masterTransform;
-        starMaster11.scaling.x = .1;
-        starMaster11.scaling.y = .1;
-        starMaster11.scaling.z = .1;
-        starMaster11.rotation.y = Math.PI / 2;
+        starMaster.position = new BABYLON.Vector3(0, 200, 0);
+        starMaster.parent = masterTransform;
+        starMaster.scaling.x = .1;
+        starMaster.scaling.y = .1;
+        starMaster.scaling.z = .1;
+        starMaster.rotation.y = Math.PI / 2;
+
+        starManager.starMasters.push(starMaster);
 
         // drawRandomStars();
-        eventBus.post("eventTest",'argument');
-
+        eventBus.post("eventTest", 'argument');
     }
 
     function updateObjects() {
-        // call update on all objects
-        starObjects.forEach((sObject, index) => {
-            sObject.update(audioManager.frDataArrayNormalized, index);
-        });
-    }
-
-    function drawRandomStars() {
-        masterTransform = new BABYLON.TransformNode("root");
-        for (let i = 0; i < 6; i += 6) {
-
-            let masters = [];
-
-            masters[i] = new BABYLON.TransformNode("masters[i+1]");
-            // // masters.push(starMaster);                
-            // createStarGroup1(masters[i]);
-
-            // masters[i].position = new BABYLON.Vector3(Math.random() * 1000 - 500, Math.random() * 1000 + 1500, Math.random() * 1000 - 500);
-            // masters[i].parent = masterTransform;
-            // masters[i].scaling.x = .1;
-            // masters[i].scaling.y = .1;
-            // masters[i].scaling.z = .1;
-
-
-            masters[i + 1] = new BABYLON.TransformNode("masters[i+1]");
-            // masters.push(masters[i+1]);            
-            createStarGroupRandom2({
-                r: .75,
-                g: .25,
-                b: .25
-            }, {
-                x: 1,
-                y: 1,
-                z: 1
-            }, masters[i + 1]);
-
-            masters[i + 1].position = new BABYLON.Vector3(Math.random() * 1000 - 500, Math.random() * 1000 + 1500, Math.random() * 1000 - 500);
-            masters[i + 1].parent = masterTransform;
-            masters[i + 1].scaling.x = .2;
-            masters[i + 1].scaling.y = .2;
-            masters[i + 1].scaling.z = .2;
-            masters[i + 1].rotation.y = Math.PI / 2;
-
-            masters[i + 2] = new BABYLON.TransformNode("masters[i+2]");
-            // masters.push(masters[i+2]);            
-            createStarGroupRandom3({
-                r: .25,
-                g: .65,
-                b: .25
-            }, {
-                x: 0,
-                y: 1,
-                z: 0
-            }, masters[i + 2]);
-
-            masters[i + 2].position = new BABYLON.Vector3(Math.random() * 1000 - 500, Math.random() * 1000 + 1500, Math.random() * 1000 - 500);
-            masters[i + 2].parent = masterTransform;
-            masters[i + 2].scaling.x = .2;
-            masters[i + 2].scaling.y = .2;
-            masters[i + 2].scaling.z = .2;
-            masters[i + 2].rotation.y = Math.PI / 2;
-
-            masters[i + 3] = new BABYLON.TransformNode("masters[i+3]");
-            // masters.push(masters[i+3]);            
-            createStarGroupRandom4({
-                r: .25,
-                g: .25,
-                b: .75
-            }, {
-                x: 1,
-                y: 1,
-                z: 1
-            }, masters[i + 3]);
-
-            masters[i + 3].position = new BABYLON.Vector3(Math.random() * 1000 - 500, Math.random() * 1000 + 1500, Math.random() * 1000 - 500);
-            masters[i + 3].parent = masterTransform;
-            masters[i + 3].scaling.x = .3;
-            masters[i + 3].scaling.y = .3;
-            masters[i + 3].scaling.z = .3;
-            masters[i + 3].rotation.y = Math.PI / 2;
-
-            masters[i + 4] = new BABYLON.TransformNode("masters[i+4]");
-            // masters.push(starMaster);            
-            createStarGroupRandom5({
-                r: .95,
-                g: .25,
-                b: .95
-            }, {
-                x: 1,
-                y: 0,
-                z: 1
-            }, masters[i + 4]);
-
-            masters[i + 4].position = new BABYLON.Vector3(Math.random() * 1000 - 500, Math.random() * 1000 + 1500, Math.random() * 1000 - 500);
-            masters[i + 4].parent = masterTransform;
-            masters[i + 4].scaling.x = .2;
-            masters[i + 4].scaling.y = .2;
-            masters[i + 4].scaling.z = .2;
-            masters[i + 4].rotation.y = Math.PI / 2;
-
-            masters[i + 5] = new BABYLON.TransformNode("masters[i+5]");
-            // masters.push(masters[i+5]);            
-            createStarGroupRandom6({
-                r: 1,
-                g: 1,
-                b: 1
-            }, {
-                x: 0,
-                y: 1,
-                z: 0
-            }, masters[i + 5]);
-
-            masters[i + 5].position = new BABYLON.Vector3(Math.random() * 1000 - 500, Math.random() * 1000 + 1500, Math.random() * 1000 - 500);
-            masters[i + 5].parent = masterTransform;
-            masters[i + 5].scaling.x = .2;
-            masters[i + 5].scaling.y = .2;
-            masters[i + 5].scaling.z = .2;
-            masters[i + 5].rotation.y = Math.PI / 2;
-        }
-    }
-
-    let exampleStarOptions = {
-        innerStartIndex : 0,
-        outerStartIndex : 0,
-
-        innerSlices : .5,
-        outerSlices : .5,
-
-        innerRadius : 1,
-        outerRadius : 4,
-
-        resolution: 256,
-
-        xRotation: 0,
-        yRotation: 1,
-        yRotation: 0
-    }
-
-    function createStarGroupRandom2(colorBias, rotationBias, parent, location) {
-
-        for (let index = 0; index < 9; index++) {
-
-            let test = new Star("Random Star "+index, "test Star parent", null, getBiasedGlowMaterial(colorBias), pieResolution, waterMaterial, eventBus, scene);
-            let rad = 20 * index + 10;
-            test.setOptions(
-                Math.round(Math.random() * 20),
-                Math.round(Math.random() * 20),
-
-                Math.pow(2, Math.round(Math.random() * 6)),
-                Math.pow(2, Math.round(Math.random() * 6)),
-
-                rad,
-                rad + Math.round(Math.random() * 6) - 3,
-
-                256,
-
-                waterMaterial,
-
-                rotationBias.x == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-                rotationBias.y == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-                rotationBias.z == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-            );
-            test.mesh.parent = parent;
-            starObjects.push(test);
-        }
-    }
-
-    function createStarGroupRandom3(colorBias, rotationBias, parent, location) {
-
-        for (let index = 0; index < 9; index++) {
-
-            let test = new Star("Random Star "+index, "test Star parent", null, getBiasedGlowMaterial(colorBias), pieResolution, waterMaterial, eventBus, scene);
-            let rad = 20 * index + 10;
-            let i = Math.round(Math.random() * 10)
-            test.setOptions(
-                i,
-                i + Math.round(Math.random() * 2 + 1),
-
-                Math.pow(2, Math.round(Math.random() * 6) + 1),
-                Math.pow(2, Math.round(Math.random() * 6) + 1),
-
-                rad,
-                rad,
-
-                256,
-
-                waterMaterial,
-
-                rotationBias.x == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-                rotationBias.y == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-                rotationBias.z == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-            );
-            test.mesh.parent = parent;
-            starObjects.push(test);
-        }
-    }
-
-    function createStarGroupRandom4(colorBias, rotationBias, parent, location) {
-
-        for (let index = 0; index < 9; index++) {
-
-            let test = new Star("Random Star "+index, "test Star parent", null, getBiasedGlowMaterial(colorBias), pieResolution, waterMaterial, eventBus, scene);
-            let rad = 8 * (9 - index) + 40;
-            let i = Math.round(Math.random() * 10)
-            test.setOptions(
-                i,
-                i,
-
-                Math.pow(2, Math.round(Math.random() * 1) + 2),
-                Math.pow(2, Math.round(Math.random() * 1) + 4),
-
-                rad,
-                rad + 2,
-
-                256,
-
-                waterMaterial,
-
-                rotationBias.x == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-                rotationBias.y == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-                rotationBias.z == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-            );
-            test.mesh.parent = parent;
-            starObjects.push(test);
-        }
-    }
-
-    function createStarGroupRandom5(colorBias, rotationBias, parent, location) {
-
-        for (let index = 0; index < 9; index++) {
-
-            let test = new Star("Random Star "+index, "test Star parent", null, getBiasedGlowMaterial(colorBias), pieResolution, waterMaterial, eventBus, scene);
-            let rad = 10 * index + 80;
-            let i = Math.round(Math.random() * 10 + 2);
-            let s = Math.pow(2, Math.round(Math.random() * 1));
-            test.setOptions(
-                i,
-                i - 1,
-
-                Math.pow(2, index),
-                Math.pow(2, index),
-
-                rad,
-                rad + 1,
-
-                256,
-
-                waterMaterial,
-
-                rotationBias.x == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-                rotationBias.y == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-                rotationBias.z == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-            );
-            test.mesh.parent = parent;
-            starObjects.push(test);
-        }
-    }
-
-    function createStarGroupRandom6(colorBias, rotationBias, parent, location) {
-
-        for (let index = 0; index < 25; index++) {
-
-            let test = new Star("Random Star "+index, "test Star parent", null, getBiasedGlowMaterial(colorBias), pieResolution, waterMaterial, eventBus, scene);
-            let rad = 30 * index+20;
-            let i = Math.round(Math.random() * 10 + 2);
-            let s = Math.pow(2, Math.round(Math.random() * 1));
-            test.setOptions(
-                i + 2,
-                i + 1,
-
-                Math.pow(2, Math.round(Math.random()*4)+1),
-                Math.pow(2, Math.round(Math.random()*4)+1),
-
-                rad,
-                rad + 1,
-
-                256,
-
-                waterMaterial,
-
-                rotationBias.x == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-                rotationBias.y == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-                rotationBias.z == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
-            );
-            test.mesh.parent = parent;
-            starObjects.push(test);
-        }
-    }
-
-    function getBiasedGlowMaterial(colorBias) {
-        
-        let dimmer = 1.0;
-        let r = Math.random() * colorBias.r;
-        let g = Math.random() * colorBias.g;
-        let b = Math.random() * colorBias.b;
-        let color = new BABYLON.Color4(r * dimmer, g * dimmer, b * dimmer, 1, false);
-
-        let mat = new BABYLON.StandardMaterial("mat", scene);
-        mat.diffuseColor = color;
-        mat.specularColor = new BABYLON.Color3(r * .1, g * .1, b * .1);
-        mat.ambientColor = new BABYLON.Color3(r * .25, g * .25, b * .25);
-        mat.emissiveColor = new BABYLON.Color3(r, g, b);
-        mat.backFaceCulling = true;
-        mat.alpha = .5;
-
-        return mat;
+        starManager.update();
     }
 
     //////////////////////////////////////////////////////////////////////
     // start the 2D render loop
+    //////////////////////////////////////////////////////////////////////
 
-    var canvas2D = document.getElementById("canvas2D");
+    var canvas2D = $('#canvas2D')[0];
     canvas2D.style.width = canvas2D.width;
     canvas2D.style.height = canvas2D.height;
     var ctx2D = canvas2D.getContext("2d");
     ctx2D.globalAlpha = .5;
-    
+
     render2DFrame();
 
     function render2DFrame() {
@@ -729,9 +465,13 @@ window.onload = function () {
             draw2DBars();
         }
 
-        drawWaveform(canvas2D, audioManager.tdDataArrayNormalized, canvas2D.width, 60);
+        if (options.showWaveform){
+            drawWaveform(canvas2D, audioManager.tdDataArrayNormalized, canvas2D.width, 60);
+        }
 
-        renderConsoleOutput();
+        if (options.showConsole){
+            renderConsoleOutput();
+        }
 
         requestAnimationFrame(render2DFrame);
     }
@@ -806,14 +546,23 @@ window.onload = function () {
 
     //////////////////////////////////////////////////////////////////////
     // event listeners
-    
+    //////////////////////////////////////////////////////////////////////
+
+    $('#dl_Btn').click(function () {
+        let multiplier = 10;
+        BABYLON.Tools.CreateScreenshotUsingRenderTarget(engine, scene.cameras[0], {
+            width: canvas3D.width * multiplier,
+            height: canvas3D.height * multiplier
+        });
+    });
+
     $('td').bind("click", function () {
         scene.cameras[0].target = cameraPosition[this.id - 1].lookat
         scene.cameras[0].alpha = cameraPosition[this.id - 1].alpha
         scene.cameras[0].beta = cameraPosition[this.id - 1].beta
         scene.cameras[0].radius = cameraPosition[this.id - 1].radius
     });
-        
+
     // show playlist
     $('.pl').click(function (e) {
         // e.preventDefault();
@@ -827,7 +576,7 @@ window.onload = function () {
         audioManager.initAudio($(this));
         $('.playlist').fadeOut(500);
     });
-    
+
     // custom button that calls click on hidden fileInput element
     $('.local_Btn').bind("click", function () {
         $('#fileInput').click();
@@ -850,7 +599,7 @@ window.onload = function () {
 
     audio.onended = function () {
         siteIndex++;
-        if (siteIndex > 48) {
+        if (siteIndex > 13) {
             siteIndex = 1;
         }
 
@@ -865,3 +614,91 @@ window.onload = function () {
     });
 
 };
+
+
+/*
+
+
+$( "a" ).attr( "href", "allMyHrefsAreTheSameNow.html" );
+
+
+$( "a" ).attr({
+
+    title: "all titles are the same too!",
+
+    href: "somethingNew.html"
+
+});
+
+ 
+
+// Testing whether a selection contains elements.
+if ( $( "div.foo" ).length ) {
+    let a = 1;
+}
+ 
+
+// Refining selections.
+$( "div.foo" ).has( "p" );         // div.foo elements that contain <p> tags
+$( "h1" ).not( ".bar" );           // h1 elements that don't have a class of bar
+$( "ul li" ).filter( ".current" ); // unordered list items with class of current
+$( "ul li" ).first();              // just the first unordered list item
+$( "ul li" ).eq( 5 );              // the sixth
+ 
+
+ 
+
+$( "input:file" ) 
+
+ 
+
+// Setting CSS properties.
+ 
+$( "h1" ).css( "fontSize", "100px" ); // Setting an individual property.
+ 
+// Setting multiple properties.
+$( "h1" ).css({
+    fontSize: "100px",
+    color: "red"
+});
+ 
+
+// Working with classes.
+ 
+var h1 = $( "h1" );
+ 
+h1.addClass( "big" );
+h1.removeClass( "big" );
+h1.toggleClass( "big" );
+ 
+if ( h1.hasClass( "big" ) ) {
+    let a = 1;
+}
+ 
+
+// Basic dimensions methods.
+ 
+// Sets the width of all <h1> elements.
+$( "h1" ).width( "50px" );
+ 
+// Gets the width of the first <h1> element.
+$( "h1" ).width();
+ 
+// Sets the height of all <h1> elements.
+$( "h1" ).height( "50px" );
+ 
+// Gets the height of the first <h1> element.
+$( "h1" ).height();
+ 
+ 
+// Returns an object containing position information for
+// the first <h1> relative to its "offset (positioned) parent".
+$( "h1" ).position();
+ 
+
+// Storing and retrieving data related to an element.
+ 
+$( "#myDiv" ).data( "keyName", { foo: "bar" } );
+ 
+$( "#myDiv" ).data( "keyName" ); // Returns { foo: "bar" }
+ */

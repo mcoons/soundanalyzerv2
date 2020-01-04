@@ -142,6 +142,26 @@
 //     });
 // }
 
+function getBiasedGlowMaterial(colorBias, scene) {
+        
+    let dimmer = 1.0;
+    let r = Math.random() * colorBias.r;
+    let g = Math.random() * colorBias.g;
+    let b = Math.random() * colorBias.b;
+    let color = new BABYLON.Color4(r * dimmer, g * dimmer, b * dimmer, 1, false);
+
+    let mat = new BABYLON.StandardMaterial("mat", scene);
+    mat.diffuseColor = color;
+    mat.specularColor = new BABYLON.Color3(r * .1, g * .1, b * .1);
+    mat.ambientColor = new BABYLON.Color3(r * .25, g * .25, b * .25);
+    mat.emissiveColor = new BABYLON.Color3(r, g, b);
+    mat.backFaceCulling = true;
+    mat.alpha = .5;
+
+    return mat;
+}
+
+
 // map a value from one range to another
 function map(x, oMin, oMax, nMin, nMax) {
     // check range
@@ -188,6 +208,7 @@ export {
     // addToGlowPalette,
     // addToPalette,
     // buildPalettes,
+    getBiasedGlowMaterial,
     map,
     logToScreen
 };

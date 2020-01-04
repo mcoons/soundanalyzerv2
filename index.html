@@ -5,13 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Music Visualizer v2.0</title>
+    <title>Music Visualizer v3.0</title>
     <link href="https://fonts.googleapis.com/css?family=Arima+Madurai:800&display=swap" rel="stylesheet">
     <script src="app/jquery/jquery-1.7.2.min.js"></script>
     <script src="app/babylon/babylon.max.js"></script>
     <script src="app/babylon/babylon.waterMaterial.js"></script>
     <script src="app/babylon/babylon.skyMaterial.js"></script>
     <script src="app/babylon/babylon.gridMaterial.js"></script>
+    <!-- <script src="app/babylon/earcut.min.js"></script> -->
+    <script src="app/babylon/meshwriter.min.js"></script>
 
     <script src="app/index.js" defer type='module'></script>
     <link rel="stylesheet" href="index.css" type="text/css" media="all">
@@ -24,16 +26,17 @@
         <div id="content">
             <input id="fileInput" type="file" accept="audio/*" multiple />
             <audio id="audio"  class="button" controls autoplay></audio>
-            <button class="site_Btn pl button">Site Music</button>
             <button class="local_Btn button">Local File</button>            
+            <button class="site_Btn pl button">Site Music</button>
             <button class="mic_Btn button">Microphone</button>
-            <button class="options_Btn button">OPTIONS</button>
+            <button id="dl_Btn" class="options_Btn button">Snapshot</button>
         </div>
-        <div id="title">Music Visualizer v2.1</div>
+        <div id="title">Music Visualizer v3.0</div>
         <div id="consoleElement"></div>
         <div id="options"></div>
         <div id="cameraTarget">
             <table>
+                <div id="cameraLegend">Cameras</div>
                 <tr>
                     <td id="1"></td>
                     <td style="visibility:hidden"></td>
@@ -49,7 +52,6 @@
                     <td style="visibility:hidden">8</td style="visibility:hidden">
                     <td id="5"></td>
                 </tr>
-            <div id="cameraLegend">Cameras</div>
 
             </table>
 
@@ -57,53 +59,18 @@
             <div class="playlist hidden">
                 <ul>
                     <li index="1" audioURL="A Good Bass for Gambling.mp3">A Good Bass for Gambling.mp3</li>
-                    <li index="2" audioURL="Abstract Anxiety.mp3">Abstract Anxiety.mp3</li>
-                    <li index="3" audioURL="Advertising.mp3">Advertising.mp3</li>
-                    <li index="4" audioURL="After the End.mp3">After the End.mp3</li>
-                    <li index="5" audioURL="Ambient Bongos.mp3">Ambient Bongos.mp3</li>
-                    <li index="6" audioURL="Ambient G Glowing.mp3">Ambient G Glowing.mp3</li>
-                    <li index="7" audioURL="Arpent.mp3">Arpent.mp3</li>
-                    <li index="8" audioURL="Barroom Ballet.mp3">Barroom Ballet.mp3</li>
-                    <li index="9" audioURL="Bass Meant Jazz.mp3">Bass Meant Jazz.mp3</li>
-                    <li index="10" audioURL="Be Jammin.mp3">Be Jammin.mp3</li>
-                    <li index="11" audioURL="Behind Enemy Lines.mp3">Behind Enemy Lines.mp3</li>
-                    <li index="12" audioURL="Bit Bit Loop.mp3">Bit Bit Loop.mp3</li>
-                    <li index="13" audioURL="Blacksmith.mp3">Blacksmith.mp3</li>
-                    <li index="14" audioURL="Celebration.mp3">Celebration.mp3</li>
-                    <li index="15" audioURL="Chronos.mp3">Chronos.mp3</li>
-                    <li index="16" audioURL="City Run.mp3">City Run.mp3</li>
-                    <li index="17" audioURL="City Sunshine.mp3">City Sunshine.mp3</li>
-                    <li index="18" audioURL="Comic Game Loop - Mischief.mp3">Comic Game Loop - Mischief.mp3</li>
-                    <li index="19" audioURL="Consecrated Ground.mp3">Consecrated Ground.mp3</li>
-                    <li index="20" audioURL="Creepy Hallow.mp3">Creepy Hallow.mp3</li>
-                    <li index="21" audioURL="Evil Incoming.mp3">Evil Incoming.mp3</li>
-                    <li index="22" audioURL="Eye of Forgiveness.mp3">Eye of Forgiveness.mp3</li>
-                    <li index="23" audioURL="Favorite.mp3">Favorite.mp3</li>
-                    <li index="24" audioURL="Final Step.mp3">Final Step.mp3</li>
-                    <li index="25" audioURL="Foam Rubber.mp3">Foam Rubber.mp3</li>
-                    <li index="26" audioURL="Funkeriffic.mp3">Funkeriffic.mp3</li>
-                    <li index="27" audioURL="Funky Energy Loop.mp3">Funky Energy Loop.mp3</li>
-                    <li index="28" audioURL="Ghost Town.mp3">Ghost Town.mp3</li>
-                    <li index="29" audioURL="Groovin.mp3">Groovin.mp3</li>
-                    <li index="30" audioURL="Guerilla Tactics.mp3">Guerilla Tactics.mp3</li>
-                    <li index="31" audioURL="Heroic Adventure.mp3">Heroic Adventure.mp3</li>
-                    <li index="32" audioURL="Hippety Hop.mp3">Hippety Hop.mp3</li>
-                    <li index="33" audioURL="Hit n Smash.mp3">Hit n Smash.mp3</li>
-                    <li index="34" audioURL="Horroriffic.mp3">Horroriffic.mp3</li>
-                    <li index="35" audioURL="Improv for Evil.mp3">Improv for Evil.mp3</li>
-                    <li index="36" audioURL="Inspiration.mp3">Inspiration.mp3</li>
-                    <li index="37" audioURL="Jungle Mission.mp3">Jungle Mission.mp3</li>
-                    <li index="38" audioURL="Lonely Mountain.mp3">Lonely Mountain.mp3</li>
-                    <li index="39" audioURL="Monsters in Hotel.mp3">Monsters in Hotel.mp3</li>
-                    <li index="40" audioURL="Nightmare.mp3">Nightmare.mp3</li>
-                    <li index="41" audioURL="Pickled Pink.mp3">Pickled Pink.mp3</li>
-                    <li index="42" audioURL="Silent Night (Unholy Night).mp3">Silent Night (Unholy Night).mp3</li>
-                    <li index="43" audioURL="Spec Ops.mp3">Spec Ops.mp3</li>
-                    <li index="44" audioURL="The Drama.mp3">The Drama.mp3</li>
-                    <li index="45" audioURL="The Land of the Dead.mp3">The Land of the Dead.mp3</li>
-                    <li index="46" audioURL="The Story.mp3">The Story.mp3</li>
-                    <li index="47" audioURL="Ukulele Song.mp3">Ukulele Song.mp3</li>
-                    <li index="48" audioURL="3 am West End.mp3">3 am West End.mp3</li>
+                    <li index="2" audioURL="Ambient Bongos.mp3">Ambient Bongos.mp3</li>
+                    <li index="3" audioURL="Arpent.mp3">Arpent.mp3</li>
+                    <li index="4" audioURL="Barroom Ballet.mp3">Barroom Ballet.mp3</li>
+                    <li index="5" audioURL="Bass Meant Jazz.mp3">Bass Meant Jazz.mp3</li>
+                    <li index="6" audioURL="Celebration.mp3">Celebration.mp3</li>
+                    <li index="7" audioURL="City Sunshine.mp3">City Sunshine.mp3</li>
+                    <li index="8" audioURL="Creepy Hallow.mp3">Creepy Hallow.mp3</li>
+                    <li index="9" audioURL="Foam Rubber.mp3">Foam Rubber.mp3</li>
+                    <li index="10" audioURL="Funkeriffic.mp3">Funkeriffic.mp3</li>
+                    <li index="11" audioURL="Hippety Hop.mp3">Hippety Hop.mp3</li>
+                    <li index="12" audioURL="Monsters in Hotel.mp3">Monsters in Hotel.mp3</li>
+                    <li index="13" audioURL="Ukulele Song.mp3">Ukulele Song.mp3</li>
 
                 </ul>
         </div>
