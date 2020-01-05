@@ -1,6 +1,6 @@
-import {
-    logToScreen
-} from './utilities.js';
+// import {
+//     logToScreen
+// } from './utilities.js';
 
 import {
     EventBus
@@ -13,6 +13,10 @@ import {
 import {
     SceneManager
 } from  './SceneManager.js';
+
+import {
+    OverlayManager
+} from  './OverlayManager.js';
 
 window.onload = function () {
 
@@ -27,7 +31,7 @@ window.onload = function () {
     var options = {
         showBars: true,
         showTitle: false,
-        showRipple: true,
+        // showRipple: true,
         showWater: false,
         showSky: false,
         showConsole: true,
@@ -57,99 +61,103 @@ window.onload = function () {
     // start the 2D render loop
     //////////////////////////////////////////////////////////////////////
 
-    var canvas2D = $('#canvas2D')[0];
-    canvas2D.style.width = canvas2D.width;
-    canvas2D.style.height = canvas2D.height;
-    var ctx2D = canvas2D.getContext("2d");
-    ctx2D.globalAlpha = .5;
 
-    render2DFrame();
 
-    function render2DFrame() {
+    var overlayManager = new OverlayManager('#canvas2D', options, eventBus, audioManager, sceneManager);
 
-        audioManager.analyzeData();
+    // var canvas2D = $('#canvas2D')[0];
+    // canvas2D.style.width = canvas2D.width;
+    // canvas2D.style.height = canvas2D.height;
+    // var ctx2D = canvas2D.getContext("2d");
+    // ctx2D.globalAlpha = .5;
 
-        fix_dpi();
+    // overlayManager.render2DFrame();
 
-        if (options.showBars) {
-            draw2DBars();
-        }
+    // function render2DFrame() {
 
-        if (options.showWaveform) {
-            drawWaveform(canvas2D, audioManager.tdDataArrayNormalized, canvas2D.width, 60);
-        }
+    //     audioManager.analyzeData();
 
-        if (options.showConsole) {
-            renderConsoleOutput();
-        }
+    //     fix_dpi();
 
-        requestAnimationFrame(render2DFrame);
-    }
+    //     if (options.showBars) {
+    //         draw2DBars();
+    //     }
 
-    function drawWaveform(canvas, drawData, width, height) {
-        let ctx = canvas.getContext('2d');
-        let drawHeight = height / 2;
+    //     if (options.showWaveform) {
+    //         drawWaveform(canvas2D, audioManager.tdDataArrayNormalized, canvas2D.width, 60);
+    //     }
 
-        ctx.lineWidth = 5;
-        ctx.moveTo(0, drawHeight);
-        ctx.beginPath();
-        for (let i = 0; i < width; i++) {
-            let minPixel = drawData[i] * .5;
-            ctx.lineTo(i, minPixel);
-        }
+    //     if (options.showConsole) {
+    //         renderConsoleOutput();
+    //     }
 
-        ctx.strokeStyle = 'white';
-        ctx.stroke();
-    }
+    //     requestAnimationFrame(render2DFrame);
+    // }
 
-    function renderConsoleOutput() {
-        let outputString = "<br><br><br><br><br><br>"; // = "camera pos:<br>"+scene.activeCamera.position + "<br>";
-        outputString += "&nbsp alpha: <br> &nbsp " + Math.round(sceneManager.scene.activeCamera.alpha * 1000) / 1000 + "<br><br>";
-        outputString += "&nbsp beta:  <br> &nbsp " + Math.round(sceneManager.scene.activeCamera.beta * 1000) / 1000 + "<br><br>";
-        outputString += "&nbsp radius:<br> &nbsp " + Math.round(sceneManager.scene.activeCamera.radius * 1000) / 1000 + "<br><br>";
-        outputString += "&nbsp site index:<br> &nbsp " + siteIndex + "<br><br>";
-        logToScreen(outputString);
-    }
+    // function drawWaveform(canvas, drawData, width, height) {
+    //     let ctx = canvas.getContext('2d');
+    //     let drawHeight = height / 2;
 
-    function draw2DBars() {
-        let WIDTH = canvas2D.width;
-        let HEIGHT = canvas2D.height;
-        let barWidth = (WIDTH / (audioManager.frDataLength));
+    //     ctx.lineWidth = 5;
+    //     ctx.moveTo(0, drawHeight);
+    //     ctx.beginPath();
+    //     for (let i = 0; i < width; i++) {
+    //         let minPixel = drawData[i] * .5;
+    //         ctx.lineTo(i, minPixel);
+    //     }
 
-        ctx2D.clearRect(0, 0, WIDTH, HEIGHT);
+    //     ctx.strokeStyle = 'white';
+    //     ctx.stroke();
+    // }
 
-        let x = 0;
+    // function renderConsoleOutput() {
+    //     let outputString = "<br><br><br><br><br><br>"; // = "camera pos:<br>"+scene.activeCamera.position + "<br>";
+    //     outputString += "&nbsp alpha: <br> &nbsp " + Math.round(sceneManager.scene.activeCamera.alpha * 1000) / 1000 + "<br><br>";
+    //     outputString += "&nbsp beta:  <br> &nbsp " + Math.round(sceneManager.scene.activeCamera.beta * 1000) / 1000 + "<br><br>";
+    //     outputString += "&nbsp radius:<br> &nbsp " + Math.round(sceneManager.scene.activeCamera.radius * 1000) / 1000 + "<br><br>";
+    //     outputString += "&nbsp site index:<br> &nbsp " + siteIndex + "<br><br>";
+    //     logToScreen(outputString);
+    // }
 
-        for (var i = 0; i < audioManager.frBufferLength; i++) {
-            let barHeight = audioManager.frDataArray[i] * 1 + 1;
+    // function draw2DBars() {
+    //     let WIDTH = canvas2D.width;
+    //     let HEIGHT = canvas2D.height;
+    //     let barWidth = (WIDTH / (audioManager.frDataLength));
 
-            var r = barHeight + (55.52 * (i / audioManager.frDataLength));
-            var g = 255 * (55 * i / audioManager.frDataLength);
-            var b = 255;
+    //     ctx2D.clearRect(0, 0, WIDTH, HEIGHT);
 
-            ctx2D.fillStyle = "rgba(" + r + "," + g + "," + b + ",.7)";
-            ctx2D.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
+    //     let x = 0;
 
-            x += barWidth + 1;
-        }
-    }
+    //     for (var i = 0; i < audioManager.frBufferLength; i++) {
+    //         let barHeight = audioManager.frDataArray[i] * 1 + 1;
 
-    function fix_dpi() {
-        //create a style object that returns width and height
-        var dpi = window.devicePixelRatio;
+    //         var r = barHeight + (55.52 * (i / audioManager.frDataLength));
+    //         var g = 255 * (55 * i / audioManager.frDataLength);
+    //         var b = 255;
 
-        let style = {
-            height() {
-                return +getComputedStyle(canvas2D).getPropertyValue('height').slice(0, -2);
-            },
-            width() {
-                return +getComputedStyle(canvas2D).getPropertyValue('width').slice(0, -2);
-            }
-        }
-        //set the correct attributes for a crystal clear image!
-        canvas2D.setAttribute('width', style.width() * dpi);
-        canvas2D.setAttribute('height', style.height() * dpi);
-    }
+    //         ctx2D.fillStyle = "rgba(" + r + "," + g + "," + b + ",.7)";
+    //         ctx2D.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
+
+    //         x += barWidth + 1;
+    //     }
+    // }
+
+    // function fix_dpi() {
+    //     //create a style object that returns width and height
+    //     var dpi = window.devicePixelRatio;
+
+    //     let style = {
+    //         height() {
+    //             return +getComputedStyle(canvas2D).getPropertyValue('height').slice(0, -2);
+    //         },
+    //         width() {
+    //             return +getComputedStyle(canvas2D).getPropertyValue('width').slice(0, -2);
+    //         }
+    //     }
+    //     //set the correct attributes for a crystal clear image!
+    //     canvas2D.setAttribute('width', style.width() * dpi);
+    //     canvas2D.setAttribute('height', style.height() * dpi);
+    // }
 
     //////////////////////////////////////////////////////////////////////
     // event listeners
@@ -164,10 +172,10 @@ window.onload = function () {
     });
 
     $('td').bind("click", function () {
-        scene.cameras[0].target = cameraPositions[this.id - 1].lookat
-        scene.cameras[0].alpha = cameraPositions[this.id - 1].alpha
-        scene.cameras[0].beta = cameraPositions[this.id - 1].beta
-        scene.cameras[0].radius = cameraPositions[this.id - 1].radius
+        sceneManager.scene.cameras[0].target = sceneManager.cameraPositions[this.id - 1].lookat
+        sceneManager.scene.cameras[0].alpha = sceneManager.cameraPositions[this.id - 1].alpha
+        sceneManager.scene.cameras[0].beta = sceneManager.cameraPositions[this.id - 1].beta
+        sceneManager.scene.cameras[0].radius = sceneManager.cameraPositions[this.id - 1].radius
     });
 
     // show playlist
@@ -217,7 +225,7 @@ window.onload = function () {
     };
 
     window.addEventListener('resize', function () {
-        engine.resize();
+        sceneManager.engine.resize();
     });
 
 };

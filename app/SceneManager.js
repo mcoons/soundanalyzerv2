@@ -71,6 +71,8 @@ export class SceneManager {
 
         var  self =  this;
         this.engine.runRenderLoop(function () {
+            // self.audioManager.analyzeData();
+
             self.updateObjects();
             self.scene.render();
         });

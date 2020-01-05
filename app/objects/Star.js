@@ -55,7 +55,6 @@ export class Star extends BaseObject {
         // console.log("method test from: " + this.name);
     }
 
-
     create() {
         for (let r = 1; r <= 2; r++) {
             let path = [];

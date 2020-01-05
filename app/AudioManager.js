@@ -1,10 +1,14 @@
 export class AudioManager {
 
     constructor() {
-        this.fileInput = document.getElementById("fileInput");
-        this.audio = document.getElementById("audio");
+        // this.fileInput = document.getElementById("fileInput");
+        // this.audio = document.getElementById("audio");
+        
+        this.fileInput = $("#fileInput")[0];
+        this.audio = $("#audio")[0];
+        
         this.audioCtx = new AudioContext();
-        this.audioSrc = this.audioCtx.createMediaElementSource(audio);
+        this.audioSrc = this.audioCtx.createMediaElementSource(this.audio);
 
         this.frAnalyser = this.audioCtx.createAnalyser();
         this.frAnalyser.fftSize = 1024;
@@ -13,8 +17,6 @@ export class AudioManager {
         this.frDataLength = this.frBufferLength - 64;
         this.frDataArray = new Uint8Array(this.frBufferLength);
         this.frDataArrayNormalized = new Uint8Array(this.frBufferLength);
-        this.frCurrentHigh = 0;
-        this.frCurrentLow = 255
 
         this.tdAnalyser = this.audioCtx.createAnalyser();
         this.tdAnalyser.fftSize = 4096;
@@ -31,6 +33,11 @@ export class AudioManager {
         this.audioSrc.connect(this.frAnalyser);
         this.frAnalyser.connect(this.tdAnalyser);
         this.tdAnalyser.connect(this.audioCtx.destination);
+
+        setInterval(() => {
+            this.analyzeData();
+        }, 10);
+
     }
 
     initAudio(elem) {
@@ -85,15 +92,5 @@ export class AudioManager {
         const multiplier = Math.pow(Math.max(...sourceData), -1);
         return sourceData.map(n => n * multiplier * 255);
     }
-
-    // sampleData(source, start, end, samplesDesired) {
-    //     let sampledData = [];
-
-    //     let interval = Math.round((end - start) / samplesDesired);
-    //     for (let i = start; i < end && i < source.length; i += interval) {
-    //         sampledData.push(source[i]);
-    //     }
-    //     return sampledData;
-    // }
 
 }
