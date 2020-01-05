@@ -1,5 +1,6 @@
 
 export class BaseObject{
+    
     constructor(name, parent, palette, material, resolution, reflect, eventBus, scene) {
         
         this.name = name;

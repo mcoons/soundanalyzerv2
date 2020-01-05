@@ -1,6 +1,6 @@
 import {
     StarManager
-} from './StarManager.js';
+} from './objects/StarManager.js';
 
 import {
     Clock
@@ -35,6 +35,7 @@ export class SceneManager {
         this.glowLayer;
         this.masterTransform;
 
+        // preset camera positions
         this.cameraPositions = [{
                 lookat: new BABYLON.Vector3(-200, 0, 200),
                 alpha: -Math.PI / 2,
@@ -67,16 +68,16 @@ export class SceneManager {
             },
         ];
 
+        // add objects to the scene
         this.createObjects();
 
+        // start  3D render loop
         var  self =  this;
         this.engine.runRenderLoop(function () {
-            // self.audioManager.analyzeData();
-
             self.updateObjects();
             self.scene.render();
         });
-    }
+    }  // end constructor
 
     createScene() {
         // create a basic BJS Scene object
@@ -131,13 +132,9 @@ export class SceneManager {
             waterMesh.position.y = -80;
         }
 
-        // buildPalettes(palette, paletteGlow, paletteRed, paletteGreen, null, paletteGray, paletteMetallic, scene);
-
         this.camera = new BABYLON.ArcRotateCamera("camera1", 4.7, 1.1, 815, new BABYLON.Vector3(0, 0, 0), scene);
         this.camera.upperRadiusLimit = 9400;
         this.camera.lowerRadiusLimit = 10;
-
-        // attach the this.camera to the canvas3D
         this.camera.attachControl(canvas3D, true);
 
         // create a basic light, aiming 0,1,0 - meaning, to the sky
@@ -161,8 +158,6 @@ export class SceneManager {
     }
 
     createObjects() {
-
-
         let starMaster;
         this.masterTransform = new BABYLON.TransformNode("root");
         this.masterTransform.position = new BABYLON.Vector3(0, 0, 0);
@@ -407,7 +402,6 @@ export class SceneManager {
 
         this.starManager.starMasters.push(starMaster);
 
-        // drawRandomStars();
         this.eventBus.post("eventTest", 'argument');
     }
 

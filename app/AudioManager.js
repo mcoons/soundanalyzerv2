@@ -1,8 +1,6 @@
 export class AudioManager {
 
     constructor() {
-        // this.fileInput = document.getElementById("fileInput");
-        // this.audio = document.getElementById("audio");
         
         this.fileInput = $("#fileInput")[0];
         this.audio = $("#audio")[0];
@@ -34,9 +32,13 @@ export class AudioManager {
         this.frAnalyser.connect(this.tdAnalyser);
         this.tdAnalyser.connect(this.audioCtx.destination);
 
+        this.siteIndex = Math.round(Math.random() * 12) + 1;
+
+        this.initAudio($('.playlist li:nth-child(' + this.siteIndex + ')'));
+
         setInterval(() => {
             this.analyzeData();
-        }, 10);
+        }, 50);
 
     }
 

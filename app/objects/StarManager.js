@@ -1,10 +1,10 @@
 import {
     Star
-} from './objects/Star.js';
+} from './Star.js';
 
 import {
     getBiasedGlowMaterial
-} from './utilities.js';
+} from '../utilities.js';
 
 export class StarManager  {
     
@@ -33,7 +33,7 @@ export class StarManager  {
 
         for (let index = 0; index < 5; index++) {
 
-            let star = new Star("Random Star "+index, "star parent", null, getBiasedGlowMaterial(colorBias, this.scene), this.pieResolution, null, this.eventBus, this.scene);
+            let star = new Star("Random Star 2-"+index, "star parent", null, getBiasedGlowMaterial(colorBias, this.scene), this.pieResolution, null, this.eventBus, this.scene);
             let rad = 20 * index + 10;
             star.setOptions(
                 Math.round(Math.random() * 20),
@@ -62,7 +62,7 @@ export class StarManager  {
 
         for (let index = 0; index < 5; index++) {
 
-            let star = new Star("Random Star "+index, "star parent", null, getBiasedGlowMaterial(colorBias, this.scene), this.pieResolution, null, this.eventBus, this.scene);
+            let star = new Star("Random Star 3-"+index, "star parent", null, getBiasedGlowMaterial(colorBias, this.scene), this.pieResolution, null, this.eventBus, this.scene);
             let rad = 20 * index + 10;
             let i = Math.round(Math.random() * 10)
             star.setOptions(
@@ -92,7 +92,7 @@ export class StarManager  {
 
         for (let index = 0; index < 5; index++) {
 
-            let star = new Star("Random Star "+index, "star parent", null, getBiasedGlowMaterial(colorBias, this.scene), this.pieResolution, null, this.eventBus, this.scene);
+            let star = new Star("Random Star 4-"+index, "star parent", null, getBiasedGlowMaterial(colorBias, this.scene), this.pieResolution, null, this.eventBus, this.scene);
             let rad = 8 * (9 - index) + 40;
             let i = Math.round(Math.random() * 10)
             star.setOptions(
@@ -122,7 +122,7 @@ export class StarManager  {
 
         for (let index = 0; index < 5; index++) {
 
-            let star = new Star("Random Star "+index, "star parent", null, getBiasedGlowMaterial(colorBias, this.scene), this.pieResolution, null, this.eventBus, this.scene);
+            let star = new Star("Random Star 5-"+index, "star parent", null, getBiasedGlowMaterial(colorBias, this.scene), this.pieResolution, null, this.eventBus, this.scene);
             let rad = 10 * index + 80;
             let i = Math.round(Math.random() * 10 + 2);
             let s = Math.pow(2, Math.round(Math.random() * 1));
@@ -153,7 +153,7 @@ export class StarManager  {
 
         for (let index = 0; index < 15; index++) {
 
-            let star = new Star("Random Star "+index, "star parent", null, getBiasedGlowMaterial(colorBias, this.scene), this.pieResolution, null, this.eventBus, this.scene);
+            let star = new Star("Random Star 6-"+index, "star parent", null, getBiasedGlowMaterial(colorBias, this.scene), this.pieResolution, null, this.eventBus, this.scene);
             let rad = 30 * index+20;
             let i = Math.round(Math.random() * 10 + 2);
             let s = Math.pow(2, Math.round(Math.random() * 1));

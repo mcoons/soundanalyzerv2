@@ -56,3 +56,89 @@ Color scheme that is created from the current image of slideshow?
 
 
 
+/*
+
+
+$( "a" ).attr( "href", "allMyHrefsAreTheSameNow.html" );
+
+
+$( "a" ).attr({
+
+    title: "all titles are the same too!",
+
+    href: "somethingNew.html"
+
+});
+
+ 
+
+// Testing whether a selection contains elements.
+if ( $( "div.foo" ).length ) {
+    let a = 1;
+}
+ 
+
+// Refining selections.
+$( "div.foo" ).has( "p" );         // div.foo elements that contain <p> tags
+$( "h1" ).not( ".bar" );           // h1 elements that don't have a class of bar
+$( "ul li" ).filter( ".current" ); // unordered list items with class of current
+$( "ul li" ).first();              // just the first unordered list item
+$( "ul li" ).eq( 5 );              // the sixth
+ 
+
+ 
+
+$( "input:file" ) 
+
+ 
+
+// Setting CSS properties.
+ 
+$( "h1" ).css( "fontSize", "100px" ); // Setting an individual property.
+ 
+// Setting multiple properties.
+$( "h1" ).css({
+    fontSize: "100px",
+    color: "red"
+});
+ 
+
+// Working with classes.
+ 
+var h1 = $( "h1" );
+ 
+h1.addClass( "big" );
+h1.removeClass( "big" );
+h1.toggleClass( "big" );
+ 
+if ( h1.hasClass( "big" ) ) {
+    let a = 1;
+}
+ 
+
+// Basic dimensions methods.
+ 
+// Sets the width of all <h1> elements.
+$( "h1" ).width( "50px" );
+ 
+// Gets the width of the first <h1> element.
+$( "h1" ).width();
+ 
+// Sets the height of all <h1> elements.
+$( "h1" ).height( "50px" );
+ 
+// Gets the height of the first <h1> element.
+$( "h1" ).height();
+ 
+ 
+// Returns an object containing position information for
+// the first <h1> relative to its "offset (positioned) parent".
+$( "h1" ).position();
+ 
+
+// Storing and retrieving data related to an element.
+ 
+$( "#myDiv" ).data( "keyName", { foo: "bar" } );
+ 
+$( "#myDiv" ).data( "keyName" ); // Returns { foo: "bar" }
+ */

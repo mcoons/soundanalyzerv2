@@ -3,6 +3,7 @@ import {
 } from './utilities.js';
 
 export class OverlayManager {
+    
     constructor(canvasID, options, eventBus, audioManager, sceneManager) {
 
         this.options = options;
@@ -80,6 +81,8 @@ export class OverlayManager {
         outputString += "&nbsp radius:<br> &nbsp " + Math.round(this.sceneManager.scene.activeCamera.radius * 1000) / 1000 + "<br><br>";
         outputString += "&nbsp site index:<br> &nbsp " + this.audioManager.siteIndex + "<br><br>";
         logToScreen(outputString);
+
+        // console.log(this.sceneManager.starManager.starObjects);
     }
 
     draw2DBars() {
