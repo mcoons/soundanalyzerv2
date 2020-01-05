@@ -14,6 +14,8 @@ What can we save to local storage?
 
 TODO
 
+Add a favicon
+
 REFACTOR AND OPTIMIZE  --  ALWAYS
      Look into using clones for 3D optimization
      Look into fallbacks
@@ -40,7 +42,7 @@ Add Options popup
      b) 2D title, 3D title or no title
 
 
-Color scheme that is created from the current image of slideshow
+Color scheme that is created from the current image of slideshow?
 
 
 
