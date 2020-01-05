@@ -7,11 +7,12 @@ import {
 } from './objects/Clock.js';
 
 export class SceneManager {
+
     constructor(canvasID, options, eventBus, audioManager) {
 
         this.options = options;
-        this.eventBus =   eventBus;
-        this.audioManager =  audioManager;
+        this.eventBus = eventBus;
+        this.audioManager = audioManager;
 
         this.canvas3D = $(canvasID)[0];
         this.engine = new BABYLON.Engine(this.canvas3D, true, {
@@ -19,8 +20,7 @@ export class SceneManager {
             stencil: true
         });
 
-
-        this.scene = this.createScene(this.engine);
+        this.scene = this.createScene();
         this.camera;
 
         this.starManager = new StarManager(this.scene, this.eventBus, this.audioManager);
@@ -33,9 +33,7 @@ export class SceneManager {
         this.waterMesh;
 
         this.glowLayer;
-
         this.masterTransform;
-
 
         this.cameraPositions = [{
                 lookat: new BABYLON.Vector3(-200, 0, 200),
@@ -78,10 +76,9 @@ export class SceneManager {
         });
     }
 
-
-    createScene(engine) {
+    createScene() {
         // create a basic BJS Scene object
-        let scene = new BABYLON.Scene(engine);
+        let scene = new BABYLON.Scene(this.engine);
         scene.clearColor = BABYLON.Color3.Black();
         scene.ambientColor = new BABYLON.Color3(0.4, 0.3, 0.5);
 
@@ -415,6 +412,5 @@ export class SceneManager {
     updateObjects() {
         this.starManager.update();
     }
-
 
 }

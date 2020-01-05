@@ -86,14 +86,14 @@ export class AudioManager {
         return sourceData.map(n => n * multiplier * 255);
     }
 
-    sampleData(source, start, end, samplesDesired) {
-        let sampledData = [];
+    // sampleData(source, start, end, samplesDesired) {
+    //     let sampledData = [];
 
-        let interval = Math.round((end - start) / samplesDesired);
-        for (let i = start; i < end && i < source.length; i += interval) {
-            sampledData.push(source[i]);
-        }
-        return sampledData;
-    }
+    //     let interval = Math.round((end - start) / samplesDesired);
+    //     for (let i = start; i < end && i < source.length; i += interval) {
+    //         sampledData.push(source[i]);
+    //     }
+    //     return sampledData;
+    // }
 
 }
