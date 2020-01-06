@@ -3,7 +3,7 @@ import {
 } from './utilities.js';
 
 export class OverlayManager {
-    
+
     constructor(canvasID, options, eventBus, audioManager, sceneManager) {
 
         this.options = options;
@@ -97,9 +97,9 @@ export class OverlayManager {
         for (var i = 0; i < this.audioManager.frBufferLength; i++) {
             let barHeight = this.audioManager.frDataArray[i] * 1 + 1;
 
-            var r = barHeight + (55.52 * (i / this.audioManager.frDataLength));
-            var g = 255 * (55 * i / this.audioManager.frDataLength);
-            var b = 255;
+            var r = barHeight;
+            var g = 255 *  i / this.audioManager.frDataLength;
+            var b = 255 -  128 * i / this.audioManager.frDataLength;
 
             this.ctx2D.fillStyle = "rgba(" + r + "," + g + "," + b + ",.7)";
             this.ctx2D.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);

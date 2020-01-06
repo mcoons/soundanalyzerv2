@@ -114,7 +114,7 @@ export class StarManager  {
             b: .95
         }, {
             x: 0,
-            y: 1,
+            y: 0,
             z: 0
         }, starMaster);
 
@@ -137,7 +137,7 @@ export class StarManager  {
             b: .45
         }, {
             x: 0,
-            y: 1,
+            y: 0,
             z: 0
         }, starMaster);
 

@@ -16,11 +16,23 @@ export class AudioManager {
         this.frDataArray = new Uint8Array(this.frBufferLength);
         this.frDataArrayNormalized = new Uint8Array(this.frBufferLength);
 
+
+
+        this.frAnalyserAll = this.audioCtx.createAnalyser();
+        this.frAnalyserAll.fftSize = 1024;
+        this.frAnalyserAll.smoothingTimeConstant = 0.9;
+        this.frBufferLengthAll = this.frAnalyserAll.frequencyBinCount;
+        this.frDataLengthAll = this.frBufferLengthAll;
+        this.frDataArrayAll = new Uint8Array(this.frBufferLengthAll);
+        this.frDataArrayNormalizedAll = new Uint8Array(this.frBufferLengthAll);
+
+
+
         this.tdAnalyser = this.audioCtx.createAnalyser();
-        this.tdAnalyser.fftSize = 4096;
+        this.tdAnalyser.fftSize = 16384;
         this.tdAnalyser.smoothingTimeConstant = 0.9;
         this.tdBufferLength = this.tdAnalyser.frequencyBinCount;
-        this.tdDataLength = this.tdBufferLength - 64;
+        this.tdDataLength = this.tdBufferLength;
         this.tdDataArray = new Uint8Array(this.tdBufferLength);
         this.tdDataArrayNormalized = new Uint8Array(this.frBufferLength);
 
@@ -29,7 +41,8 @@ export class AudioManager {
         this.tdHistory = Array(this.arraySize).fill(0);
 
         this.audioSrc.connect(this.frAnalyser);
-        this.frAnalyser.connect(this.tdAnalyser);
+        this.frAnalyser.connect(this.frAnalyserAll);
+        this.frAnalyserAll.connect(this.tdAnalyser);
         this.tdAnalyser.connect(this.audioCtx.destination);
 
         this.siteIndex = Math.round(Math.random() * 12) + 1;
@@ -68,6 +81,7 @@ export class AudioManager {
 
         // normalize the data   0..1
         this.frDataArrayNormalized = this.normalizeData(this.frDataArray);
+        this.frDataArrayNormalizedAll = this.normalizeData(this.frDataArrayAll);
 
         //////////////////////////////////////
         // get TIME DOMAIN data for this frame

@@ -20,10 +20,8 @@ export class SceneManager {
             stencil: true
         });
 
-        this.scene = this.createScene();
         this.camera;
-
-
+        this.scene = this.createScene();
 
         this.defaultGridMaterial;
         this.skySphere;
@@ -66,17 +64,23 @@ export class SceneManager {
                 radius: 115
             },
         ];
-
-        this.starManager = new StarManager(this.scene, this.eventBus, this.audioManager);
         this.clock = new Clock(this.scene);
-        
+
+
+
+        this.managerClasses = [StarManager];
+
+        // this.currentManagerClass = this.managerClasses[0];
+        this.currentManager = new this.managerClasses[0](this.scene, this.eventBus, this.audioManager);
+
+
         // add objects to the scene
-        this.starManager.create();
+        this.currentManager.create();
 
         // start  3D render loop
         var  self =  this;
         this.engine.runRenderLoop(function () {
-            self.starManager.update();
+            self.currentManager.update();
             self.scene.render();
         });
     }  // end constructor

@@ -46,10 +46,11 @@ window.onload = function () {
     // start the 3D render loop
 
     var sceneManager = new SceneManager('#canvas3D', options, eventBus, audioManager);
+
     setInterval(()=> {
-        sceneManager.starManager.dispose();
-        sceneManager.starManager.create();
-    }, 10000);
+        sceneManager.currentManager.dispose();
+        sceneManager.currentManager.create();
+    }, 20000);
 
     //////////////////////////////////////////////////////////////////////
     // start the 2D render loop
@@ -75,8 +76,7 @@ window.onload = function () {
     });
 
     // show playlist
-    $('.pl').click(function (e) {
-        // e.preventDefault();
+    $('.pl').click(function () {
         $('.playlist').fadeIn(500);
     });
 
@@ -113,6 +113,9 @@ window.onload = function () {
         if (audioManager.siteIndex > 13) {
             audioManager.siteIndex = 1;
         }
+
+        sceneManager.currentManager.dispose();
+        sceneManager.currentManager.create();
 
         if (isSiteTrack) {
             let current = $('.playlist li:nth-child(' + audioManager.siteIndex + ')');
