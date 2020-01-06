@@ -46,6 +46,10 @@ window.onload = function () {
     // start the 3D render loop
 
     var sceneManager = new SceneManager('#canvas3D', options, eventBus, audioManager);
+    setInterval(()=> {
+        sceneManager.starManager.dispose();
+        sceneManager.starManager.create();
+    }, 10000);
 
     //////////////////////////////////////////////////////////////////////
     // start the 2D render loop

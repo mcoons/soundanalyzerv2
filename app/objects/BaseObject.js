@@ -1,6 +1,6 @@
 
 export class BaseObject{
-    
+
     constructor(name, parent, palette, material, resolution, reflect, eventBus, scene) {
         
         this.name = name;
@@ -27,7 +27,7 @@ export class BaseObject{
         return `${this.name} says update from BaseObject: ${this.mesh}`;
     }
 
-    destroy(){
+    dispose(){
         if (this.mesh) {
             this.mesh.dispose();
         }

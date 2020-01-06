@@ -11,19 +11,23 @@
 
 <body>
     <div id="wrapper">
+
         <canvas id="canvas3D"></canvas>
         <canvas id="canvas2D"></canvas>
+
         <div id="content">
             <input id="fileInput" type="file" accept="audio/*" multiple />
-            <audio id="audio"  class="button" controls autoplay></audio>
-            <button class="local_Btn button">Local File</button>            
+            <audio id="audio" class="button" controls autoplay></audio>
+            <button class="local_Btn button">Local File</button>
             <button class="site_Btn pl button">Site Music</button>
             <button class="mic_Btn button">Microphone</button>
             <button id="dl_Btn" class="options_Btn button">Snapshot</button>
         </div>
+
         <div id="title">Music Visualizer v3.0</div>
         <div id="consoleElement"></div>
         <div id="options"></div>
+
         <div id="cameraTarget">
             <table>
                 <div id="cameraLegend">Cameras</div>
@@ -33,38 +37,37 @@
                     <td id="2"></td>
                 </tr>
                 <tr>
-                    <td style="visibility:hidden">4</td style="visibility:hidden">
+                    <td style="visibility:hidden"></td>
                     <td id="3"></td>
-                    <td style="visibility:hidden">6</td style="visibility:hidden">
+                    <td style="visibility:hidden"></td>
                 </tr>
                 <tr>
                     <td id="4"></td>
-                    <td style="visibility:hidden">8</td style="visibility:hidden">
+                    <td style="visibility:hidden"></td>
                     <td id="5"></td>
                 </tr>
-
             </table>
-
-            </div>
-            <div class="playlist hidden">
-                <ul>
-                    <li index="1" audioURL="A Good Bass for Gambling.mp3">A Good Bass for Gambling.mp3</li>
-                    <li index="2" audioURL="Ambient Bongos.mp3">Ambient Bongos.mp3</li>
-                    <li index="3" audioURL="Arpent.mp3">Arpent.mp3</li>
-                    <li index="4" audioURL="Barroom Ballet.mp3">Barroom Ballet.mp3</li>
-                    <li index="5" audioURL="Bass Meant Jazz.mp3">Bass Meant Jazz.mp3</li>
-                    <li index="6" audioURL="Celebration.mp3">Celebration.mp3</li>
-                    <li index="7" audioURL="City Sunshine.mp3">City Sunshine.mp3</li>
-                    <li index="8" audioURL="Creepy Hallow.mp3">Creepy Hallow.mp3</li>
-                    <li index="9" audioURL="Foam Rubber.mp3">Foam Rubber.mp3</li>
-                    <li index="10" audioURL="Funkeriffic.mp3">Funkeriffic.mp3</li>
-                    <li index="11" audioURL="Hippety Hop.mp3">Hippety Hop.mp3</li>
-                    <li index="12" audioURL="Monsters in Hotel.mp3">Monsters in Hotel.mp3</li>
-                    <li index="13" audioURL="Ukulele Song.mp3">Ukulele Song.mp3</li>
-
-                </ul>
         </div>
-    </div>
+
+        <div class="playlist hidden">
+            <ul>
+                <li index="1" audioURL="A Good Bass for Gambling.mp3">A Good Bass for Gambling.mp3</li>
+                <li index="2" audioURL="Ambient Bongos.mp3">Ambient Bongos.mp3</li>
+                <li index="3" audioURL="Arpent.mp3">Arpent.mp3</li>
+                <li index="4" audioURL="Barroom Ballet.mp3">Barroom Ballet.mp3</li>
+                <li index="5" audioURL="Bass Meant Jazz.mp3">Bass Meant Jazz.mp3</li>
+                <li index="6" audioURL="Celebration.mp3">Celebration.mp3</li>
+                <li index="7" audioURL="City Sunshine.mp3">City Sunshine.mp3</li>
+                <li index="8" audioURL="Creepy Hallow.mp3">Creepy Hallow.mp3</li>
+                <li index="9" audioURL="Foam Rubber.mp3">Foam Rubber.mp3</li>
+                <li index="10" audioURL="Funkeriffic.mp3">Funkeriffic.mp3</li>
+                <li index="11" audioURL="Hippety Hop.mp3">Hippety Hop.mp3</li>
+                <li index="12" audioURL="Monsters in Hotel.mp3">Monsters in Hotel.mp3</li>
+                <li index="13" audioURL="Ukulele Song.mp3">Ukulele Song.mp3</li>
+            </ul>
+        </div>
+
+    </div>  
 
     <link href="https://fonts.googleapis.com/css?family=Arima+Madurai:800&display=swap" rel="stylesheet">
     <script src="app/jquery/jquery-1.7.2.min.js"></script>
@@ -75,6 +78,6 @@
     <script src="app/babylon/meshwriter.min.js"></script>
 
     <script src="app/index.js" defer type='module'></script>
-</body>
 
+</body>
 </html>

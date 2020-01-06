@@ -5,7 +5,6 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Arima Madurai', cursive;
-
 }
 
 #wrapper {
@@ -32,7 +31,7 @@ body {
     left: 0px;
     width: 100%;
     height: 100%;
-    touch-action: none;
+    /* touch-action: none; */
     background-color: black;
 }
 
@@ -77,6 +76,8 @@ td {
     0 0 0 1px black;
 }
 
+
+
 #consoleElement {
     position: absolute;
     pointer-events: none;
@@ -88,14 +89,13 @@ td {
     height: 100%;
     color: white;
     z-index: 150;
-
 }
 
 audio {
     position: absolute;
-    width: 60vw;
+    width: 80%;
     height: 25px;
-    left: 20vw;
+    left: 10%;
     bottom: 35px;
     z-index: 100;
     border-radius: 30px;
@@ -104,49 +104,48 @@ audio {
 #fileInput,
 .local_Btn {
     position: absolute;
-    width: 14.7vw;
+    width: 20%;
     height: 25px;
     bottom: 5px;
-    left: 35.25vw;
-    border-radius: 30px;
+    left: 30%;
+    /* border-radius: 30px; */
     z-index: 100;
 }
 
 .site_Btn {
     position: absolute;
-    width: 14.7vw;
+    width: 20%;
     height: 25px;
     bottom: 5px;
-    left: 20vw;
-    border-radius: 30px;
+    left: 10%;
+    /* border-radius: 30px; */
     z-index: 100;
 }
 
 .mic_Btn {
     position: absolute;
-    width: 14.7vw;
+    width: 20%;
     height: 25px;
     bottom: 5px;
-    left: 50.25vw;
-    border-radius: 30px;
+    left: 50%;
+    /* border-radius: 30px; */
     z-index: 100;
 }
 
 .options_Btn {
     position: absolute;
-    width: 14.7vw;
+    width: 20%;
     height: 25px;
     bottom: 5px;
-    left: 65.3vw;
-    border-radius: 30px;
+    left: 70%;
+    /* border-radius: 30px; */
     z-index: 100;
 }
 
 .button:hover {
     background-color: #ddd;
     box-shadow: 7px 7px 8px white inset, -5px -5px 6px white inset, 0 0 0 white;
-
-  }
+}
 
 .button {
     box-shadow: 7px 7px 8px #fafafa inset, -5px -5px 6px #7796b3 inset, 2px 2px 8px rgba(70, 46, 0, 0.653);
@@ -156,8 +155,6 @@ audio {
     border-right: 2px solid rgb(100, 100, 100);
     background: linear-gradient(to bottom right, rgb(227, 240, 255), rgb(186, 217, 255));
 }
-
-
 
 .local_Btn, .site_Btn {
     color: black;
@@ -171,7 +168,6 @@ audio {
     display: none;
 }
    
-
 .playlist {
     position: absolute;
     background-color: #333333;
@@ -183,6 +179,7 @@ audio {
     width: 326px;
     z-index: 150;
 }
+
 .playlist li {
     color: #EEEEEE;
     cursor: pointer;
@@ -190,6 +187,7 @@ audio {
     font-family: courier;
     font-size: 10px;
 }
+
 .playlist li.active {
     font-weight: bold;
     color:green;

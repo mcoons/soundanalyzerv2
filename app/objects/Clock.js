@@ -62,7 +62,7 @@ export class Clock {
             var Writer = BABYLON.MeshWriter(this.scene, {
                 scale: this.scale
             });
-            
+
             this.textWriterHours = new Writer(
                 this.textHours, {
                     "anchor": "center",
@@ -128,6 +128,13 @@ export class Clock {
             );
         }
 
+    }
+
+    dispose() {
+        this.textWriterHours.dispose();
+        this.textWriterMinutes.dispose();
+        this.textWriterSeconds.dispose();
+        this.textWriterColons.dispose();
     }
 
 }
