@@ -1,27 +1,38 @@
 export class AudioManager {
 
     constructor() {
-
-        this.fileInput = document.getElementById("fileInput");
-        this.audio = document.getElementById("audio");
+        
+        this.fileInput = $("#fileInput")[0];
+        this.audio = $("#audio")[0];
+        
         this.audioCtx = new AudioContext();
-        this.audioSrc = this.audioCtx.createMediaElementSource(audio);
+        this.audioSrc = this.audioCtx.createMediaElementSource(this.audio);
 
         this.frAnalyser = this.audioCtx.createAnalyser();
-        this.frAnalyser.fftSize = 1024;
+        this.frAnalyser.fftSize = 2048;
         this.frAnalyser.smoothingTimeConstant = 0.9;
         this.frBufferLength = this.frAnalyser.frequencyBinCount;
         this.frDataLength = this.frBufferLength - 64;
         this.frDataArray = new Uint8Array(this.frBufferLength);
         this.frDataArrayNormalized = new Uint8Array(this.frBufferLength);
-        this.frCurrentHigh = 0;
-        this.frCurrentLow = 255
+
+
+
+        this.frAnalyserAll = this.audioCtx.createAnalyser();
+        this.frAnalyserAll.fftSize = 16384;
+        this.frAnalyserAll.smoothingTimeConstant = 0.9;
+        this.frBufferLengthAll = this.frAnalyserAll.frequencyBinCount;
+        this.frDataLengthAll = this.frBufferLengthAll;
+        this.frDataArrayAll = new Uint8Array(this.frBufferLengthAll);
+        this.frDataArrayNormalizedAll = new Uint8Array(this.frBufferLengthAll);
+
+
 
         this.tdAnalyser = this.audioCtx.createAnalyser();
         this.tdAnalyser.fftSize = 4096;
         this.tdAnalyser.smoothingTimeConstant = 0.9;
         this.tdBufferLength = this.tdAnalyser.frequencyBinCount;
-        this.tdDataLength = this.tdBufferLength - 64;
+        this.tdDataLength = this.tdBufferLength;
         this.tdDataArray = new Uint8Array(this.tdBufferLength);
         this.tdDataArrayNormalized = new Uint8Array(this.frBufferLength);
 
@@ -30,16 +41,45 @@ export class AudioManager {
         this.tdHistory = Array(this.arraySize).fill(0);
 
         this.audioSrc.connect(this.frAnalyser);
-        this.frAnalyser.connect(this.tdAnalyser);
+        this.frAnalyser.connect(this.frAnalyserAll);
+        this.frAnalyserAll.connect(this.tdAnalyser);
         this.tdAnalyser.connect(this.audioCtx.destination);
+
+        this.siteIndex = Math.round(Math.random() * 12) + 1;
+        this.localIndex = 1;
+
+        this.fileList = [];
+
+        this.isSiteTrack = true;
+        this.isMic = false;
+
+        let current = $('.playlist li:nth-child(' + this.siteIndex + ')');
+
+        title.innerHTML = current[0].innerHTML;
+        this.initAudio($(current));
+
+        setInterval(() => {
+            this.analyzeData();
+        }, 20);
+
+    }
+
+    initAudio(elem) {
+        var url = elem.attr('audiourl');
+
+        this.audio.src = "app/assets/tracks/" + url;
+        this.audio.load();
+
+        $('.playlist li').removeClass('active');
+        elem.addClass('active');
     }
 
     analyzeData() {
-
         ////////////////////////////////////
         // get FREQUENCY data for this frame
 
         this.frAnalyser.getByteFrequencyData(this.frDataArray);
+        this.frAnalyserAll.getByteFrequencyData(this.frDataArrayAll);
 
         // get highest and lowest FREQUENCY for this frame
         let frCurrentHigh = 0;
@@ -51,6 +91,7 @@ export class AudioManager {
 
         // normalize the data   0..1
         this.frDataArrayNormalized = this.normalizeData(this.frDataArray);
+        this.frDataArrayNormalizedAll = this.normalizeData(this.frDataArrayAll);
 
         //////////////////////////////////////
         // get TIME DOMAIN data for this frame
@@ -73,33 +114,9 @@ export class AudioManager {
         }
     }
 
-
-    initAudio(elem) {
-        // console.log(elem)
-        var url = elem.attr('audiourl');
-
-        this.audio.src = "app/assets/tracks/" + url;
-        this.audio.load();
-
-        $('.playlist li').removeClass('active');
-        elem.addClass('active');
-    }
-    
-
     normalizeData(sourceData) {
         const multiplier = Math.pow(Math.max(...sourceData), -1);
         return sourceData.map(n => n * multiplier * 255);
     }
-
-    sampleData(source, start, end, samplesDesired) {
-        let sampledData = [];
-
-        let interval = Math.round((end - start) / samplesDesired);
-        for (let i = start; i < end && i < source.length; i += interval) {
-            sampledData.push(source[i]);
-        }
-        return sampledData;
-    }
-
 
 }
