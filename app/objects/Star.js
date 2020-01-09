@@ -9,7 +9,7 @@ export class Star extends BaseObject {
         super(name, parent, palette, material, resolution, reflect, eventBus, scene);
 
         ////////////////////////////
-        // user definable variables
+        // class specific variables
 
         this.innerStartIndex = 0;
         this.outerStartIndex = 1;
@@ -126,6 +126,10 @@ export class Star extends BaseObject {
         return `${this.name} says updated from star.`;
     }
 
+    dispose(){
+        super.dispose();
+    }
+
     setOptions(p_innerStartIndex, p_outerStartIndex, p_innerSlices, p_outerSlices, p_innerRadius, p_outerRadius, p_resolution, p_reflect, p_xRotation, p_yRotation, p_zRotation) {
         // reset other things in here too like color, reset rotations
 
@@ -158,8 +162,6 @@ export class Star extends BaseObject {
         this.outerEndIndex = this.outerStartIndex + Math.round(this.outerItemsDesired);
     }
 
-    dispose(){
-        super.dispose();
-    }
+
 
 }

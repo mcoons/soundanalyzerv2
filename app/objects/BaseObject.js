@@ -20,11 +20,11 @@ export class BaseObject{
     }
 
     create(){
-        return `${this.name} says create from BaseObject: ${this.mesh}`;
+        return `${this.name} reports create from BaseObject: ${this.mesh}`;
     }
 
     update(){
-        return `${this.name} says update from BaseObject: ${this.mesh}`;
+        return `${this.name} reports update from BaseObject: ${this.mesh}`;
     }
 
     dispose(){
@@ -32,6 +32,6 @@ export class BaseObject{
             this.mesh.dispose();
         }
 
-        return `${this.name} says destroy from BaseObject: ${this.mesh}`;
+        return `${this.name} reports destroy from BaseObject: ${this.mesh}`;
     }
 }

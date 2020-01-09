@@ -3,8 +3,21 @@ import {
 } from './objects/StarManager.js';
 
 import {
+    BlockSpiralManager
+} from './objects/BlockSpiralManager.js';
+
+import {
+    BlockPlaneManager
+} from './objects/BlockPlaneManager.js';
+
+import {
+    RippleManager
+} from './objects/RippleManager.js';
+
+import {
     Clock
 } from './objects/Clock.js';
+
 
 export class SceneManager {
 
@@ -64,24 +77,25 @@ export class SceneManager {
                 radius: 115
             },
         ];
-        this.clock = new Clock(this.scene);
+        // this.clock = new Clock(this.scene);
 
+        this.managerClassIndex = 1;
+        this.managerClasses = [BlockPlaneManager, BlockSpiralManager, RippleManager, StarManager];
+        this.currentManager = new this.managerClasses[this.managerClassIndex](this.scene, this.eventBus, this.audioManager);
 
-
-        this.managerClasses = [StarManager];
-
-        // this.currentManagerClass = this.managerClasses[0];
-        this.currentManager = new this.managerClasses[0](this.scene, this.eventBus, this.audioManager);
-
-
-        // add objects to the scene
+        // add current objects to the scene
         this.currentManager.create();
 
         // start  3D render loop
         var  self =  this;
-        this.engine.runRenderLoop(function () {
-            self.currentManager.update();
-            self.scene.render();
+
+        this.scene.registerBeforeRender(()=> {
+            this.currentManager.update();
+        });
+
+        this.engine.runRenderLoop(() => {
+            // self.currentManager.update();
+            this.scene.render();
         });
     }  // end constructor
 
@@ -146,25 +160,20 @@ export class SceneManager {
         // create a basic light, aiming 0,1,0 - meaning, to the sky
         var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(-1, -1, 0), scene);
         light.intensity = 1.6;
-        // light.groundColor = null[255].color;
 
-        // var pointLight1 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(20, 20, -10), scene);
-        // pointLight1.intensity = 1.2;
+        var pointLight1 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(200, 300, -600), scene);
+        pointLight1.intensity = 2.2;
 
-        // var pointLight2 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(0, -80, 0), scene);
-        // pointLight2.intensity = 1.2;
+        var pointLight2 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(-200, -300, 600), scene);
+        pointLight2.intensity = 2.2;
 
-        var pointLight3 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(0, 80, 0), scene);
-        pointLight3.intensity = .8;
+        // var pointLight3 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(0, 200, 0), scene);
+        // pointLight3.intensity = 1.8;
 
-        var pointLight4 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(40, 580, -180), scene);
-        pointLight4.intensity = 1.0;
+        // var pointLight4 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(300, 480, -280), scene);
+        // pointLight4.intensity = 1.0;
 
         return scene;
     }
-
-    // updateStarClusters() {
-    //     this.starManager.update();
-    // }
 
 }

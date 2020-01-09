@@ -19,7 +19,6 @@ export class StarManager  {
         this.starMasters = [];
     }
 
-
     create() {
         let starMaster;
         this.masterTransform = new BABYLON.TransformNode("root");
@@ -274,14 +273,12 @@ export class StarManager  {
         });
     }
 
-
     dispose() {
         this.starObjects.forEach( obj => obj.dispose());
         this.starObjects = [];
         this.starMasters = [];
-
-        console.log("DISPOSED !!!!!!!!");
     }
+
 
     createStarGroupRandom2(colorBias, rotationBias, parent) {
 

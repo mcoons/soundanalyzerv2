@@ -13,6 +13,7 @@ export class Clock {
 
         this.scale = 1.25;
         this.positionZ = -240;
+        this.positionY = -0.01;;
         this.thickness = 3;
 
         this.create();
@@ -20,7 +21,6 @@ export class Clock {
         setInterval(() => {
             this.update();
         }, 1000);
-
     }
 
     create() {
@@ -35,6 +35,7 @@ export class Clock {
                 "letter-thickness": this.thickness,
                 "color": "#1C3870",
                 "position": {
+                    "y": this.positionY,
                     "z": this.positionZ
                 }
             }
@@ -71,6 +72,7 @@ export class Clock {
                     "color": "#1C3870",
                     "position": {
                         "x": -70,
+                        "y": this.positionY,
                         "z": this.positionZ
                     }
                 }
@@ -96,6 +98,7 @@ export class Clock {
                     "letter-thickness": this.thickness,
                     "color": "#1C3870",
                     "position": {
+                        "y": this.positionY,
                         "z": this.positionZ
                     }
                 }
@@ -122,6 +125,7 @@ export class Clock {
                     "color": "#1C3870",
                     "position": {
                         "x": 70,
+                        "y": this.positionY,
                         "z": this.positionZ
                     }
                 }

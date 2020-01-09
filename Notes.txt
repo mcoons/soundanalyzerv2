@@ -11,6 +11,7 @@ Polar - Parametric
 Can i get any performance increase using server side calculations????
 Can I determine what key a song is played in and what is out of key
 What can we save to local storage?
+Per star animation of growing/shedding inner to outer layers
 
 TODO
 
@@ -24,11 +25,8 @@ REFACTOR AND OPTIMIZE  --  ALWAYS
 Fix title changes for both local and site.
 Standardize the fonts.
 Add the ability to save the current screen (2D and 3D)
+
 Microphone support
-
-Add randomize ability to all stars
-Per star animation of growing/shedding inner to outer layers
-
 Add multi-track/loop ability to local music.
 Support for different local/streamed players
 Create a custom player
@@ -38,8 +36,11 @@ Add CSS for different sizes
 Add error checking for everything
 
 Add Options popup
-     a) Which objects to display
+     a) Which overlay objects to display
      b) 2D title, 3D title or no title
+     c) scene selection
+     d) scene specific options
+     e) world options
 
 
 Color scheme that is created from the current image of slideshow?

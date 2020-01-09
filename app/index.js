@@ -1,4 +1,3 @@
-
 import {
     EventBus
 } from './EventBus.js';
@@ -9,63 +8,59 @@ import {
 
 import {
     SceneManager
-} from  './SceneManager.js';
+} from './SceneManager.js';
 
 import {
     OverlayManager
-} from  './OverlayManager.js';
+} from './OverlayManager.js';
 
 window.onload = function () {
 
-    var eventBus = new EventBus();
-    eventBus.subscribe("eventTest", eventTestCallback);
-
-    function eventTestCallback() {
-        console.log("Event Received");
-    }
-    eventBus.post("eventTest");
-
     var options = {
-        showBars: true,
-        showTitle: false,
+        showBars: false,
+        showTitle: true,
         showWater: false,
         showSky: false,
-        showConsole: true,
-        showWaveform: true
+        showConsole: false,
+        showWaveform: false
     }
 
     //////////////////////////////////////////////////////////////////////
-    // start the audio
+    // start the Event Bus (event handler)
 
-    var isSiteTrack = true;
-    var isMic = false;
+    var eventBus = new EventBus();
+
+    // event bus test
+    eventBus.subscribe("eventTest", eventTestCallback);
+    function eventTestCallback() {
+        console.log("Initial Event Received");
+    }
+    eventBus.post("eventTest");
+    eventBus.unsubscribe("eventTest", eventTestCallback);
+
+    //////////////////////////////////////////////////////////////////////
+    // start the Audio Manager (audio loop)
 
     var audioManager = new AudioManager();
 
     //////////////////////////////////////////////////////////////////////
-    // start the 3D render loop
+    // start the Sene Manager (3D render loop)
 
     var sceneManager = new SceneManager('#canvas3D', options, eventBus, audioManager);
 
-    setInterval(()=> {
-        sceneManager.currentManager.dispose();
-        sceneManager.currentManager.create();
-    }, 20000);
-
     //////////////////////////////////////////////////////////////////////
-    // start the 2D render loop
+    // start the Overlay Manager (2D render loop)
 
     var overlayManager = new OverlayManager('#canvas2D', options, eventBus, audioManager, sceneManager);
-
+    
     //////////////////////////////////////////////////////////////////////
     // event listeners
 
-    $('#dl_Btn').click(function () {
-        let multiplier = 10;
-        BABYLON.Tools.CreateScreenshotUsingRenderTarget(sceneManager.engine, sceneManager.scene.cameras[0], {
-            width: sceneManager.canvas3D.width * multiplier,
-            height: sceneManager.canvas3D.height * multiplier
-        });
+    $('#options_Btn').click(function () {
+        sceneManager.currentManager.dispose();
+        sceneManager.managerClassIndex = (sceneManager.managerClassIndex >= sceneManager.managerClasses.length - 1 ? 0 : sceneManager.managerClassIndex + 1);
+        sceneManager.currentManager = new sceneManager.managerClasses[sceneManager.managerClassIndex](sceneManager.scene, eventBus, audioManager);
+        sceneManager.currentManager.create(sceneManager.scene, eventBus, audioManager);
     });
 
     $('td').bind("click", function () {
@@ -82,9 +77,13 @@ window.onload = function () {
 
     // playlist elements - click
     $('.playlist li').click(function () {
-        isSiteTrack = true;
+        let title = $('#title')[0];
+        audioManager.isSiteTrack = true;
         audioManager.siteIndex = Number($(this).attr('index'));
         audioManager.initAudio($(this));
+        if (options.showTitle) {
+            title.innerHTML = this.innerHTML;
+        }
         $('.playlist').fadeOut(500);
     });
 
@@ -97,29 +96,42 @@ window.onload = function () {
     fileInput.onchange = function () {
         var files = this.files;
 
-        // console.log(files[0]);
-        isSiteTrack = false;
+        audioManager.isSiteTrack = false;
+        let title = $('#title')[0];
 
         if (options.showTitle) {
             title.innerHTML = files[0].name;
         }
 
-        audioManager.audio.src = URL.createObjectURL(files[0]);
+        audioManager.fileList = [...files];
+
+        audioManager.audio.src = URL.createObjectURL(audioManager.fileList[0]);
         audioManager.audio.load();
     };
 
     audio.onended = function () {
-        audioManager.siteIndex++;
-        if (audioManager.siteIndex > 13) {
-            audioManager.siteIndex = 1;
-        }
+        let title = $('#title')[0];
 
-        sceneManager.currentManager.dispose();
-        sceneManager.currentManager.create();
-
-        if (isSiteTrack) {
+        if (audioManager.isSiteTrack) {
+            audioManager.siteIndex++;
+            if (audioManager.siteIndex > 13) {
+                audioManager.siteIndex = 1;
+            }
             let current = $('.playlist li:nth-child(' + audioManager.siteIndex + ')');
+            if (options.showTitle) {
+                title.innerHTML = current[0].innerHTML;
+            }
             audioManager.initAudio(current);
+        } else {
+            audioManager.localIndex++;
+            if (audioManager.localIndex >= audioManager.fileList.length) {
+                audioManager.localIndex = 0;
+            }
+            if (options.showTitle) {
+                title.innerHTML = audioManager.fileList[audioManager.localIndex].name;
+            }
+            audioManager.audio.src = URL.createObjectURL(audioManager.fileList[audioManager.localIndex]);
+            audioManager.audio.load();
         }
     };
 

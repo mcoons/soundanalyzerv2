@@ -18,7 +18,6 @@ export class OverlayManager {
         this.ctx2D.globalAlpha = .5;
 
         var self = this;
-
         window.requestAnimationFrame(render2DFrame);
 
         function render2DFrame() {
@@ -81,8 +80,6 @@ export class OverlayManager {
         outputString += "&nbsp radius:<br> &nbsp " + Math.round(this.sceneManager.scene.activeCamera.radius * 1000) / 1000 + "<br><br>";
         outputString += "&nbsp site index:<br> &nbsp " + this.audioManager.siteIndex + "<br><br>";
         logToScreen(outputString);
-
-        // console.log(this.sceneManager.starManager.starObjects);
     }
 
     draw2DBars() {

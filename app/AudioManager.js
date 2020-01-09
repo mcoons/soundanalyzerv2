@@ -9,7 +9,7 @@ export class AudioManager {
         this.audioSrc = this.audioCtx.createMediaElementSource(this.audio);
 
         this.frAnalyser = this.audioCtx.createAnalyser();
-        this.frAnalyser.fftSize = 1024;
+        this.frAnalyser.fftSize = 2048;
         this.frAnalyser.smoothingTimeConstant = 0.9;
         this.frBufferLength = this.frAnalyser.frequencyBinCount;
         this.frDataLength = this.frBufferLength - 64;
@@ -19,7 +19,7 @@ export class AudioManager {
 
 
         this.frAnalyserAll = this.audioCtx.createAnalyser();
-        this.frAnalyserAll.fftSize = 1024;
+        this.frAnalyserAll.fftSize = 16384;
         this.frAnalyserAll.smoothingTimeConstant = 0.9;
         this.frBufferLengthAll = this.frAnalyserAll.frequencyBinCount;
         this.frDataLengthAll = this.frBufferLengthAll;
@@ -29,7 +29,7 @@ export class AudioManager {
 
 
         this.tdAnalyser = this.audioCtx.createAnalyser();
-        this.tdAnalyser.fftSize = 16384;
+        this.tdAnalyser.fftSize = 4096;
         this.tdAnalyser.smoothingTimeConstant = 0.9;
         this.tdBufferLength = this.tdAnalyser.frequencyBinCount;
         this.tdDataLength = this.tdBufferLength;
@@ -46,12 +46,21 @@ export class AudioManager {
         this.tdAnalyser.connect(this.audioCtx.destination);
 
         this.siteIndex = Math.round(Math.random() * 12) + 1;
+        this.localIndex = 1;
 
-        this.initAudio($('.playlist li:nth-child(' + this.siteIndex + ')'));
+        this.fileList = [];
+
+        this.isSiteTrack = true;
+        this.isMic = false;
+
+        let current = $('.playlist li:nth-child(' + this.siteIndex + ')');
+
+        title.innerHTML = current[0].innerHTML;
+        this.initAudio($(current));
 
         setInterval(() => {
             this.analyzeData();
-        }, 50);
+        }, 20);
 
     }
 
@@ -70,6 +79,7 @@ export class AudioManager {
         // get FREQUENCY data for this frame
 
         this.frAnalyser.getByteFrequencyData(this.frDataArray);
+        this.frAnalyserAll.getByteFrequencyData(this.frDataArrayAll);
 
         // get highest and lowest FREQUENCY for this frame
         let frCurrentHigh = 0;
