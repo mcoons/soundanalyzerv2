@@ -5,6 +5,7 @@ export class AudioManager {
         this.fileInput = $("#fileInput")[0];
         this.audio = $("#audio")[0];
         
+        var AudioContext = window.AudioContext || window.webkitAudioContext;
         this.audioCtx = new AudioContext();
         this.audioSrc = this.audioCtx.createMediaElementSource(this.audio);
 
@@ -17,7 +18,6 @@ export class AudioManager {
         this.frDataArrayNormalized = new Uint8Array(this.frBufferLength);
 
 
-
         this.frAnalyserAll = this.audioCtx.createAnalyser();
         this.frAnalyserAll.fftSize = 16384;
         this.frAnalyserAll.smoothingTimeConstant = 0.9;
@@ -25,7 +25,6 @@ export class AudioManager {
         this.frDataLengthAll = this.frBufferLengthAll;
         this.frDataArrayAll = new Uint8Array(this.frBufferLengthAll);
         this.frDataArrayNormalizedAll = new Uint8Array(this.frBufferLengthAll);
-
 
 
         this.tdAnalyser = this.audioCtx.createAnalyser();
