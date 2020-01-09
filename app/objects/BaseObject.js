@@ -27,7 +27,7 @@ export class BaseObject{
         return `${this.name} reports update from BaseObject: ${this.mesh}`;
     }
 
-    dispose(){
+    remove(){
         if (this.mesh) {
             this.mesh.dispose();
         }

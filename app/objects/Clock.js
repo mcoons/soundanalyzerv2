@@ -18,7 +18,7 @@ export class Clock {
 
         this.create();
 
-        setInterval(() => {
+        this.clockTimer = setInterval(() => {
             this.update();
         }, 1000);
     }
@@ -134,11 +134,13 @@ export class Clock {
 
     }
 
-    dispose() {
+    remove() {
         this.textWriterHours.dispose();
         this.textWriterMinutes.dispose();
         this.textWriterSeconds.dispose();
         this.textWriterColons.dispose();
+
+        clearInterval(this.clockTimer);
     }
 
 }

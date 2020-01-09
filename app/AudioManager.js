@@ -81,13 +81,13 @@ export class AudioManager {
         this.frAnalyser.getByteFrequencyData(this.frDataArray);
         this.frAnalyserAll.getByteFrequencyData(this.frDataArrayAll);
 
-        // get highest and lowest FREQUENCY for this frame
-        let frCurrentHigh = 0;
-        let frCurrentLow = 255;
-        this.frDataArray.forEach(f => {
-            if (f > frCurrentHigh) frCurrentHigh = f;
-            if (f < frCurrentLow) frCurrentLow = f;
-        });
+        // // get highest and lowest FREQUENCY for this frame
+        // let frCurrentHigh = 0;
+        // let frCurrentLow = 255;
+        // this.frDataArray.forEach(f => {
+        //     if (f > frCurrentHigh) frCurrentHigh = f;
+        //     if (f < frCurrentLow) frCurrentLow = f;
+        // });
 
         // normalize the data   0..1
         this.frDataArrayNormalized = this.normalizeData(this.frDataArray);
@@ -98,20 +98,20 @@ export class AudioManager {
 
         this.tdAnalyser.getByteTimeDomainData(this.tdDataArray);
 
-        // get the highest for this frame
-        let highest = 0;
-        this.tdDataArray.forEach(d => {
-            if (d > highest) highest = d;
-        });
+        // // get the highest for this frame
+        // let highest = 0;
+        // this.tdDataArray.forEach(d => {
+        //     if (d > highest) highest = d;
+        // });
 
         // normalize the data   0..1
         this.tdDataArrayNormalized = this.normalizeData(this.tdDataArray);
 
-        // TODO: historical data for wave form       TODO:    TODO:
-        this.tdHistory.push(highest);
-        if (this.tdHistory.length > this.arraySize) {
-            this.tdHistory.shift();
-        }
+        // // TODO: historical data for wave form       TODO:    TODO:
+        // this.tdHistory.push(highest);
+        // if (this.tdHistory.length > this.arraySize) {
+        //     this.tdHistory.shift();
+        // }
     }
 
     normalizeData(sourceData) {

@@ -109,7 +109,7 @@ export class SceneManager {
         this.glowLayer.intensity = 2.75;
 
         // default object grid material
-        this.defaultGridMaterial = new BABYLON.GridMaterial("default", scene);
+        this.defaultGridMaterial = new BABYLON.GridMaterial("defaultGridMaterial", scene);
         this.defaultGridMaterial.majorUnitFrequency = 10;
         this.defaultGridMaterial.minorUnitVisibility = .33;
         this.defaultGridMaterial.gridRatio = 0.75;
@@ -119,7 +119,7 @@ export class SceneManager {
 
         // sky grid material
         if (this.options.showSky) {
-            this.skyMaterial = new BABYLON.GridMaterial("this.skyMaterial", scene);
+            this.skyMaterial = new BABYLON.GridMaterial("skyMaterial", scene);
             this.skyMaterial.majorUnitFrequency = 5;
             this.skyMaterial.minorUnitVisibility = .43;
             this.skyMaterial.gridRatio = 20.0;
