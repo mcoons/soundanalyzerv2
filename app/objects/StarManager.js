@@ -273,10 +273,14 @@ export class StarManager  {
         });
     }
 
-    dispose() {
-        this.starObjects.forEach( obj => obj.dispose());
+    remove() {
+        this.starObjects.forEach( obj => obj.remove());
         this.starObjects = [];
+
+        this.starMasters.forEach( obj => obj.dispose());
         this.starMasters = [];
+
+        this.masterTransform.dispose();
     }
 
 

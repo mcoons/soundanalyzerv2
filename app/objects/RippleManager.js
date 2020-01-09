@@ -71,7 +71,7 @@ export class RippleManager {
   }
 
 
-  dispose() {
+  remove() {
 
     this.ripple.dispose();
 

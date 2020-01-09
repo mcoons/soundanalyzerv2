@@ -87,13 +87,18 @@ export class BlockPlaneManager {
 
     }
 
-    dispose() {
+    remove() {
 
         this.objects.forEach(o => o.dispose());
-        this.objects = [];
+        this.objects = null;
 
         this.instances.forEach(i => i.dispose());
-        this.instances = [];
+        this.instances = null;
+
+        this.baseColors = null;
+
+        this.master.dispose();
+        this.master = null;
 
     }
 }

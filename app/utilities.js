@@ -150,7 +150,7 @@ function getBiasedGlowMaterial(colorBias, scene) {
     let b = Math.random() * colorBias.b;
     let color = new BABYLON.Color4(r * dimmer, g * dimmer, b * dimmer, 1, false);
 
-    let mat = new BABYLON.StandardMaterial("mat", scene);
+    let mat = new BABYLON.StandardMaterial("matbiasedGlow", scene);
     mat.diffuseColor = color;
     mat.specularColor = new BABYLON.Color3(r * .1, g * .1, b * .1);
     mat.ambientColor = new BABYLON.Color3(r * .25, g * .25, b * .25);

@@ -48,6 +48,7 @@ export class Star extends BaseObject {
             // console.log("My position is " + self.mesh.position);
             self.testCallback();
         }
+        this.eventBus.unsubscribe("eventTest", eventTestCallback);
 
     }
 
@@ -126,8 +127,11 @@ export class Star extends BaseObject {
         return `${this.name} says updated from star.`;
     }
 
-    dispose(){
-        super.dispose();
+    remove(){
+        if (this.mesh) {
+            this.mesh.dispose();
+        }
+        super.remove();
     }
 
     setOptions(p_innerStartIndex, p_outerStartIndex, p_innerSlices, p_outerSlices, p_innerRadius, p_outerRadius, p_resolution, p_reflect, p_xRotation, p_yRotation, p_zRotation) {

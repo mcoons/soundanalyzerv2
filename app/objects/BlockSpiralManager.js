@@ -42,7 +42,7 @@ export class BlockSpiralManager  {
 
           let color = new BABYLON.Color4(r,g,b, 1, false);
 
-          let mat = new BABYLON.StandardMaterial("mat", this.scene);
+          let mat = new BABYLON.StandardMaterial("matSpiral", this.scene);
           mat.diffuseColor = color;
           mat.specularColor = new BABYLON.Color3(0, 0, 0);
 
@@ -72,10 +72,12 @@ export class BlockSpiralManager  {
       
         }
 
-    dispose() {
+    remove() {
 
         this.myObjects.forEach( o => o.dispose());
-        this.myObjects = [];
+        this.myObjects = null;
+
+        this.wheel1Master.dispose();
 
     }
 }

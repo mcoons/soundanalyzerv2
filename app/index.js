@@ -57,10 +57,18 @@ window.onload = function () {
     // event listeners
 
     $('#options_Btn').click(function () {
-        sceneManager.currentManager.dispose();
+        sceneManager.currentManager.remove();
+        sceneManager.currentManager = null;
+        sceneManager.scene.materials.forEach( m => {
+            if (m.name != "defaultGridMaterial" && m.name != "skyMaterial") {
+                m.dispose(true, true, true);
+            }
+        });
         sceneManager.managerClassIndex = (sceneManager.managerClassIndex >= sceneManager.managerClasses.length - 1 ? 0 : sceneManager.managerClassIndex + 1);
         sceneManager.currentManager = new sceneManager.managerClasses[sceneManager.managerClassIndex](sceneManager.scene, eventBus, audioManager);
         sceneManager.currentManager.create(sceneManager.scene, eventBus, audioManager);
+
+        console.log(sceneManager.scene);
     });
 
     $('td').bind("click", function () {
