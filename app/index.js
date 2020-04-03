@@ -16,13 +16,21 @@ import {
 
 window.onload = function () {
 
+    var nothing = new Audio("http://touchbasicapp.com/nothing.wav");
+
+    nothing.play().then(function() {
+        console.log("Audio started unlocked!")
+        }).catch(function(){
+        console.log("Audio started locked")
+        })
+
     var options = {
-        showBars: false,
+        showBars: true,
         showTitle: true,
         showWater: false,
         showSky: false,
-        showConsole: false,
-        showWaveform: false
+        showConsole: true,
+        showWaveform: true
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -57,25 +65,33 @@ window.onload = function () {
     // event listeners
 
     $('#options_Btn').click(function () {
-        sceneManager.currentManager.remove();
-        sceneManager.currentManager = null;
-        sceneManager.scene.materials.forEach( m => {
-            if (m.name != "defaultGridMaterial" && m.name != "skyMaterial") {
-                m.dispose(true, true, true);
-            }
-        });
-        sceneManager.managerClassIndex = (sceneManager.managerClassIndex >= sceneManager.managerClasses.length - 1 ? 0 : sceneManager.managerClassIndex + 1);
-        sceneManager.currentManager = new sceneManager.managerClasses[sceneManager.managerClassIndex](sceneManager.scene, eventBus, audioManager);
-        sceneManager.currentManager.create(sceneManager.scene, eventBus, audioManager);
 
-        console.log(sceneManager.scene);
+        sceneManager.scene.cameras[0].target = sceneManager.cameraPositions[2].lookat;
+        sceneManager.scene.cameras[0].alpha = sceneManager.cameraPositions[2].alpha;
+        sceneManager.scene.cameras[0].beta = sceneManager.cameraPositions[2].beta;
+        sceneManager.scene.cameras[0].radius = sceneManager.cameraPositions[2].radius;
+
+        sceneManager.nextScene();
+
+        // sceneManager.currentManager.remove();
+        // sceneManager.currentManager = null;
+        // sceneManager.scene.materials.forEach( m => {
+        //     if (m.name != "defaultGridMaterial" && m.name != "skyMaterial") {
+        //         m.dispose(true, true, true);
+        //     }
+        // });
+        // sceneManager.managerClassIndex = (sceneManager.managerClassIndex >= sceneManager.managerClasses.length - 1 ? 0 : sceneManager.managerClassIndex + 1);
+        // sceneManager.currentManager = new sceneManager.managerClasses[sceneManager.managerClassIndex](sceneManager, eventBus, audioManager);
+        // sceneManager.currentManager.create(sceneManager.scene, eventBus, audioManager);
+
+        // console.log(sceneManager.scene);
     });
 
     $('td').bind("click", function () {
-        sceneManager.scene.cameras[0].target = sceneManager.cameraPositions[this.id - 1].lookat
-        sceneManager.scene.cameras[0].alpha = sceneManager.cameraPositions[this.id - 1].alpha
-        sceneManager.scene.cameras[0].beta = sceneManager.cameraPositions[this.id - 1].beta
-        sceneManager.scene.cameras[0].radius = sceneManager.cameraPositions[this.id - 1].radius
+        sceneManager.scene.cameras[0].target = sceneManager.cameraPositions[this.id - 1].lookat;
+        sceneManager.scene.cameras[0].alpha = sceneManager.cameraPositions[this.id - 1].alpha;
+        sceneManager.scene.cameras[0].beta = sceneManager.cameraPositions[this.id - 1].beta;
+        sceneManager.scene.cameras[0].radius = sceneManager.cameraPositions[this.id - 1].radius;
     });
 
     // show playlist
@@ -94,6 +110,10 @@ window.onload = function () {
         }
         $('.playlist').fadeOut(500);
     });
+
+    $("#closeBtn").click(function(){
+        $('.playlist').fadeOut(500);
+    })
 
     // custom button that calls click on hidden fileInput element
     $('.local_Btn').bind("click", function () {
@@ -115,6 +135,13 @@ window.onload = function () {
 
         audioManager.audio.src = URL.createObjectURL(audioManager.fileList[0]);
         audioManager.audio.load();
+        audioManager.audio.play()
+        .then(function() {
+                console.log("Audio Successfully Playing")
+            })
+        .catch(function(){
+                console.log("Audio Failed Playing")
+            });
     };
 
     audio.onended = function () {

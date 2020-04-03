@@ -166,6 +166,4 @@ export class Star extends BaseObject {
         this.outerEndIndex = this.outerStartIndex + Math.round(this.outerItemsDesired);
     }
 
-
-
 }

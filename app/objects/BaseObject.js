@@ -34,4 +34,5 @@ export class BaseObject{
 
         return `${this.name} reports destroy from BaseObject: ${this.mesh}`;
     }
+    
 }

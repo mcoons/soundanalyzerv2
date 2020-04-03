@@ -3,6 +3,10 @@ import {
 } from './objects/StarManager.js';
 
 import {
+    MovingStarManager
+} from './objects/MovingStarManager.js';
+
+import {
     BlockSpiralManager
 } from './objects/BlockSpiralManager.js';
 
@@ -10,13 +14,34 @@ import {
     BlockPlaneManager
 } from './objects/BlockPlaneManager.js';
 
+
+import {
+    BlockPlaneManager2
+} from './objects/BlockPlaneManager2.js';
+
+
+import {
+    BlockPlaneManager3
+} from './objects/BlockPlaneManager3.js';
+
 import {
     RippleManager
 } from './objects/RippleManager.js';
 
 import {
+    WispManager
+} from './objects/WispManager.js';
+
+import {
     Clock
 } from './objects/Clock.js';
+
+import {
+    buildPalettes
+} from './utilities.js';
+
+import { EquationManager } from './objects/EquationManager.js';
+import { EquationManager2 } from './objects/EquationManager2.js';
 
 
 export class SceneManager {
@@ -32,9 +57,12 @@ export class SceneManager {
             preserveDrawingBuffer: true,
             stencil: true
         });
-
         this.camera;
         this.scene = this.createScene();
+        this.glowLayer;
+
+        // this.scene.debugLayer.show();
+
 
         this.defaultGridMaterial;
         this.skySphere;
@@ -42,62 +70,76 @@ export class SceneManager {
         this.waterMaterial
         this.waterMesh;
 
-        this.glowLayer;
+        this.palette = [];
+        this.paletteGlow = [];
+        this.paletteRed = [];
+        this.paletteGreen = [];
+        this.paletteBlue = [];
+        this.paletteGray = [];
+        this.paletteMetallic = [];
+
+        buildPalettes(this.palette, this.paletteGlow, this.paletteRed, this.paletteGreen, this.paletteBlue, this.paletteGray, this.paletteMetallic, this.scene)
+
+        console.log(this.palette);
         this.masterTransform;
 
-        // preset camera positions
+        // define preset camera positions
         this.cameraPositions = [{
-                lookat: new BABYLON.Vector3(-200, 0, 200),
+                lookat: new BABYLON.Vector3(-300, 0, 200),
                 alpha: -Math.PI / 2,
                 beta: 0.01,
-                radius: 115
+                radius: 320
             },
             {
-                lookat: new BABYLON.Vector3(200, 0, 200),
+                lookat: new BABYLON.Vector3(300, 0, 200),
                 alpha: -Math.PI / 2,
                 beta: 0.01,
-                radius: 115
+                radius: 320
             },
             {
                 lookat: new BABYLON.Vector3(0, 0, 0),
                 alpha: 4.711,
                 beta: 1.096,
-                radius: 831
+                radius: 1100
             },
             {
-                lookat: new BABYLON.Vector3(-200, 0, -200),
+                lookat: new BABYLON.Vector3(-300, 0, -200),
                 alpha: -Math.PI / 2,
                 beta: .01,
-                radius: 115
+                radius: 320
             },
             {
-                lookat: new BABYLON.Vector3(200, 0, -200),
+                lookat: new BABYLON.Vector3(300, 0, -200),
                 alpha: -Math.PI / 2,
                 beta: 0.01,
-                radius: 115
+                radius: 320
             },
         ];
         // this.clock = new Clock(this.scene);
 
-        this.managerClassIndex = 1;
-        this.managerClasses = [BlockPlaneManager, BlockSpiralManager, RippleManager, StarManager];
-        this.currentManager = new this.managerClasses[this.managerClassIndex](this.scene, this.eventBus, this.audioManager);
+        this.managerClassIndex = 4;
+        this.managerClasses = [
+//            MovingStarManager, 
+            BlockPlaneManager, 
+//            BlockPlaneManager2, 
+            BlockPlaneManager3, 
+            BlockSpiralManager, 
+//            RippleManager, 
+            StarManager,
+            EquationManager
+//            EquationManager2
+            /*, WispManager*/ ];
 
-        // add current objects to the scene
-        this.currentManager.create();
+        this.nextScene();
 
-        // start  3D render loop
-        var  self =  this;
-
-        this.scene.registerBeforeRender(()=> {
+        this.scene.registerBeforeRender(() => {
             this.currentManager.update();
         });
 
         this.engine.runRenderLoop(() => {
-            // self.currentManager.update();
             this.scene.render();
         });
-    }  // end constructor
+    } // end constructor
 
     createScene() {
         // create a basic BJS Scene object
@@ -152,20 +194,20 @@ export class SceneManager {
             waterMesh.position.y = -80;
         }
 
-        this.camera = new BABYLON.ArcRotateCamera("camera1", 4.7, 1.1, 815, new BABYLON.Vector3(0, 0, 0), scene);
+        this.camera = new BABYLON.ArcRotateCamera("camera1", 4.7, 1.1, 1100, new BABYLON.Vector3(0, 0, 0), scene);
         this.camera.upperRadiusLimit = 9400;
         this.camera.lowerRadiusLimit = 10;
         this.camera.attachControl(canvas3D, true);
 
         // create a basic light, aiming 0,1,0 - meaning, to the sky
         var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(-1, -1, 0), scene);
-        light.intensity = 1.6;
+        light.intensity = 1.5;
 
         var pointLight1 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(200, 300, -600), scene);
-        pointLight1.intensity = 2.2;
+        pointLight1.intensity = 1.8;
 
         var pointLight2 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(-200, -300, 600), scene);
-        pointLight2.intensity = 2.2;
+        pointLight2.intensity = 1.3;
 
         // var pointLight3 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(0, 200, 0), scene);
         // pointLight3.intensity = 1.8;
@@ -174,6 +216,25 @@ export class SceneManager {
         // pointLight4.intensity = 1.0;
 
         return scene;
+    }
+
+    nextScene() {
+
+        if (this.currentManager) {
+            this.currentManager.remove();
+        }
+
+        this.currentManager = null;
+        this.scene.materials.forEach(m => {
+            if (m.name != "defaultGridMaterial" && m.name != "skyMaterial") {
+                m.dispose(true, true, true);
+            }
+        });
+
+        this.managerClassIndex = (this.managerClassIndex >= this.managerClasses.length - 1 ? 0 : this.managerClassIndex + 1);
+        this.currentManager = new this.managerClasses[this.managerClassIndex](this, this.eventBus, this.audioManager);
+        this.currentManager.create(this.scene, this.eventBus, this.audioManager);
+
     }
 
 }

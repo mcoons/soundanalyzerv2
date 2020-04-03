@@ -85,18 +85,18 @@ export class OverlayManager {
     draw2DBars() {
         let WIDTH = this.canvas2D.width;
         let HEIGHT = this.canvas2D.height;
-        let barWidth = (WIDTH / (this.audioManager.frDataLength));
+        let barWidth = (WIDTH / (this.audioManager.fr512DataLength - 80));
 
         this.ctx2D.clearRect(0, 0, WIDTH, HEIGHT);
 
         let x = 0;
 
-        for (var i = 0; i < this.audioManager.frBufferLength; i++) {
-            let barHeight = this.audioManager.frDataArray[i] * 1 + 1;
+        for (var i = 0; i < this.audioManager.fr512BufferLength - 80; i++) {
+            let barHeight = this.audioManager.fr512DataArray[i] * 1 + 1;
 
             var r = barHeight;
-            var g = 255 *  i / this.audioManager.frDataLength;
-            var b = 255 -  128 * i / this.audioManager.frDataLength;
+            var g = 255 *  i / this.audioManager.fr512DataLength;
+            var b = 255 -  128 * i / (this.audioManager.fr512DataLength - 80);
 
             this.ctx2D.fillStyle = "rgba(" + r + "," + g + "," + b + ",.7)";
             this.ctx2D.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);

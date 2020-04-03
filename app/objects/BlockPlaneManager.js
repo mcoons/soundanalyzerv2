@@ -1,9 +1,10 @@
 
 export class BlockPlaneManager {
 
-    constructor(scene, eventBus, audioManager) {
+    constructor(sceneManager, eventBus, audioManager) {
 
-        this.scene = scene;
+        this.sceneManager = sceneManager;
+        this.scene = this.sceneManager.scene;
         this.eventBus = eventBus;
         this.audioManager = audioManager;
 
@@ -47,14 +48,14 @@ export class BlockPlaneManager {
 
         this.objects.push(thing);
 
-        for (let z = 18; z > 0; z--) {
-            for (let x = 0; x < 50; x++) {
+        for (let z = 16; z > 0; z--) {
+            for (let x = 0; x < 32; x++) {
 
                 let newInstance = thing.createInstance("instance(" + x + "," + z + ")");
 
-                newInstance.position.x = (x - 24.5) * 30;
-                newInstance.position.z = (z - 10) * 30;
-                newInstance.position.y = 0;
+                newInstance.position.x = (x - 16) * 30;
+                newInstance.position.z = (z - 8) * 30;
+                newInstance.position.y = -10;
 
                 newInstance.isVisible = true;
                 newInstance.parent = this.master;
@@ -70,9 +71,9 @@ export class BlockPlaneManager {
     update() {
 
         this.instances.forEach((o, i) => {
-            let y = (this.audioManager.frDataArray[i]);
+            let y = (this.audioManager.fr2048DataArray[i]);
             o.scaling.y = .01 + y/2;
-            o.position.y = o.scaling.y / 2;
+            o.position.y = o.scaling.y / 2 - 10;
 
             let r = y*.8;
             let b = 200-y*1.5;
@@ -101,4 +102,5 @@ export class BlockPlaneManager {
         this.master = null;
 
     }
+    
 }
