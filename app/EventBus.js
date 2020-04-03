@@ -1,8 +1,10 @@
 // from: https://github.com/PierfrancescoSoffritti
+// Converted to Class object & added unsubscribe - Michael Coons
 
 
 // MANAGER
 // var eventBus = new EventBus();
+
 
 // OBJECTs USE
 // eventBus.subscribe('clear', clearBusCallback);
@@ -13,6 +15,7 @@
 // eventBus.post('droppingEnded');
 // eventBus.post("newGem", my.material, my.object.position, worldPosition);
 
+
 /**
  * [EventObject Class representing an association between an event type and its list of callbacks]
  * @param {[string]} type [event name]
@@ -20,10 +23,8 @@
 class EventObject {
 
     constructor(type){
-
         this.eventType = type;
         this.callbacks = new Array();
-
     }
 
 }

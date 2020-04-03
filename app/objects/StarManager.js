@@ -8,14 +8,16 @@ import {
 
 export class StarManager  {
     
-    constructor(scene, eventBus, audioManager){
+    constructor(sceneManager, eventBus, audioManager){
 
-        this.scene = scene;
+        this.sceneManager = sceneManager;
+        this.scene = this.sceneManager.scene;
+
         this.eventBus = eventBus;
         this.audioManager = audioManager;
 
         this.pieResolution = 256;
-        this.starObjects = [];
+        this.objects = [];
         this.starMasters = [];
     }
 
@@ -268,21 +270,20 @@ export class StarManager  {
     }
 
     update(){
-        this.starObjects.forEach((sObject, index) => {
+        this.objects.forEach((sObject, index) => {
             sObject.update(this.audioManager.frDataArrayNormalized, index);
         });
     }
 
     remove() {
-        this.starObjects.forEach( obj => obj.remove());
-        this.starObjects = [];
+        this.objects.forEach( obj => obj.remove());
+        this.objects = [];
 
         this.starMasters.forEach( obj => obj.dispose());
         this.starMasters = [];
 
         this.masterTransform.dispose();
     }
-
 
     createStarGroupRandom2(colorBias, rotationBias, parent) {
 
@@ -309,7 +310,7 @@ export class StarManager  {
                 rotationBias.z == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
             );
             star.mesh.parent = parent;
-            this.starObjects.push(star);
+            this.objects.push(star);
         }
     }
 
@@ -339,7 +340,7 @@ export class StarManager  {
                 rotationBias.z == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
             );
             star.mesh.parent = parent;
-            this.starObjects.push(star);
+            this.objects.push(star);
         }
     }
 
@@ -369,7 +370,7 @@ export class StarManager  {
                 rotationBias.z == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
             );
             star.mesh.parent = parent;
-            this.starObjects.push(star);
+            this.objects.push(star);
         }
     }
 
@@ -400,7 +401,7 @@ export class StarManager  {
                 rotationBias.z == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
             );
             star.mesh.parent = parent;
-            this.starObjects.push(star);
+            this.objects.push(star);
         }
     }
 
@@ -431,7 +432,7 @@ export class StarManager  {
                 rotationBias.z == 1 ? (Math.round(Math.random()*3)%2 ? .01 * (Math.round(Math.random() * 2) - 1) : 0) : 0,
             );
             star.mesh.parent = parent;
-            this.starObjects.push(star);
+            this.objects.push(star);
         }
     }
 

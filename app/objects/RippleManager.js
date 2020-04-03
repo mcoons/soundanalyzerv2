@@ -1,9 +1,10 @@
 
 export class RippleManager {
 
-  constructor(scene, eventBus, audioManager) {
+  constructor(sceneManager, eventBus, audioManager) {
 
-    this.scene = scene;
+    this.sceneManager = sceneManager;
+    this.scene = this.sceneManager.scene;
     this.eventBus = eventBus;
     this.audioManager = audioManager;
 
@@ -19,8 +20,8 @@ export class RippleManager {
       let path = [];
       for (let theta = 0; theta < 2 * Math.PI; theta += Math.PI / 128) {
 
-        let x = r * Math.cos(theta) + xOffset;
-        let z = r * Math.sin(theta) + zOffset;
+        let x = 2*r * Math.cos(theta) + xOffset;
+        let z = 2*r * Math.sin(theta) + zOffset;
         let y = -.01;
 
         path.push(new BABYLON.Vector3(x, y, z));
@@ -54,7 +55,7 @@ export class RippleManager {
 
         let x =  2*r * Math.cos(theta) + xOffset;
         let z =  2*r * Math.sin(theta) + zOffset;
-        let y = this.audioManager.frDataArray[r] / 5; // + 20.3;
+        let y = this.audioManager.fr2048DataArray[r] / 20; // + 20.3;
 
         path.push(new BABYLON.Vector3(x, y, z));
       }
@@ -69,7 +70,6 @@ export class RippleManager {
     });
 
   }
-
 
   remove() {
 
