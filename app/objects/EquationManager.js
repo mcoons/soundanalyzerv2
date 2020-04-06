@@ -26,20 +26,27 @@ export class EquationManager {
     // this.wheel1Master.scaling.y = 4;
     // this.wheel1Master.scaling.z = 4;
     this.thetaDelta = 0;
+
+    this.cameraMoveDir = .001;
   }
 
   create() {
+    this.sceneManager.scene.cameras[0].beta = .01;
 
     let radius = 200;
 
-    for (let theta = 0; theta < 2 * Math.PI ; theta += Math.PI / 32) { // 512 items ---  256*2    128*4    64*8
+    for (let theta = 0; theta < 2 * Math.PI; theta += Math.PI / 32) { // 512 items ---  256*2    128*4    64*8
 
 
-      let thing = BABYLON.MeshBuilder.CreateBox(("box"), { height: 20, width: 20, depth: 20}, this.scene);
+      let thing = BABYLON.MeshBuilder.CreateBox(("box"), {
+        height: 20,
+        width: 20,
+        depth: 20
+      }, this.scene);
 
-      thing.position.x = radius * Math.cos(theta+this.thetaDelta);
-      thing.position.z = radius * Math.sin(theta+this.thetaDelta);
-      thing.position.y = radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta);
+      thing.position.x = radius * Math.cos(theta + this.thetaDelta);
+      thing.position.z = radius * Math.sin(theta + this.thetaDelta);
+      thing.position.y = radius * Math.sin(theta + this.thetaDelta) * Math.cos(theta);
       // thing.rotation.y = -theta;
 
       let r = .5;
@@ -60,11 +67,15 @@ export class EquationManager {
       this.objects1.push(thing);
 
 
-      let thing2 = BABYLON.MeshBuilder.CreateBox(("box"), { height: 20, width: 20, depth: 20}, this.scene);
+      let thing2 = BABYLON.MeshBuilder.CreateBox(("box"), {
+        height: 20,
+        width: 20,
+        depth: 20
+      }, this.scene);
 
-      thing2.position.x = radius * Math.cos(theta+this.thetaDelta);
-      thing2.position.z = radius * Math.sin(theta+this.thetaDelta);
-      thing2.position.y = radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta);
+      thing2.position.x = radius * Math.cos(theta + this.thetaDelta);
+      thing2.position.z = radius * Math.sin(theta + this.thetaDelta);
+      thing2.position.y = radius * Math.sin(theta + this.thetaDelta) * Math.cos(theta);
       // thing2.rotation.y = -theta;
 
       r = .5;
@@ -86,11 +97,15 @@ export class EquationManager {
 
 
 
-      let thing3 = BABYLON.MeshBuilder.CreateBox(("box"), { height: 20, width: 20, depth: 20}, this.scene);
+      let thing3 = BABYLON.MeshBuilder.CreateBox(("box"), {
+        height: 20,
+        width: 20,
+        depth: 20
+      }, this.scene);
 
-      thing3.position.x = radius * Math.cos(theta+this.thetaDelta);
-      thing3.position.z = radius * Math.sin(theta+this.thetaDelta);
-      thing3.position.y = radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta);
+      thing3.position.x = radius * Math.cos(theta + this.thetaDelta);
+      thing3.position.z = radius * Math.sin(theta + this.thetaDelta);
+      thing3.position.y = radius * Math.sin(theta + this.thetaDelta) * Math.cos(theta);
       // thing3.rotation.y = -theta;
 
       r = .5;
@@ -114,11 +129,15 @@ export class EquationManager {
 
 
 
-      let thing4 = BABYLON.MeshBuilder.CreateBox(("box"), { height: 20, width: 20, depth: 20}, this.scene);
+      let thing4 = BABYLON.MeshBuilder.CreateBox(("box"), {
+        height: 20,
+        width: 20,
+        depth: 20
+      }, this.scene);
 
-      thing4.position.x = radius * Math.cos(theta+this.thetaDelta);
-      thing4.position.z = radius * Math.sin(theta+this.thetaDelta);
-      thing4.position.y = radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta);
+      thing4.position.x = radius * Math.cos(theta + this.thetaDelta);
+      thing4.position.z = radius * Math.sin(theta + this.thetaDelta);
+      thing4.position.y = radius * Math.sin(theta + this.thetaDelta) * Math.cos(theta);
       // thing4.rotation.y = -theta;
 
       r = .5;
@@ -142,11 +161,15 @@ export class EquationManager {
 
 
 
-      let thing5 = BABYLON.MeshBuilder.CreateBox(("box"), { height: 20, width: 20, depth: 20}, this.scene);
+      let thing5 = BABYLON.MeshBuilder.CreateBox(("box"), {
+        height: 20,
+        width: 20,
+        depth: 20
+      }, this.scene);
 
-      thing5.position.x = radius * Math.cos(theta+this.thetaDelta);
-      thing5.position.z = radius * Math.sin(theta+this.thetaDelta);
-      thing5.position.y = radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta);
+      thing5.position.x = radius * Math.cos(theta + this.thetaDelta);
+      thing5.position.z = radius * Math.sin(theta + this.thetaDelta);
+      thing5.position.y = radius * Math.sin(theta + this.thetaDelta) * Math.cos(theta);
       // thing5.rotation.y = -theta;
 
       r = .5;
@@ -172,11 +195,15 @@ export class EquationManager {
 
 
 
-      let thing6 = BABYLON.MeshBuilder.CreateBox(("box"), { height: 20, width: 20, depth: 20}, this.scene);
+      let thing6 = BABYLON.MeshBuilder.CreateBox(("box"), {
+        height: 20,
+        width: 20,
+        depth: 20
+      }, this.scene);
 
-      thing6.position.x = radius * Math.cos(theta+this.thetaDelta);
-      thing6.position.z = radius * Math.sin(theta+this.thetaDelta);
-      thing6.position.y = radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta);
+      thing6.position.x = radius * Math.cos(theta + this.thetaDelta);
+      thing6.position.z = radius * Math.sin(theta + this.thetaDelta);
+      thing6.position.y = radius * Math.sin(theta + this.thetaDelta) * Math.cos(theta);
       // thing6.rotation.y = -theta;
 
       r = .5;
@@ -202,11 +229,15 @@ export class EquationManager {
 
 
 
-      let thing7 = BABYLON.MeshBuilder.CreateBox(("box"), { height: 20, width: 20, depth: 20}, this.scene);
+      let thing7 = BABYLON.MeshBuilder.CreateBox(("box"), {
+        height: 20,
+        width: 20,
+        depth: 20
+      }, this.scene);
 
-      thing7.position.x = radius * Math.cos(theta+this.thetaDelta);
-      thing7.position.z = radius * Math.sin(theta+this.thetaDelta);
-      thing7.position.y = radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta);
+      thing7.position.x = radius * Math.cos(theta + this.thetaDelta);
+      thing7.position.z = radius * Math.sin(theta + this.thetaDelta);
+      thing7.position.y = radius * Math.sin(theta + this.thetaDelta) * Math.cos(theta);
       // thing7.rotation.y = -theta;
 
       r = .5;
@@ -232,11 +263,15 @@ export class EquationManager {
 
 
 
-      let thing8 = BABYLON.MeshBuilder.CreateBox(("box"), { height: 20, width: 20, depth: 20}, this.scene);
+      let thing8 = BABYLON.MeshBuilder.CreateBox(("box"), {
+        height: 20,
+        width: 20,
+        depth: 20
+      }, this.scene);
 
-      thing8.position.x = radius * Math.cos(theta+this.thetaDelta);
-      thing8.position.z = radius * Math.sin(theta+this.thetaDelta);
-      thing8.position.y = radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta);
+      thing8.position.x = radius * Math.cos(theta + this.thetaDelta);
+      thing8.position.z = radius * Math.sin(theta + this.thetaDelta);
+      thing8.position.y = radius * Math.sin(theta + this.thetaDelta) * Math.cos(theta);
       // thing8.rotation.y = -theta;
 
       r = .5;
@@ -266,35 +301,69 @@ export class EquationManager {
 
   update() {
 
+    this.sceneManager.scene.cameras[0].beta  += this.cameraMoveDir;
+
+    if (this.cameraMoveDir > 0 && this.sceneManager.scene.cameras[0].beta >= 3.13){
+      this.cameraMoveDir *= -1;
+    } 
+    else 
+    if (this.cameraMoveDir < 0 && this.sceneManager.scene.cameras[0].beta <= .01){
+      this.cameraMoveDir *= -1;
+    } 
+
+
     let radius = 200;
     let index = 0;
     let soundIndex = 0;
 
-    for (let theta = 0; theta <  2 * Math.PI ; theta += Math.PI / 32) { // 512 items ---  256*2    128*4    64*8
+    for (let theta = 0; theta < 2 * Math.PI; theta += Math.PI / 32) { // 512 items ---  256*2    128*4    64*8
 
-      this.objects1[index].position.x = radius * Math.cos(theta+this.thetaDelta);
-      this.objects1[index].position.z = radius * Math.sin(theta+this.thetaDelta);
-      // this.objects1[index].position.y = radius * Math.sin(theta+this.thetaDelta) / Math.cos(theta+this.thetaDelta);
-      this.objects1[index].position.y = radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
+      this.objects1[index].position.x = radius * Math.cos(theta + this.thetaDelta);
+      this.objects1[index].position.z = radius * Math.sin(theta + this.thetaDelta);
+      this.objects1[index].position.y = radius * Math.sin(theta + this.thetaDelta) * Math.cos(theta + this.thetaDelta);
 
-      // this.objects1[index].scaling.y = 1+this.audioManager.sample1[soundIndex]/30;
+      let y = (this.audioManager.sample1[soundIndex]);
+      y = (y / 255 * y / 255) * 255;
 
-      this.objects1[index].material.diffuseColor = this.sceneManager.palette[ this.audioManager.sample1[soundIndex]*5].color;
+      // let r = y * .8;
+      // let g = 200 - y * 1.5;
+      // let b = 128 - y / 2;
+
+      let r = y * 1.6;
+      let g = 128 - y * 1.5;
+      let b = 192 + y / 4;
+
+      this.objects1[index].material.diffuseColor.r = r / 255;
+      this.objects1[index].material.diffuseColor.g = g / 255;
+      this.objects1[index].material.diffuseColor.b = b / 255;
+
       soundIndex++;
       index++;
 
     }
 
     index = 0;
-    for (let theta = 0; theta <  2 * Math.PI ; theta += Math.PI / 32) { // 512 items ---  256*2    128*4    64*8
+    for (let theta = 0; theta < 2 * Math.PI; theta += Math.PI / 32) { // 512 items ---  256*2    128*4    64*8
 
-      this.objects2[index].position.x = 1.1 * radius * Math.cos(theta+this.thetaDelta);
-      this.objects2[index].position.z = 1.1 * radius * Math.sin(theta+this.thetaDelta);
-      this.objects2[index].position.y = .9 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
+      this.objects2[index].position.x = 1.1 * radius * Math.cos(theta + this.thetaDelta);
+      this.objects2[index].position.z = 1.1 * radius * Math.sin(theta + this.thetaDelta);
+      this.objects2[index].position.y = 0.9 * radius * Math.sin(theta + this.thetaDelta) * Math.cos(theta + this.thetaDelta);
 
-      // this.objects2[index].scaling.y = 1+this.audioManager.sample1[soundIndex]/30;
+      let y = (this.audioManager.sample1[soundIndex]);
+      y = (y / 255 * y / 255) * 255;
 
-      this.objects2[index].material.diffuseColor = this.sceneManager.palette[ this.audioManager.sample1[soundIndex]*5].color;
+      // let r = y * .8;
+      // let g = 200 - y * 1.5;
+      // let b = 128 - y / 2;
+
+      let r = y * 1.2;
+      let g = 128 - y * 1.5;
+      let b = 192 + y / 4;
+
+      this.objects2[index].material.diffuseColor.r = r / 255;
+      this.objects2[index].material.diffuseColor.g = g / 255;
+      this.objects2[index].material.diffuseColor.b = b / 255;
+
       soundIndex++;
       index++;
 
@@ -303,15 +372,27 @@ export class EquationManager {
 
 
     index = 0;
-    for (let theta = 0; theta <  2 * Math.PI ; theta += Math.PI / 32) { // 512 items ---  256*2    128*4    64*8
+    for (let theta = 0; theta < 2 * Math.PI; theta += Math.PI / 32) { // 512 items ---  256*2    128*4    64*8
 
-      this.objects3[index].position.x = 1.2 * radius * Math.cos(theta+this.thetaDelta);
-      this.objects3[index].position.z = 1.2 * radius * Math.sin(theta+this.thetaDelta);
-      this.objects3[index].position.y = .8 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
+      this.objects3[index].position.x = 1.2 * radius * Math.cos(theta + this.thetaDelta);
+      this.objects3[index].position.z = 1.2 * radius * Math.sin(theta + this.thetaDelta);
+      this.objects3[index].position.y = 0.8 * radius * Math.sin(theta + this.thetaDelta) * Math.cos(theta + this.thetaDelta);
 
-      // this.objects3[index].scaling.y = 1+this.audioManager.sample1[soundIndex]/30;
+      let y = (this.audioManager.sample1[soundIndex]);
+      y = (y / 255 * y / 255) * 255;
 
-      this.objects3[index].material.diffuseColor = this.sceneManager.palette[ this.audioManager.sample1[soundIndex]*5].color;
+      // let r = y * .8;
+      // let g = 200 - y * 1.5;
+      // let b = 128 - y / 2;
+
+      let r = y * 1.6;
+      let g = 128 - y * 1.5;
+      let b = 192 + y / 4;
+
+      this.objects3[index].material.diffuseColor.r = r / 255;
+      this.objects3[index].material.diffuseColor.g = g / 255;
+      this.objects3[index].material.diffuseColor.b = b / 255;
+
       soundIndex++;
       index++;
 
@@ -321,15 +402,27 @@ export class EquationManager {
 
 
     index = 0;
-    for (let theta = 0; theta <  2 * Math.PI ; theta += Math.PI / 32) { // 512 items ---  256*2    128*4    64*8
+    for (let theta = 0; theta < 2 * Math.PI; theta += Math.PI / 32) { // 512 items ---  256*2    128*4    64*8
 
-      this.objects4[index].position.x = 1.3 * radius * Math.cos(theta+this.thetaDelta);
-      this.objects4[index].position.z = 1.3 * radius * Math.sin(theta+this.thetaDelta);
-      this.objects4[index].position.y = .7 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
+      this.objects4[index].position.x = 1.3 * radius * Math.cos(theta + this.thetaDelta);
+      this.objects4[index].position.z = 1.3 * radius * Math.sin(theta + this.thetaDelta);
+      this.objects4[index].position.y = 0.7 * radius * Math.sin(theta + this.thetaDelta) * Math.cos(theta + this.thetaDelta);
 
-      // this.objects4[index].scaling.y = 1+this.audioManager.sample1[soundIndex]/30;
+      let y = (this.audioManager.sample1[soundIndex]);
+      y = (y / 255 * y / 255) * 255;
 
-      this.objects4[index].material.diffuseColor = this.sceneManager.palette[ this.audioManager.sample1[soundIndex]*5].color;
+      // let r = y * .8;
+      // let g = 200 - y * 1.5;
+      // let b = 128 - y / 2;
+
+      let r = y * 1.6;
+      let g = 128 - y * 1.5;
+      let b = 192 + y / 4;
+
+      this.objects4[index].material.diffuseColor.r = r / 255;
+      this.objects4[index].material.diffuseColor.g = g / 255;
+      this.objects4[index].material.diffuseColor.b = b / 255;
+
       soundIndex++;
       index++;
 
@@ -339,53 +432,27 @@ export class EquationManager {
 
 
     index = 0;
-    for (let theta = 0; theta <  2 * Math.PI ; theta += Math.PI / 32) { // 512 items ---  256*2    128*4    64*8
+    for (let theta = 0; theta < 2 * Math.PI; theta += Math.PI / 32) { // 512 items ---  256*2    128*4    64*8
 
-      this.objects5[index].position.x = 1.4 * radius * Math.cos(theta+this.thetaDelta);
-      this.objects5[index].position.z = 1.4 * radius * Math.sin(theta+this.thetaDelta);
-      this.objects5[index].position.y = .6 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
+      this.objects5[index].position.x = 1.4 * radius * Math.cos(theta + this.thetaDelta);
+      this.objects5[index].position.z = 1.4 * radius * Math.sin(theta + this.thetaDelta);
+      this.objects5[index].position.y = 0.6 * radius * Math.sin(theta + this.thetaDelta) * Math.cos(theta + this.thetaDelta);
 
-      // this.objects5[index].scaling.y = 1+this.audioManager.sample1[soundIndex]/30;
+      let y = (this.audioManager.sample1[soundIndex]);
+      y = (y / 255 * y / 255) * 255;
 
-      this.objects5[index].material.diffuseColor = this.sceneManager.palette[ this.audioManager.sample1[soundIndex]*5].color;
-      soundIndex++;
-      index++;
+      // let r = y * .8;
+      // let g = 200 - y * 1.5;
+      // let b = 128 - y / 2;
 
-    }
+      let r = y * 1.6;
+      let g = 128 - y * 1.5;
+      let b = 192 + y / 4;
 
+      this.objects5[index].material.diffuseColor.r = r / 255;
+      this.objects5[index].material.diffuseColor.g = g / 255;
+      this.objects5[index].material.diffuseColor.b = b / 255;
 
-
-
-
-    index = 0;
-    for (let theta = 0; theta <  2 * Math.PI ; theta += Math.PI / 32) { // 512 items ---  256*2    128*4    64*8
-
-      this.objects6[index].position.x = 1.5 * radius * Math.cos(theta+this.thetaDelta);
-      this.objects6[index].position.z = 1.5 * radius * Math.sin(theta+this.thetaDelta);
-      this.objects6[index].position.y = .5 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
-
-      // this.objects6[index].scaling.y = 1+this.audioManager.sample1[soundIndex]/30;
-
-      this.objects6[index].material.diffuseColor = this.sceneManager.palette[ this.audioManager.sample1[soundIndex]*5].color;
-      soundIndex++;
-      index++;
-
-    }
-
-
-
-
-
-    index = 0;
-    for (let theta = 0; theta <  2 * Math.PI ; theta += Math.PI / 32) { // 512 items ---  256*2    128*4    64*8
-
-      this.objects7[index].position.x = 1.6 * radius * Math.cos(theta+this.thetaDelta);
-      this.objects7[index].position.z = 1.6 * radius * Math.sin(theta+this.thetaDelta);
-      this.objects7[index].position.y = .4 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
-
-      // this.objects7[index].scaling.y = 1+this.audioManager.sample1[soundIndex]/30;
-
-      this.objects7[index].material.diffuseColor = this.sceneManager.palette[ this.audioManager.sample1[soundIndex]*5].color;
       soundIndex++;
       index++;
 
@@ -396,15 +463,27 @@ export class EquationManager {
 
 
     index = 0;
-    for (let theta = 0; theta <  2 * Math.PI ; theta += Math.PI / 32) { // 512 items ---  256*2    128*4    64*8
+    for (let theta = 0; theta < 2 * Math.PI; theta += Math.PI / 32) { // 512 items ---  256*2    128*4    64*8
 
-      this.objects8[index].position.x = 1.7 * radius * Math.cos(theta+this.thetaDelta);
-      this.objects8[index].position.z = 1.7 * radius * Math.sin(theta+this.thetaDelta);
-      this.objects8[index].position.y = .3 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
+      this.objects6[index].position.x = 1.5 * radius * Math.cos(theta + this.thetaDelta);
+      this.objects6[index].position.z = 1.5 * radius * Math.sin(theta + this.thetaDelta);
+      this.objects6[index].position.y = 0.5 * radius * Math.sin(theta + this.thetaDelta) * Math.cos(theta + this.thetaDelta);
 
-      // this.objects8[index].scaling.y = 1+this.audioManager.sample1[soundIndex]/30;
+      let y = (this.audioManager.sample1[soundIndex]);
+      y = (y / 255 * y / 255) * 255;
 
-      this.objects8[index].material.diffuseColor = this.sceneManager.palette[ this.audioManager.sample1[soundIndex]*5].color;
+      // let r = y * .8;
+      // let g = 200 - y * 1.5;
+      // let b = 128 - y / 2;
+
+      let r = y * 1.6;
+      let g = 128 - y * 1.5;
+      let b = 192 + y / 4;
+
+      this.objects6[index].material.diffuseColor.r = r / 255;
+      this.objects6[index].material.diffuseColor.g = g / 255;
+      this.objects6[index].material.diffuseColor.b = b / 255;
+
       soundIndex++;
       index++;
 
@@ -412,13 +491,75 @@ export class EquationManager {
 
 
 
-    this.wheel1Master.rotation.y += .01
+
+
+    index = 0;
+    for (let theta = 0; theta < 2 * Math.PI; theta += Math.PI / 32) { // 512 items ---  256*2    128*4    64*8
+
+      this.objects7[index].position.x = 1.6 * radius * Math.cos(theta + this.thetaDelta);
+      this.objects7[index].position.z = 1.6 * radius * Math.sin(theta + this.thetaDelta);
+      this.objects7[index].position.y = 0.4 * radius * Math.sin(theta + this.thetaDelta) * Math.cos(theta + this.thetaDelta);
+
+      let y = (this.audioManager.sample1[soundIndex]);
+      y = (y / 255 * y / 255) * 255;
+
+      // let r = y * .8;
+      // let g = 200 - y * 1.5;
+      // let b = 128 - y / 2;
+
+      let r = y * 1.6;
+      let g = 128 - y * 1.5;
+      let b = 192 + y / 4;
+
+      this.objects7[index].material.diffuseColor.r = r / 255;
+      this.objects7[index].material.diffuseColor.g = g / 255;
+      this.objects7[index].material.diffuseColor.b = b / 255;
+
+      soundIndex++;
+      index++;
+
+    }
+
+
+
+
+
+    index = 0;
+    for (let theta = 0; theta < 2 * Math.PI; theta += Math.PI / 32) { // 512 items ---  256*2    128*4    64*8
+
+      this.objects8[index].position.x = 1.7 * radius * Math.cos(theta + this.thetaDelta);
+      this.objects8[index].position.z = 1.7 * radius * Math.sin(theta + this.thetaDelta);
+      this.objects8[index].position.y = 0.3 * radius * Math.sin(theta + this.thetaDelta) * Math.cos(theta + this.thetaDelta);
+
+      let y = (this.audioManager.sample1[soundIndex]);
+      y = (y / 255 * y / 255) * 255;
+
+      // let r = y * .8;
+      // let g = 200 - y * 1.5;
+      // let b = 128 - y / 2;
+
+      let r = y * 1.6;
+      let g = 128 - y * 1.5;
+      let b = 192 + y / 4;
+
+      this.objects8[index].material.diffuseColor.r = r / 255;
+      this.objects8[index].material.diffuseColor.g = g / 255;
+      this.objects8[index].material.diffuseColor.b = b / 255;
+
+      soundIndex++;
+      index++;
+
+    }
+
+
+
+    this.wheel1Master.rotation.y += .01;
 
 
 
     this.thetaDelta += .011;
-    if (this.thetaDelta > 2*  Math.PI) {
-      this.thetaDelta -= 2 * Math.PI
+    if (this.thetaDelta > 2 * Math.PI) {
+      this.thetaDelta -= 2 * Math.PI;
     }
 
   }
@@ -429,7 +570,7 @@ export class EquationManager {
     this.objects1 = null;
 
     this.objects2.forEach(o => o.dispose());
-    this.objects2 = null;  
+    this.objects2 = null;
 
     this.objects3.forEach(o => o.dispose());
     this.objects3 = null;

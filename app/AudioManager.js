@@ -69,12 +69,7 @@ export class AudioManager {
             alert('Web Audio API is not supported in this browser');
         }
 
-
-
-        // var AudioContext = window.AudioContext || window.webkitAudioContext;
-        // this.audioCtx = new AudioContext();
         this.audioSrc = this.audioCtx.createMediaElementSource(this.audio);
-
 
         this.fr64Analyser = this.audioCtx.createAnalyser();
         this.fr64Analyser.fftSize = 128;
@@ -111,7 +106,7 @@ export class AudioManager {
         this.fr512DataArray = new Uint8Array(this.fr512BufferLength);
         this.fr512DataArrayNormalized = new Uint8Array(this.fr512BufferLength);
 
-        
+
         this.fr1024Analyser = this.audioCtx.createAnalyser();
         this.fr1024Analyser.fftSize = 2048;
         this.fr1024Analyser.smoothingTimeConstant = 0.9;
@@ -194,10 +189,10 @@ export class AudioManager {
         this.sample1Normalized = [];
 
         for (let index = 0; index < 576; index++) {
-            this.sample1[index] = 0;            
+            this.sample1[index] = 0;
         }
 
-        this.soundArrays=[
+        this.soundArrays = [
             this.fr64DataArray,
             this.fr128DataArray,
             this.fr256DataArray,
@@ -207,6 +202,20 @@ export class AudioManager {
             this.fr4096DataArray,
             this.fr8192DataArray,
             this.fr16384DataArray
+        ];
+
+        this.analyzerArray = [
+            this.fr64Analyser,
+            this.fr128Analyser,
+            this.fr256Analyser,
+            this.fr512Analyser,
+            this.fr1024Analyser,
+            this.fr2048Analyser,
+            this.fr4096Analyser,
+            this.fr8192Analyser,
+            this.fr16384Analyser,
+            this.frAnalyser,
+            this.frAnalyserAll
         ];
 
 
@@ -294,17 +303,17 @@ export class AudioManager {
 
         // log sample
 
-        for (let index = 0; index < 64; index++) {   //  64*9 = 576
+        for (let index = 0; index < 64; index++) { //  64*9 = 576
 
-            this.sample1[index]     = (this.soundArrays[8])[index];
-            this.sample1[index+64]  = (this.soundArrays[8])[index+64];
-            this.sample1[index+128] = (this.soundArrays[7])[index+64];
-            this.sample1[index+192] = (this.soundArrays[6])[index+64];
-            this.sample1[index+256] = (this.soundArrays[5])[index+64];
-            this.sample1[index+320] = (this.soundArrays[4])[index+64];
-            this.sample1[index+384] = (this.soundArrays[3])[index+64];
-            this.sample1[index+448] = (this.soundArrays[2])[index+64];
-            this.sample1[index+512] = (this.soundArrays[1])[index+64];
+            this.sample1[index] = (this.soundArrays[8])[index];
+            this.sample1[index + 64] = (this.soundArrays[8])[index + 64];
+            this.sample1[index + 128] = (this.soundArrays[7])[index + 64];
+            this.sample1[index + 192] = (this.soundArrays[6])[index + 64];
+            this.sample1[index + 256] = (this.soundArrays[5])[index + 64];
+            this.sample1[index + 320] = (this.soundArrays[4])[index + 64];
+            this.sample1[index + 384] = (this.soundArrays[3])[index + 64];
+            this.sample1[index + 448] = (this.soundArrays[2])[index + 64];
+            this.sample1[index + 512] = (this.soundArrays[1])[index + 64];
 
         }
 

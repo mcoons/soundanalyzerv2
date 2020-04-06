@@ -22,7 +22,7 @@
  */
 class EventObject {
 
-    constructor(type){
+    constructor(type) {
         this.eventType = type;
         this.callbacks = new Array();
     }
@@ -31,10 +31,10 @@ class EventObject {
 
 export class EventBus {
 
-    constructor(){
+    constructor() {
         this.eventObjects = new Array();
     }
-    
+
     /**
      * [subscribe Subscribe for a specific event]
      * @param  {[string]} eventType [the event name]
@@ -42,9 +42,11 @@ export class EventBus {
      */
     subscribe(eventType, callback) {
         // check if someone is already subscribed to this event
-        var eventObject = this.eventObjects.filter(function (eventObject) { return eventObject.eventType === eventType; })[0];
+        var eventObject = this.eventObjects.filter(function (eventObject) {
+            return eventObject.eventType === eventType;
+        })[0];
 
-        if(eventObject) {
+        if (eventObject) {
             // if there are already callbacks for this event -> add the new callback
             eventObject.callbacks.push(callback);
         } else {
@@ -64,8 +66,14 @@ export class EventBus {
     post(eventType, argument1, argument2, argument3) {
         // call every callback of the event
         this.eventObjects
-            .filter(function (eventObject) { return eventObject.eventType === eventType; })
-            .forEach(function (eventObject) { eventObject.callbacks.forEach(function (callback) { callback(eventType, argument1, argument2, argument3) }) });
+            .filter(function (eventObject) {
+                return eventObject.eventType === eventType;
+            })
+            .forEach(function (eventObject) {
+                eventObject.callbacks.forEach(function (callback) {
+                    callback(eventType, argument1, argument2, argument3)
+                })
+            });
     }
 
     /**
@@ -77,16 +85,26 @@ export class EventBus {
     unsubscribe(eventType, callback) {
         // get the eventObject for the event
         this.eventObjects
-        .filter(function (eventObject) { return eventObject.eventType === eventType; })
-        // remove the callback from the eventObject's callback array
-        .forEach(function (eventObject) { eventObject.callbacks = eventObject.callbacks.filter(function (cb) { return cb != callback }) });
+            .filter(function (eventObject) {
+                return eventObject.eventType === eventType;
+            })
+            // remove the callback from the eventObject's callback array
+            .forEach(function (eventObject) {
+                eventObject.callbacks = eventObject.callbacks.filter(function (cb) {
+                    return cb != callback
+                })
+            });
 
         // if the callbacks array is now empty then remove the eventObject 
         // from the this.eventObjects array 
-        var eventObject = this.eventObjects.filter(function (eventObject) { return eventObject.eventType === eventType; })[0];
-        if (eventObject.callbacks.length === 0){
-            this.eventObjects = this.eventObjects.filter(function (eventObject) { return eventObject.eventType != eventType; })
+        var eventObject = this.eventObjects.filter(function (eventObject) {
+            return eventObject.eventType === eventType;
+        })[0];
+        if (eventObject.callbacks.length === 0) {
+            this.eventObjects = this.eventObjects.filter(function (eventObject) {
+                return eventObject.eventType != eventType;
+            })
         }
     }
-    
+
 }

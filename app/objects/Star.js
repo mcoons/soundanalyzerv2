@@ -2,11 +2,12 @@ import {
     BaseObject
 } from './BaseObject.js';
 
+
 export class Star extends BaseObject {
 
-    constructor(name, parent, palette, material, resolution, reflect, eventBus, scene) {
+    constructor(name, parent, palette, material, resolution, reflect, eventBus, scene, dataSource) {
 
-        super(name, parent, palette, material, resolution, reflect, eventBus, scene);
+        super(name, parent, palette, material, resolution, reflect, eventBus, scene, dataSource);
 
         ////////////////////////////
         // class specific variables
@@ -40,9 +41,10 @@ export class Star extends BaseObject {
         this.outerEndIndex = this.outerStartIndex + Math.round(this.outerItemsDesired);
 
         this.create();
-        
+
         var self = this;
         this.eventBus.subscribe("eventTest", eventTestCallback);
+
         function eventTestCallback() {
             // console.log("Event Received from " + self.name);
             // console.log("My position is " + self.mesh.position);
@@ -80,7 +82,9 @@ export class Star extends BaseObject {
         return this.mesh;
     }
 
-    update(data, zindex) {
+    update(zindex) {
+
+        let data = this.dataSource;
 
         // Rotation imposes the rotation order YXZ in local space using Euler angles.
         this.mesh.rotation.y += this.yRotationDelta;
@@ -94,7 +98,7 @@ export class Star extends BaseObject {
         this.innerPath = [];
         this.outerPath = [];
 
-        for (let theta = 0; theta <= 2 * Math.PI; theta += 2 * Math.PI / 256) {
+        for (let theta = 0; theta <= 2 * Math.PI; theta += 2 * Math.PI / this.resolution) {
             // inner range calculations
             if (this.innerDataIndex >= this.innerEndIndex || this.innerDataIndex <= this.innerStartIndex) this.innerIndexDirection = -this.innerIndexDirection;
 
@@ -127,7 +131,7 @@ export class Star extends BaseObject {
         return `${this.name} says updated from star.`;
     }
 
-    remove(){
+    remove() {
         if (this.mesh) {
             this.mesh.dispose();
         }

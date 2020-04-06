@@ -63,7 +63,7 @@ function buildPalettes(palette, paletteGlow, paletteRed, paletteGreen, paletteBl
 // add a palette object to a given palette
 function addToPalette(r, g, b, palette, saturation = .6, wireframe = false, scene) {
 
-    let mat = new BABYLON.StandardMaterial("material("+r+","+g+","+b+")", scene);
+    let mat = new BABYLON.StandardMaterial("material(" + r + "," + g + "," + b + ")", scene);
 
     r = r * saturation;
     g = g * saturation;
@@ -143,7 +143,7 @@ function addToGlowPalette(r, g, b, palette, scene) {
 }
 
 function getBiasedGlowMaterial(colorBias, scene) {
-        
+
     let dimmer = 1.0;
     let r = Math.random() * colorBias.r;
     let g = Math.random() * colorBias.g;

@@ -18,11 +18,11 @@ window.onload = function () {
 
     var nothing = new Audio("http://touchbasicapp.com/nothing.wav");
 
-    nothing.play().then(function() {
+    nothing.play().then(function () {
         console.log("Audio started unlocked!")
-        }).catch(function(){
+    }).catch(function () {
         console.log("Audio started locked")
-        })
+    })
 
     var options = {
         showBars: true,
@@ -34,12 +34,13 @@ window.onload = function () {
     }
 
     //////////////////////////////////////////////////////////////////////
-    // start the Event Bus (event handler)
+    // start the Event Bus (event handler) - testing only
 
     var eventBus = new EventBus();
 
     // event bus test
     eventBus.subscribe("eventTest", eventTestCallback);
+
     function eventTestCallback() {
         console.log("Initial Event Received");
     }
@@ -47,23 +48,24 @@ window.onload = function () {
     eventBus.unsubscribe("eventTest", eventTestCallback);
 
     //////////////////////////////////////////////////////////////////////
-    // start the Audio Manager (audio loop)
+    // start the Audio Manager (audio loop using  setInterval of 0020 ms)
 
     var audioManager = new AudioManager();
 
     //////////////////////////////////////////////////////////////////////
-    // start the Sene Manager (3D render loop)
+    // start the Sene Manager (3D render loop using  engine.runRenderLoop)
 
     var sceneManager = new SceneManager('#canvas3D', options, eventBus, audioManager);
 
     //////////////////////////////////////////////////////////////////////
-    // start the Overlay Manager (2D render loop)
+    // start the Overlay Manager (2D render loop using  window.requestAnimationFrame)
 
     var overlayManager = new OverlayManager('#canvas2D', options, eventBus, audioManager, sceneManager);
-    
+
     //////////////////////////////////////////////////////////////////////
     // event listeners
 
+    // change visual
     $('#options_Btn').click(function () {
 
         sceneManager.scene.cameras[0].target = sceneManager.cameraPositions[2].lookat;
@@ -73,20 +75,21 @@ window.onload = function () {
 
         sceneManager.nextScene();
 
-        // sceneManager.currentManager.remove();
-        // sceneManager.currentManager = null;
-        // sceneManager.scene.materials.forEach( m => {
-        //     if (m.name != "defaultGridMaterial" && m.name != "skyMaterial") {
-        //         m.dispose(true, true, true);
-        //     }
-        // });
-        // sceneManager.managerClassIndex = (sceneManager.managerClassIndex >= sceneManager.managerClasses.length - 1 ? 0 : sceneManager.managerClassIndex + 1);
-        // sceneManager.currentManager = new sceneManager.managerClasses[sceneManager.managerClassIndex](sceneManager, eventBus, audioManager);
-        // sceneManager.currentManager.create(sceneManager.scene, eventBus, audioManager);
-
-        // console.log(sceneManager.scene);
     });
 
+    // change visual
+    $('#visual_Btn').click(function () {
+
+        sceneManager.scene.cameras[0].target = sceneManager.cameraPositions[2].lookat;
+        sceneManager.scene.cameras[0].alpha = sceneManager.cameraPositions[2].alpha;
+        sceneManager.scene.cameras[0].beta = sceneManager.cameraPositions[2].beta;
+        sceneManager.scene.cameras[0].radius = sceneManager.cameraPositions[2].radius;
+
+        sceneManager.nextScene();
+
+    });
+
+    // camera buttons
     $('td').bind("click", function () {
         sceneManager.scene.cameras[0].target = sceneManager.cameraPositions[this.id - 1].lookat;
         sceneManager.scene.cameras[0].alpha = sceneManager.cameraPositions[this.id - 1].alpha;
@@ -94,7 +97,7 @@ window.onload = function () {
         sceneManager.scene.cameras[0].radius = sceneManager.cameraPositions[this.id - 1].radius;
     });
 
-    // show playlist
+    // show site playlist
     $('.pl').click(function () {
         $('.playlist').fadeIn(500);
     });
@@ -111,7 +114,8 @@ window.onload = function () {
         $('.playlist').fadeOut(500);
     });
 
-    $("#closeBtn").click(function(){
+    // close site playlist
+    $("#closeBtn").click(function () {
         $('.playlist').fadeOut(500);
     })
 
@@ -136,14 +140,15 @@ window.onload = function () {
         audioManager.audio.src = URL.createObjectURL(audioManager.fileList[0]);
         audioManager.audio.load();
         audioManager.audio.play()
-        .then(function() {
+            .then(function () {
                 console.log("Audio Successfully Playing")
             })
-        .catch(function(){
+            .catch(function () {
                 console.log("Audio Failed Playing")
             });
     };
 
+    // advance to next song
     audio.onended = function () {
         let title = $('#title')[0];
 
@@ -170,6 +175,7 @@ window.onload = function () {
         }
     };
 
+    // standard resoze for 3D engine
     window.addEventListener('resize', function () {
         sceneManager.engine.resize();
     });

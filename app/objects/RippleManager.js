@@ -1,4 +1,3 @@
-
 export class RippleManager {
 
   constructor(sceneManager, eventBus, audioManager) {
@@ -20,8 +19,8 @@ export class RippleManager {
       let path = [];
       for (let theta = 0; theta < 2 * Math.PI; theta += Math.PI / 128) {
 
-        let x = 2*r * Math.cos(theta) + xOffset;
-        let z = 2*r * Math.sin(theta) + zOffset;
+        let x = 2 * r * Math.cos(theta) + xOffset;
+        let z = 2 * r * Math.sin(theta) + zOffset;
         let y = -.01;
 
         path.push(new BABYLON.Vector3(x, y, z));
@@ -32,11 +31,11 @@ export class RippleManager {
     this.ripple = BABYLON.Mesh.CreateRibbon("ripple", paths, false, false, 0, this.scene, true);
 
     let mat = new BABYLON.StandardMaterial("material()", this.scene);
-    var color = new BABYLON.Color4(.3,.3,.3, 1, false);
+    var color = new BABYLON.Color4(.3, .3, .3, 1, false);
 
     mat.diffuseColor = color;
-    mat.specularColor = new BABYLON.Color3(0,0,0);
-    mat.ambientColor = new BABYLON.Color3(0,0,0);
+    mat.specularColor = new BABYLON.Color3(0, 0, 0);
+    mat.ambientColor = new BABYLON.Color3(0, 0, 0);
     mat.emissiveColor = new BABYLON.Color3(0, 0, 0);
     mat.backFaceCulling = false;
 
@@ -53,8 +52,8 @@ export class RippleManager {
       var path = [];
       for (let theta = 0; theta < 2 * Math.PI; theta += Math.PI / 128) {
 
-        let x =  2*r * Math.cos(theta) + xOffset;
-        let z =  2*r * Math.sin(theta) + zOffset;
+        let x = 2 * r * Math.cos(theta) + xOffset;
+        let z = 2 * r * Math.sin(theta) + zOffset;
         let y = this.audioManager.fr2048DataArray[r] / 20; // + 20.3;
 
         path.push(new BABYLON.Vector3(x, y, z));
