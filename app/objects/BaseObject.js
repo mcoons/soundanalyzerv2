@@ -1,7 +1,7 @@
 
 export class BaseObject{
 
-    constructor(name, parent, palette, material, resolution, reflect, eventBus, scene) {
+    constructor(name, parent, palette, material, resolution, reflect, eventBus, scene, dataSource) {
         
         this.name = name;
         this.parent = parent;
@@ -10,6 +10,7 @@ export class BaseObject{
         this.resolution = resolution;
         this.reflect = reflect;
         this.scene = scene;
+        this.dataSource = dataSource;
 
         this.mesh = null;
         this.paths = [];

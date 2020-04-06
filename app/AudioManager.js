@@ -69,12 +69,7 @@ export class AudioManager {
             alert('Web Audio API is not supported in this browser');
         }
 
-
-
-        // var AudioContext = window.AudioContext || window.webkitAudioContext;
-        // this.audioCtx = new AudioContext();
         this.audioSrc = this.audioCtx.createMediaElementSource(this.audio);
-
 
         this.fr64Analyser = this.audioCtx.createAnalyser();
         this.fr64Analyser.fftSize = 128;
@@ -207,6 +202,20 @@ export class AudioManager {
             this.fr4096DataArray,
             this.fr8192DataArray,
             this.fr16384DataArray
+        ];
+
+        this.analyzerArray = [
+            this.fr64Analyser,
+            this.fr128Analyser,
+            this.fr256Analyser,
+            this.fr512Analyser,
+            this.fr1024Analyser,
+            this.fr2048Analyser,
+            this.fr4096Analyser,
+            this.fr8192Analyser,
+            this.fr16384Analyser,
+            this.frAnalyser,
+            this.frAnalyserAll            
         ];
 
 

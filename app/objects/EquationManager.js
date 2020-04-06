@@ -274,12 +274,19 @@ export class EquationManager {
 
       this.objects1[index].position.x = radius * Math.cos(theta+this.thetaDelta);
       this.objects1[index].position.z = radius * Math.sin(theta+this.thetaDelta);
-      // this.objects1[index].position.y = radius * Math.sin(theta+this.thetaDelta) / Math.cos(theta+this.thetaDelta);
       this.objects1[index].position.y = radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
 
-      // this.objects1[index].scaling.y = 1+this.audioManager.sample1[soundIndex]/30;
+      let y = (this.audioManager.sample1[soundIndex]);
+      y = (y/255 * y/255) * 255;
 
-      this.objects1[index].material.diffuseColor = this.sceneManager.palette[ this.audioManager.sample1[soundIndex]*5].color;
+      let r = y*.8;
+      let g = 200-y*1.5;
+      let b = 128-y/2;
+
+      this.objects1[index].material.diffuseColor.r = r/255;
+      this.objects1[index].material.diffuseColor.g = g/255;
+      this.objects1[index].material.diffuseColor.b = b/255;
+
       soundIndex++;
       index++;
 
@@ -290,11 +297,19 @@ export class EquationManager {
 
       this.objects2[index].position.x = 1.1 * radius * Math.cos(theta+this.thetaDelta);
       this.objects2[index].position.z = 1.1 * radius * Math.sin(theta+this.thetaDelta);
-      this.objects2[index].position.y = .9 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
+      this.objects2[index].position.y = 0.9 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
 
-      // this.objects2[index].scaling.y = 1+this.audioManager.sample1[soundIndex]/30;
+      let y = (this.audioManager.sample1[soundIndex]);
+      y = (y/255 * y/255) * 255;
 
-      this.objects2[index].material.diffuseColor = this.sceneManager.palette[ this.audioManager.sample1[soundIndex]*5].color;
+      let r = y*.8;
+      let g = 200-y*1.5;
+      let b = 128-y/2;
+
+      this.objects2[index].material.diffuseColor.r = r/255;
+      this.objects2[index].material.diffuseColor.g = g/255;
+      this.objects2[index].material.diffuseColor.b = b/255;
+
       soundIndex++;
       index++;
 
@@ -307,11 +322,19 @@ export class EquationManager {
 
       this.objects3[index].position.x = 1.2 * radius * Math.cos(theta+this.thetaDelta);
       this.objects3[index].position.z = 1.2 * radius * Math.sin(theta+this.thetaDelta);
-      this.objects3[index].position.y = .8 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
+      this.objects3[index].position.y = 0.8 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
 
-      // this.objects3[index].scaling.y = 1+this.audioManager.sample1[soundIndex]/30;
+      let y = (this.audioManager.sample1[soundIndex]);
+      y = (y/255 * y/255) * 255;
 
-      this.objects3[index].material.diffuseColor = this.sceneManager.palette[ this.audioManager.sample1[soundIndex]*5].color;
+      let r = y*.8;
+      let g = 200-y*1.5;
+      let b = 128-y/2;
+
+      this.objects3[index].material.diffuseColor.r = r/255;
+      this.objects3[index].material.diffuseColor.g = g/255;
+      this.objects3[index].material.diffuseColor.b = b/255;
+
       soundIndex++;
       index++;
 
@@ -325,11 +348,19 @@ export class EquationManager {
 
       this.objects4[index].position.x = 1.3 * radius * Math.cos(theta+this.thetaDelta);
       this.objects4[index].position.z = 1.3 * radius * Math.sin(theta+this.thetaDelta);
-      this.objects4[index].position.y = .7 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
+      this.objects4[index].position.y = 0.7 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
 
-      // this.objects4[index].scaling.y = 1+this.audioManager.sample1[soundIndex]/30;
+      let y = (this.audioManager.sample1[soundIndex]);
+      y = (y/255 * y/255) * 255;
 
-      this.objects4[index].material.diffuseColor = this.sceneManager.palette[ this.audioManager.sample1[soundIndex]*5].color;
+      let r = y*.8;
+      let g = 200-y*1.5;
+      let b = 128-y/2;
+
+      this.objects4[index].material.diffuseColor.r = r/255;
+      this.objects4[index].material.diffuseColor.g = g/255;
+      this.objects4[index].material.diffuseColor.b = b/255;
+
       soundIndex++;
       index++;
 
@@ -343,11 +374,19 @@ export class EquationManager {
 
       this.objects5[index].position.x = 1.4 * radius * Math.cos(theta+this.thetaDelta);
       this.objects5[index].position.z = 1.4 * radius * Math.sin(theta+this.thetaDelta);
-      this.objects5[index].position.y = .6 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
+      this.objects5[index].position.y = 0.6 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
 
-      // this.objects5[index].scaling.y = 1+this.audioManager.sample1[soundIndex]/30;
+      let y = (this.audioManager.sample1[soundIndex]);
+      y = (y/255 * y/255) * 255;
 
-      this.objects5[index].material.diffuseColor = this.sceneManager.palette[ this.audioManager.sample1[soundIndex]*5].color;
+      let r = y*.8;
+      let g = 200-y*1.5;
+      let b = 128-y/2;
+
+      this.objects5[index].material.diffuseColor.r = r/255;
+      this.objects5[index].material.diffuseColor.g = g/255;
+      this.objects5[index].material.diffuseColor.b = b/255;
+
       soundIndex++;
       index++;
 
@@ -362,11 +401,19 @@ export class EquationManager {
 
       this.objects6[index].position.x = 1.5 * radius * Math.cos(theta+this.thetaDelta);
       this.objects6[index].position.z = 1.5 * radius * Math.sin(theta+this.thetaDelta);
-      this.objects6[index].position.y = .5 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
+      this.objects6[index].position.y = 0.5 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
 
-      // this.objects6[index].scaling.y = 1+this.audioManager.sample1[soundIndex]/30;
+      let y = (this.audioManager.sample1[soundIndex]);
+      y = (y/255 * y/255) * 255;
 
-      this.objects6[index].material.diffuseColor = this.sceneManager.palette[ this.audioManager.sample1[soundIndex]*5].color;
+      let r = y*.8;
+      let g = 200-y*1.5;
+      let b = 128-y/2;
+
+      this.objects6[index].material.diffuseColor.r = r/255;
+      this.objects6[index].material.diffuseColor.g = g/255;
+      this.objects6[index].material.diffuseColor.b = b/255;
+
       soundIndex++;
       index++;
 
@@ -381,11 +428,19 @@ export class EquationManager {
 
       this.objects7[index].position.x = 1.6 * radius * Math.cos(theta+this.thetaDelta);
       this.objects7[index].position.z = 1.6 * radius * Math.sin(theta+this.thetaDelta);
-      this.objects7[index].position.y = .4 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
+      this.objects7[index].position.y = 0.4 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
 
-      // this.objects7[index].scaling.y = 1+this.audioManager.sample1[soundIndex]/30;
+      let y = (this.audioManager.sample1[soundIndex]);
+      y = (y/255 * y/255) * 255;
 
-      this.objects7[index].material.diffuseColor = this.sceneManager.palette[ this.audioManager.sample1[soundIndex]*5].color;
+      let r = y*.8;
+      let g = 200-y*1.5;
+      let b = 128-y/2;
+
+      this.objects7[index].material.diffuseColor.r = r/255;
+      this.objects7[index].material.diffuseColor.g = g/255;
+      this.objects7[index].material.diffuseColor.b = b/255;
+
       soundIndex++;
       index++;
 
@@ -400,11 +455,19 @@ export class EquationManager {
 
       this.objects8[index].position.x = 1.7 * radius * Math.cos(theta+this.thetaDelta);
       this.objects8[index].position.z = 1.7 * radius * Math.sin(theta+this.thetaDelta);
-      this.objects8[index].position.y = .3 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
+      this.objects8[index].position.y = 0.3 * radius * Math.sin(theta+this.thetaDelta) * Math.cos(theta+this.thetaDelta);
 
-      // this.objects8[index].scaling.y = 1+this.audioManager.sample1[soundIndex]/30;
+      let y = (this.audioManager.sample1[soundIndex]);
+      y = (y/255 * y/255) * 255;
 
-      this.objects8[index].material.diffuseColor = this.sceneManager.palette[ this.audioManager.sample1[soundIndex]*5].color;
+      let r = y*.8;
+      let g = 200-y*1.5;
+      let b = 128-y/2;
+
+      this.objects8[index].material.diffuseColor.r = r/255;
+      this.objects8[index].material.diffuseColor.g = g/255;
+      this.objects8[index].material.diffuseColor.b = b/255;
+
       soundIndex++;
       index++;
 
@@ -412,13 +475,13 @@ export class EquationManager {
 
 
 
-    this.wheel1Master.rotation.y += .01
+    this.wheel1Master.rotation.y += .01;
 
 
 
     this.thetaDelta += .011;
     if (this.thetaDelta > 2*  Math.PI) {
-      this.thetaDelta -= 2 * Math.PI
+      this.thetaDelta -= 2 * Math.PI;
     }
 
   }

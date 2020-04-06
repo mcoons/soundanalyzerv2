@@ -122,7 +122,7 @@ audio {
     z-index: 100;
 }
 
-.mic_Btn {
+.visual_Btn {
     position: absolute;
     width: 20%;
     height: 25px;

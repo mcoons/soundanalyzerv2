@@ -60,9 +60,23 @@ export class BlockPlaneManager3 {
             // console.log(this.audioManager.sample1[i])
             // console.log(map(this.audioManager.sample1[i], 0, 255, 100, 1000))
 
-            o.scaling.y = this.audioManager.sample1[i]/1.5 +.01;
+            let yy = this.audioManager.sample1[i];
+            yy = (yy/255 * yy/255) * 255;
+            o.scaling.y = yy/2 +.01;
+            // o.scaling.y = this.audioManager.sample1[i]/1.5 +.01;
+
+            let r = yy*.8;
+            let b = 200-yy*1.5;
+            let g = 128-yy/2;
+
             o.position.y = o.scaling.y / 2;
-            o.material.diffuseColor     = this.sceneManager.palette[ Math.round( map(this.audioManager.sample1[i], 0, 255, 1220,500)) ].color;
+            // o.material.diffuseColor     = this.sceneManager.palette[ Math.round( map(this.audioManager.sample1[i], 0, 255, 150,1420)) ].color;
+            //o.material.diffuseColor     = this.sceneManager.paletteBlue[ Math.round( map(this.audioManager.sample1[i], 0, 255, 10,240))%255 ].color;
+
+            o.material.diffuseColor.r = r/255;
+            o.material.diffuseColor.g = g/255;
+            o.material.diffuseColor.b = b/255;
+            
         })
     }
 
