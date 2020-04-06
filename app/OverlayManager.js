@@ -55,7 +55,7 @@ export class OverlayManager {
             self.canvas2D.setAttribute('height', style.height() * dpi);
         }
 
-    }  // end constructor
+    } // end constructor
 
     drawWaveform(canvas, drawData, width, height) {
         let ctx = canvas.getContext('2d');
@@ -82,27 +82,53 @@ export class OverlayManager {
         logToScreen(outputString);
     }
 
+    // draw2DBars() {
+    //     let WIDTH = this.canvas2D.width;
+    //     let HEIGHT = this.canvas2D.height;
+    //     let barWidth = (WIDTH / (this.audioManager.fr512DataLength - 80));
+
+    //     this.ctx2D.clearRect(0, 0, WIDTH, HEIGHT);
+
+    //     let x = 0;
+
+    //     for (var i = 0; i < this.audioManager.fr512BufferLength - 80; i++) {
+    //         let barHeight = this.audioManager.fr512DataArray[i] * 1 + 1;
+
+    //         var r = barHeight;
+    //         var g = 255 * i / this.audioManager.fr512DataLength;
+    //         var b = 255 - 128 * i / (this.audioManager.fr512DataLength - 80);
+
+    //         this.ctx2D.fillStyle = "rgba(" + r + "," + g + "," + b + ",.7)";
+    //         this.ctx2D.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
+
+    //         x += barWidth + 1;
+    //     }
+    // }
+
+
     draw2DBars() {
         let WIDTH = this.canvas2D.width;
         let HEIGHT = this.canvas2D.height;
-        let barWidth = (WIDTH / (this.audioManager.fr512DataLength - 80));
+        let barWidth = (WIDTH / (this.audioManager.sample1.length - 80));
 
         this.ctx2D.clearRect(0, 0, WIDTH, HEIGHT);
 
         let x = 0;
 
-        for (var i = 0; i < this.audioManager.fr512BufferLength - 80; i++) {
-            let barHeight = this.audioManager.fr512DataArray[i] * 1 + 1;
+        for (var i = 0; i < this.audioManager.sample1.length - 80; i++) {
+            // let barHeight = this.audioManager.sample1[i] * 1 + 1;
+            let barHeight = this.audioManager.sample1[i] * .5 + 1;
 
-            var r = barHeight;
-            var g = 255 *  i / this.audioManager.fr512DataLength;
-            var b = 255 -  128 * i / (this.audioManager.fr512DataLength - 80);
+            var r = barHeight*2-1;
+            var g = 255 * i / this.audioManager.sample1.length;
+            var b = 255 - 128 * i / (this.audioManager.sample1.length);
 
             this.ctx2D.fillStyle = "rgba(" + r + "," + g + "," + b + ",.7)";
             this.ctx2D.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
 
-            x += barWidth + 1;
+            x += barWidth; // +1
         }
     }
+
 
 }

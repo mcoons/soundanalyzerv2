@@ -19,6 +19,16 @@ export class StarManager {
         this.pieResolution = 256;
         this.objects = [];
         this.starMasters = [];
+
+        this.currentProcedure = this.createStarGroupRandom5;
+
+        this.sceneManager.scene.cameras[0].target = new BABYLON.Vector3(0, 0, 0);
+        this.sceneManager.scene.cameras[0].alpha = 4.72;
+        this.sceneManager.scene.cameras[0].beta = .01;
+        this.sceneManager.scene.cameras[0].radius = 682;
+
+        $("#cameraTarget").removeClass("hidden");
+
     }
 
     create() {
@@ -26,31 +36,20 @@ export class StarManager {
         this.masterTransform = new BABYLON.TransformNode("root");
         this.masterTransform.position = new BABYLON.Vector3(0, 0, 0);
 
-        // starMaster1 = new BABYLON.TransformNode("starMaster1");
-
-        // createStarGroup1(starMaster1);
-
-        // starMaster1.position = new BABYLON.Vector3(400, 0, 0);
-        // starMaster1.parent = this.masterTransform;
-        // starMaster1.scaling.x = .1;
-        // starMaster1.scaling.y = .1;
-        // starMaster1.scaling.z = .1;
-
         ////////////////////////////////////////////////////////
 
-         
         starMaster = new BABYLON.TransformNode("starMaster");
 
-        this.createStarGroupRandom5({
-            r: .95,
-            g: .45,
-            b: .95
-        }, {
-            x: 0,
-            y: 0,
-            z: 0
-        }, starMaster,
-        this.audioManager.soundArrays[0]);
+        this.currentProcedure({
+                r: .95,
+                g: .45,
+                b: .95
+            }, {
+                x: 0,
+                y: 0,
+                z: 0
+            }, starMaster,
+            this.audioManager.soundArrays[1]);
 
         starMaster.position = new BABYLON.Vector3(-300, 0, 100);
         starMaster.parent = this.masterTransform;
@@ -63,19 +62,18 @@ export class StarManager {
 
         ////////////////////////////////////////////////////////
 
-
         starMaster = new BABYLON.TransformNode("starMaster");
 
-        this.createStarGroupRandom5({
-            r: .95,
-            g: .45,
-            b: .95
-        }, {
-            x: 0,
-            y: 0,
-            z: 0
-        }, starMaster,
-        this.audioManager.soundArrays[1]);
+        this.currentProcedure({
+                r: .95,
+                g: .45,
+                b: .95
+            }, {
+                x: 0,
+                y: 0,
+                z: 0
+            }, starMaster,
+            this.audioManager.soundArrays[2]);
 
         starMaster.position = new BABYLON.Vector3(-100, 0, 100);
         starMaster.parent = this.masterTransform;
@@ -86,23 +84,21 @@ export class StarManager {
 
         this.starMasters.push(starMaster);
 
+        ////////////////////////////////////////////////////////
 
-        ////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////
-        
         starMaster = new BABYLON.TransformNode("starMaster");
 
         // this.createStarGroupRandom4({
-        this.createStarGroupRandom5({
-            r: .45,
-            g: .45,
-            b: .75
-        }, {
-            x: 0,
-            y: 0,
-            z: 0
-        }, starMaster,
-        this.audioManager.soundArrays[2]);
+        this.currentProcedure({
+                r: .45,
+                g: .45,
+                b: .75
+            }, {
+                x: 0,
+                y: 0,
+                z: 0
+            }, starMaster,
+            this.audioManager.soundArrays[3]);
 
         starMaster.position = new BABYLON.Vector3(100, 0, 100);
         starMaster.parent = this.masterTransform;
@@ -118,16 +114,16 @@ export class StarManager {
         starMaster = new BABYLON.TransformNode("starMaster");
 
         // this.createStarGroupRandom4({
-        this.createStarGroupRandom5({
-            r: .45,
-            g: .45,
-            b: .75
-        }, {
-            x: 0,
-            y: 0,
-            z: 0
-        }, starMaster,
-        this.audioManager.soundArrays[3]);
+        this.currentProcedure({
+                r: .45,
+                g: .45,
+                b: .75
+            }, {
+                x: 0,
+                y: 0,
+                z: 0
+            }, starMaster,
+            this.audioManager.soundArrays[4]);
 
         starMaster.position = new BABYLON.Vector3(300, 0, 100);
         starMaster.parent = this.masterTransform;
@@ -139,21 +135,20 @@ export class StarManager {
         this.starMasters.push(starMaster);
 
         ////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////
 
         starMaster = new BABYLON.TransformNode("starMaster");
 
         // this.createStarGroupRandom3({
-        this.createStarGroupRandom5({
-            r: .45,
-            g: .65,
-            b: .45
-        }, {
-            x: 0,
-            y: 0,
-            z: 0
-        }, starMaster,
-        this.audioManager.soundArrays[5]);
+        this.currentProcedure({
+                r: .45,
+                g: .65,
+                b: .45
+            }, {
+                x: 0,
+                y: 0,
+                z: 0
+            }, starMaster,
+            this.audioManager.soundArrays[5]);
 
         starMaster.position = new BABYLON.Vector3(-300, 0, -100);
         starMaster.parent = this.masterTransform;
@@ -166,54 +161,25 @@ export class StarManager {
 
         ////////////////////////////////////////////////////////
 
-
         starMaster = new BABYLON.TransformNode("starMaster");
 
         // this.createStarGroupRandom3({
-        this.createStarGroupRandom5({
-            r: .45,
-            g: .65,
-            b: .45
-        }, {
-            x: 0,
-            y: 0,
-            z: 0
-        }, starMaster,
-        this.audioManager.soundArrays[6]);
+        this.currentProcedure({
+                r: .45,
+                g: .65,
+                b: .45
+            }, {
+                x: 0,
+                y: 0,
+                z: 0
+            }, starMaster,
+            this.audioManager.soundArrays[6]);
 
         starMaster.position = new BABYLON.Vector3(-100, 0, -100);
         starMaster.parent = this.masterTransform;
-        starMaster.scaling.x = .3;
-        starMaster.scaling.y = .3;
-        starMaster.scaling.z = .3;
-        starMaster.rotation.y = Math.PI / 2;
-
-        this.starMasters.push(starMaster);
-
-
-
-    ////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////
-
-        starMaster = new BABYLON.TransformNode("starMaster");
-
-        // this.createStarGroupRandom2({
-        this.createStarGroupRandom5({
-            r: .75,
-            g: .45,
-            b: .45
-        }, {
-            x: 0,
-            y: 0,
-            z: 0
-        }, starMaster,
-        this.audioManager.soundArrays[7]);
-
-        starMaster.position = new BABYLON.Vector3(100, 0, -100);
-        starMaster.parent = this.masterTransform;
-        starMaster.scaling.x = .3;
-        starMaster.scaling.y = .3;
-        starMaster.scaling.z = .3;
+        starMaster.scaling.x = .33;
+        starMaster.scaling.y = .33;
+        starMaster.scaling.z = .33;
         starMaster.rotation.y = Math.PI / 2;
 
         this.starMasters.push(starMaster);
@@ -223,16 +189,41 @@ export class StarManager {
         starMaster = new BABYLON.TransformNode("starMaster");
 
         // this.createStarGroupRandom2({
-        this.createStarGroupRandom5({
-            r: .75,
-            g: .45,
-            b: .45
-        }, {
-            x: 0,
-            y: 0,
-            z: 0
-        }, starMaster,
-        this.audioManager.soundArrays[8]);
+        this.currentProcedure({
+                r: .75,
+                g: .45,
+                b: .45
+            }, {
+                x: 0,
+                y: 0,
+                z: 0
+            }, starMaster,
+            this.audioManager.soundArrays[7]);
+
+        starMaster.position = new BABYLON.Vector3(100, 0, -100);
+        starMaster.parent = this.masterTransform;
+        starMaster.scaling.x = .35;
+        starMaster.scaling.y = .35;
+        starMaster.scaling.z = .35;
+        starMaster.rotation.y = Math.PI / 2;
+
+        this.starMasters.push(starMaster);
+
+        ////////////////////////////////////////////////////////
+
+        starMaster = new BABYLON.TransformNode("starMaster");
+
+        // this.createStarGroupRandom2({
+        this.currentProcedure({
+                r: .75,
+                g: .45,
+                b: .45
+            }, {
+                x: 0,
+                y: 0,
+                z: 0
+            }, starMaster,
+            this.audioManager.soundArrays[8]);
 
         starMaster.position = new BABYLON.Vector3(300, 0, -100);
         starMaster.parent = this.masterTransform;
@@ -242,66 +233,6 @@ export class StarManager {
         starMaster.rotation.y = Math.PI / 2;
 
         this.starMasters.push(starMaster);
-
-
-
-
-
-
-
-
-        ////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////
-        
-        // starMaster = new BABYLON.TransformNode("starMaster");
-
-        // // this.createStarGroupRandom6({
-        // this.createStarGroupRandom5({
-        //     r: .45,
-        //     g: .45,
-        //     b: .45
-        // }, {
-        //     x: 0,
-        //     y: 0,
-        //     z: 0
-        // }, starMaster,
-        // this.audioManager.soundArrays[6]);
-
-        // starMaster.position = new BABYLON.Vector3(0, 0, 0);
-        // starMaster.parent = this.masterTransform;
-        // starMaster.scaling.x = .1;
-        // starMaster.scaling.y = .1;
-        // starMaster.scaling.z = .1;
-        // starMaster.rotation.y = Math.PI / 2;
-
-        // this.starMasters.push(starMaster);
-
-        ////////////////////////////////////////////////////////
-
-        // starMaster = new BABYLON.TransformNode("starMaster");
-
-        // // this.createStarGroupRandom6({
-        // this.createStarGroupRandom5({
-        //     r: .45,
-        //     g: .45,
-        //     b: .45
-        // }, {
-        //     x: 0,
-        //     y: 0,
-        //     z: 0
-        // }, starMaster,
-        // this.audioManager.soundArrays[3]);
-
-        // starMaster.position = new BABYLON.Vector3(0, 200, 0);
-        // starMaster.parent = this.masterTransform;
-        // starMaster.scaling.x = .1;
-        // starMaster.scaling.y = .1;
-        // starMaster.scaling.z = .1;
-        // starMaster.rotation.y = Math.PI / 2;
-
-        // this.starMasters.push(starMaster);
-
-        // this.eventBus.post("eventTest", 'argument');
 
     }
 
@@ -324,6 +255,8 @@ export class StarManager {
         this.masterTransform.dispose();
     }
 
+    /***  FOR REFERENCE ONLY ***/
+    //
     // this.soundArrays=[
     //     this.fr64DataArray,
     //     this.fr128DataArray,
@@ -340,7 +273,7 @@ export class StarManager {
 
         for (let index = 0; index < 5; index++) {
 
-            let star = new Star("Random Star 2-" + index, "star parent", null, getBiasedGlowMaterial(colorBias, this.scene), this.pieResolution, null, this.eventBus, this.scene, this.audioManager.soundArrays[7]);
+            let star = new Star("Random Star 2-" + index, "star parent", null, getBiasedGlowMaterial(colorBias, this.scene), this.pieResolution, null, this.eventBus, this.scene, dataSource);
             let rad = 20 * index + 10;
             star.setOptions(
                 Math.round(Math.random() * 20),
@@ -369,7 +302,7 @@ export class StarManager {
 
         for (let index = 0; index < 5; index++) {
 
-            let star = new Star("Random Star 3-" + index, "star parent", null, getBiasedGlowMaterial(colorBias, this.scene), this.pieResolution, null, this.eventBus, this.scene, this.audioManager.soundArrays[7]);
+            let star = new Star("Random Star 3-" + index, "star parent", null, getBiasedGlowMaterial(colorBias, this.scene), this.pieResolution, null, this.eventBus, this.scene, dataSource);
             let rad = 20 * index + 10;
             let i = Math.round(Math.random() * 10)
             star.setOptions(
@@ -399,7 +332,7 @@ export class StarManager {
 
         for (let index = 0; index < 5; index++) {
 
-            let star = new Star("Random Star 4-" + index, "star parent", null, getBiasedGlowMaterial(colorBias, this.scene), this.pieResolution, null, this.eventBus, this.scene, this.audioManager.soundArrays[7]);
+            let star = new Star("Random Star 4-" + index, "star parent", null, getBiasedGlowMaterial(colorBias, this.scene), this.pieResolution, null, this.eventBus, this.scene, dataSource);
             let rad = 8 * (9 - index) + 40;
             let i = Math.round(Math.random() * 10)
             star.setOptions(
@@ -426,8 +359,6 @@ export class StarManager {
     }
 
     createStarGroupRandom5(colorBias, rotationBias, parent, dataSource) {
-
-        console.log("dataSource for 5 is " + dataSource);
 
         for (let index = 0; index < 5; index++) {
 
@@ -463,7 +394,7 @@ export class StarManager {
 
         for (let index = 0; index < 15; index++) {
 
-            let star = new Star("Random Star 6-" + index, "star parent", null, getBiasedGlowMaterial(colorBias, this.scene), this.pieResolution, null, this.eventBus, this.scene, this.audioManager.soundArrays[7]);
+            let star = new Star("Random Star 6-" + index, "star parent", null, getBiasedGlowMaterial(colorBias, this.scene), this.pieResolution, null, this.eventBus, this.scene, dataSource);
             let rad = 30 * index + 20;
             let i = Math.round(Math.random() * 10 + 2);
             let s = Math.pow(2, Math.round(Math.random() * 1));

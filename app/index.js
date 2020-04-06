@@ -18,11 +18,11 @@ window.onload = function () {
 
     var nothing = new Audio("http://touchbasicapp.com/nothing.wav");
 
-    nothing.play().then(function() {
+    nothing.play().then(function () {
         console.log("Audio started unlocked!")
-        }).catch(function(){
+    }).catch(function () {
         console.log("Audio started locked")
-        })
+    })
 
     var options = {
         showBars: true,
@@ -40,6 +40,7 @@ window.onload = function () {
 
     // event bus test
     eventBus.subscribe("eventTest", eventTestCallback);
+
     function eventTestCallback() {
         console.log("Initial Event Received");
     }
@@ -60,7 +61,7 @@ window.onload = function () {
     // start the Overlay Manager (2D render loop using  window.requestAnimationFrame)
 
     var overlayManager = new OverlayManager('#canvas2D', options, eventBus, audioManager, sceneManager);
-    
+
     //////////////////////////////////////////////////////////////////////
     // event listeners
 
@@ -114,7 +115,7 @@ window.onload = function () {
     });
 
     // close site playlist
-    $("#closeBtn").click(function(){
+    $("#closeBtn").click(function () {
         $('.playlist').fadeOut(500);
     })
 
@@ -139,10 +140,10 @@ window.onload = function () {
         audioManager.audio.src = URL.createObjectURL(audioManager.fileList[0]);
         audioManager.audio.load();
         audioManager.audio.play()
-        .then(function() {
+            .then(function () {
                 console.log("Audio Successfully Playing")
             })
-        .catch(function(){
+            .catch(function () {
                 console.log("Audio Failed Playing")
             });
     };

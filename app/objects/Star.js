@@ -41,9 +41,10 @@ export class Star extends BaseObject {
         this.outerEndIndex = this.outerStartIndex + Math.round(this.outerItemsDesired);
 
         this.create();
-        
+
         var self = this;
         this.eventBus.subscribe("eventTest", eventTestCallback);
+
         function eventTestCallback() {
             // console.log("Event Received from " + self.name);
             // console.log("My position is " + self.mesh.position);
@@ -130,7 +131,7 @@ export class Star extends BaseObject {
         return `${this.name} says updated from star.`;
     }
 
-    remove(){
+    remove() {
         if (this.mesh) {
             this.mesh.dispose();
         }

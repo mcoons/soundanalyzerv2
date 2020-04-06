@@ -38,7 +38,7 @@ export class BlockSpiralManager {
 
       thing.position.x = radius * Math.cos(theta);
       thing.position.z = radius * Math.sin(theta);
-      thing.position.y = 0;
+      thing.position.y = 50;
       thing.rotation.y = -theta;
 
       let r = .5;
@@ -64,41 +64,36 @@ export class BlockSpiralManager {
 
 
   update() {
+    this.sceneManager.scene.cameras[0].alpha  += .001;
+    if (this.sceneManager.scene.cameras[0].alpha >= 2 * Math.PI ) {
+      this.sceneManager.scene.cameras[0].alpha -= 2 * Math.PI;
+    }
+
 
     this.objects.forEach((o, i) => {
       let y = (this.audioManager.sample1[i]);
-      y = (y/255 * y/255) * 255;
+      y = (y / 255 * y / 255) * 255;
 
       o.scaling.y = .05 + y / 17;
-      o.position.y = o.scaling.y / 2 - i / 10 + 25;
+      o.position.y = o.scaling.y / 2 - i / 10 + 50;
 
-      let b = y*.9;
-      let g = 128-y*1.5;
-      let r = 128-y/2;
+      let b = y * .9;
+      let g = 128 - y * 1.5;
+      let r = 128 - y / 2;
 
-      o.material.diffuseColor.r = r/255;
-      o.material.diffuseColor.g = g/255;
-      o.material.diffuseColor.b = b/255;
-      
-      
-      // try {
-      //   o.material.diffuseColor = this.sceneManager.paletteGray[Math.round(map(y, 0, 255, 10, 200)) % 255].color;
-      // } catch (error) {
-      //   console.log(error);
-
-      // }
+      o.material.diffuseColor.r = r / 255;
+      o.material.diffuseColor.g = g / 255;
+      o.material.diffuseColor.b = b / 255;
 
     });
 
   }
 
   remove() {
-
     this.objects.forEach(o => o.dispose());
     this.objects = null;
 
     this.wheel1Master.dispose();
-
   }
 
 }

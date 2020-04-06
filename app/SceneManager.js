@@ -3,22 +3,8 @@ import {
 } from './objects/StarManager.js';
 
 import {
-    MovingStarManager
-} from './objects/MovingStarManager.js';
-
-import {
     BlockSpiralManager
 } from './objects/BlockSpiralManager.js';
-
-import {
-    BlockPlaneManager
-} from './objects/BlockPlaneManager.js';
-
-
-import {
-    BlockPlaneManager2
-} from './objects/BlockPlaneManager2.js';
-
 
 import {
     BlockPlaneManager3
@@ -29,10 +15,6 @@ import {
 } from './objects/RippleManager.js';
 
 import {
-    WispManager
-} from './objects/WispManager.js';
-
-import {
     Clock
 } from './objects/Clock.js';
 
@@ -40,8 +22,9 @@ import {
     buildPalettes
 } from './utilities.js';
 
-import { EquationManager } from './objects/EquationManager.js';
-import { EquationManager2 } from './objects/EquationManager2.js';
+import {
+    EquationManager
+} from './objects/EquationManager.js';
 
 
 export class SceneManager {
@@ -63,13 +46,6 @@ export class SceneManager {
 
         // this.scene.debugLayer.show();
 
-
-        // this.defaultGridMaterial;
-        // this.skySphere;
-        // this.skyMaterial;
-        // this.waterMaterial
-        // this.waterMesh;
-
         this.palette = [];
         this.paletteGlow = [];
         this.paletteRed = [];
@@ -78,57 +54,52 @@ export class SceneManager {
         this.paletteGray = [];
         this.paletteMetallic = [];
 
-        buildPalettes(this.palette, this.paletteGlow, this.paletteRed, this.paletteGreen, this.paletteBlue, this.paletteGray, this.paletteMetallic, this.scene)
+        buildPalettes(this.palette, this.paletteGlow, this.paletteRed, this.paletteGreen, this.paletteBlue, this.paletteGray, this.paletteMetallic, this.scene);
 
-        // console.log(this.palette);
         this.masterTransform;
 
         // define preset camera positions
         this.cameraPositions = [{
-                lookat: new BABYLON.Vector3(-300, 0, 200),
+                lookat: new BABYLON.Vector3(-200, 0, 100),
                 alpha: -Math.PI / 2,
                 beta: 0.01,
-                radius: 320
+                radius: 250
             },
             {
-                lookat: new BABYLON.Vector3(300, 0, 200),
+                lookat: new BABYLON.Vector3(200, 0, 100),
                 alpha: -Math.PI / 2,
                 beta: 0.01,
-                radius: 320
+                radius: 250
             },
             {
                 lookat: new BABYLON.Vector3(0, 0, 0),
                 alpha: 4.711,
                 beta: 1.096,
-                radius: 1100
+                radius: 1300
             },
             {
-                lookat: new BABYLON.Vector3(-300, 0, -200),
+                lookat: new BABYLON.Vector3(-200, 0, -100),
                 alpha: -Math.PI / 2,
                 beta: .01,
-                radius: 320
+                radius: 250
             },
             {
-                lookat: new BABYLON.Vector3(300, 0, -200),
+                lookat: new BABYLON.Vector3(200, 0, -100),
                 alpha: -Math.PI / 2,
                 beta: 0.01,
-                radius: 320
+                radius: 250
             },
         ];
         // this.clock = new Clock(this.scene);
 
         this.managerClassIndex = 1;
         this.managerClasses = [
-//            MovingStarManager, 
-//            BlockPlaneManager, 
-//            BlockPlaneManager2, 
-            BlockPlaneManager3, 
-            BlockSpiralManager, 
-//            RippleManager, 
+            BlockPlaneManager3,
+            BlockSpiralManager,
+            //            RippleManager, 
             StarManager,
             EquationManager
-//            EquationManager2
-            /*, WispManager*/ ];
+        ];
 
         this.nextScene();
 
@@ -148,51 +119,7 @@ export class SceneManager {
         scene.ambientColor = new BABYLON.Color3(1.4, 1.3, 1.5);
 
         this.glowLayer = new BABYLON.GlowLayer("glow", scene);
-        this.glowLayer.intensity = 2.75;
-
-        // default object grid material
-        // this.defaultGridMaterial = new BABYLON.GridMaterial("defaultGridMaterial", scene);
-        // this.defaultGridMaterial.majorUnitFrequency = 10;
-        // this.defaultGridMaterial.minorUnitVisibility = .33;
-        // this.defaultGridMaterial.gridRatio = 0.75;
-        // this.defaultGridMaterial.mainColor = new BABYLON.Color3(0.8, 0.75, 0.6);
-        // this.defaultGridMaterial.lineColor = new BABYLON.Color3(0, .30, .30);
-        // this.defaultGridMaterial.backFaceCulling = false;
-
-        // sky grid material
-        // if (this.options.showSky) {
-        //     this.skyMaterial = new BABYLON.GridMaterial("skyMaterial", scene);
-        //     this.skyMaterial.majorUnitFrequency = 5;
-        //     this.skyMaterial.minorUnitVisibility = .43;
-        //     this.skyMaterial.gridRatio = 20.0;
-        //     this.skyMaterial.mainColor = new BABYLON.Color3(0, 0.05, 0.2);
-        //     this.skyMaterial.lineColor = new BABYLON.Color3(0, .30, .30);
-        //     this.skyMaterial.backFaceCulling = false;
-
-        //     this.skySphere = BABYLON.Mesh.CreateSphere("skySphere", 32, 19200, scene);
-        //     skySphere.material = this.skyMaterial;
-        // }
-
-        // Water material
-        // if (this.options.showWater) {
-        //     this.waterMaterial = new BABYLON.WaterMaterial("waterMaterial", scene, new BABYLON.Vector2(512, 512));
-        //     this.waterMaterial.bumpTexture = new BABYLON.Texture("//www.babylonjs.com/assets/waterbump.png", scene);
-        //     this.waterMaterial.windForce = -5;
-        //     this.waterMaterial.waveHeight = 0.4;
-        //     this.waterMaterial.bumpHeight = 0.06;
-        //     this.waterMaterial.waveLength = 0.12;
-        //     this.waterMaterial.waveSpeed = 30.0;
-        //     this.waterMaterial.colorBlendFactor = .5;
-        //     this.waterMaterial.windDirection = new BABYLON.Vector2(1, 1);
-        //     this.waterMaterial.colorBlendFactor = 0;
-
-        //     // Configure water material
-        //     this.waterMaterial.addToRenderList(skySphere);
-        //     // Water mesh
-        //     this.waterMesh = BABYLON.Mesh.CreateGround("waterMesh", 50000, 50000, 32, scene, false);
-        //     waterMesh.material = waterMaterial;
-        //     waterMesh.position.y = -80;
-        // }
+        this.glowLayer.intensity = 3.5;
 
         this.camera = new BABYLON.ArcRotateCamera("camera1", 4.7, 1.1, 1100, new BABYLON.Vector3(0, 0, 0), scene);
         this.camera.upperRadiusLimit = 9400;
@@ -219,42 +146,24 @@ export class SceneManager {
     }
 
     nextScene() {
-
-        // if (this.currentManager) {
-        //     this.currentManager.remove();
-        // }
-
-        // this.currentManager = null;
-        // this.scene.materials.forEach(m => {
-        //     if (m.name != "defaultGridMaterial" && m.name != "skyMaterial") {
-        //         m.dispose(true, true, true);
-        //     }
-        // });
-
-        // this.managerClassIndex = (this.managerClassIndex >= this.managerClasses.length - 1 ? 0 : this.managerClassIndex + 1);
-        // this.currentManager = new this.managerClasses[this.managerClassIndex](this, this.eventBus, this.audioManager);
-        // this.currentManager.create(this.scene, this.eventBus, this.audioManager);
-
         this.selectScene(this.managerClassIndex >= this.managerClasses.length - 1 ? 0 : this.managerClassIndex + 1);
-
     }
 
-    selectScene(index){
+    selectScene(index) {
+        $("#cameraTarget").addClass("hidden");
+
         if (this.currentManager) {
             this.currentManager.remove();
         }
 
         this.currentManager = null;
         this.scene.materials.forEach(m => {
-            if (m.name != "defaultGridMaterial" && m.name != "skyMaterial") {
-                m.dispose(true, true, true);
-            }
+            m.dispose(true, true, true);
         });
 
         this.managerClassIndex = index;
         this.currentManager = new this.managerClasses[this.managerClassIndex](this, this.eventBus, this.audioManager);
         this.currentManager.create(this.scene, this.eventBus, this.audioManager);
-
     }
 
 }
