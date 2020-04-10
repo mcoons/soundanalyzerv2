@@ -100,7 +100,7 @@ window.onload = function () {
             audioManager.streams.getTracks().forEach(function (track) {
                 track.stop();
                 console.log('Track Stopped');
-            })  
+            })
         } catch (error) {
             console.log("Streams error: " + error);
         }
@@ -136,7 +136,7 @@ window.onload = function () {
             audioManager.streams.getTracks().forEach(function (track) {
                 track.stop();
                 console.log('Track Stopped');
-            })  
+            })
         } catch (error) {
             console.log("Streams error: " + error);
         }
@@ -180,8 +180,8 @@ window.onload = function () {
                 title.innerHTML = current[0].innerHTML;
             }
             audioManager.initAudio(current);
-        } else 
-        if (!audioManager.isMic){
+        } else
+        if (!audioManager.isMic) {
             audioManager.localIndex++;
             if (audioManager.localIndex >= audioManager.fileList.length) {
                 audioManager.localIndex = 0;
@@ -199,6 +199,42 @@ window.onload = function () {
     // standard resize for 3D engine
     window.addEventListener('resize', function () {
         sceneManager.engine.resize();
+        fix_dpi();
     });
+
+    //get the canvas, canvas context, and dpi
+
+    function fix_dpi() {
+        let canvas2D = document.getElementById('canvas2D'),
+            canvas3D = document.getElementById('canvas3D'),
+            dpi = window.devicePixelRatio || 1;
+
+        //create a style object that returns width and height
+        let style2D = {
+            height() {
+                return +getComputedStyle(canvas2D).getPropertyValue('height').slice(0, -2);
+            },
+            width() {
+                return +getComputedStyle(canvas2D).getPropertyValue('width').slice(0, -2);
+            }
+        }
+
+        let style3D = {
+            height() {
+                return +getComputedStyle(canvas3D).getPropertyValue('height').slice(0, -2);
+            },
+            width() {
+                return +getComputedStyle(canvas3D).getPropertyValue('width').slice(0, -2);
+            }
+        }
+
+        //set the correct attributes for a crystal clear image!
+        canvas2D.setAttribute('width', style2D.width() * dpi);
+        canvas2D.setAttribute('height', style2D.height() * dpi);
+
+        //set the correct attributes for a crystal clear image!
+        canvas3D.setAttribute('width', style3D.width() * dpi);
+        canvas3D.setAttribute('height', style3D.height() * dpi);
+    }
 
 };

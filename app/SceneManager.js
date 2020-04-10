@@ -104,6 +104,7 @@ export class SceneManager {
         this.nextScene();
 
         this.scene.registerBeforeRender(() => {
+            this.fix_dpi();
             this.currentManager.update();
         });
 
@@ -164,6 +165,41 @@ export class SceneManager {
         this.managerClassIndex = index;
         this.currentManager = new this.managerClasses[this.managerClassIndex](this, this.eventBus, this.audioManager);
         this.currentManager.create(this.scene, this.eventBus, this.audioManager);
+    }   
+    
+    fix_dpi() {
+        let canvas2D = document.getElementById('canvas2D'),
+            canvas3D = document.getElementById('canvas3D'),
+            dpi = window.devicePixelRatio || 1;
+
+        //create a style object that returns width and height
+        let style2D = {
+            height() {
+                return +getComputedStyle(canvas2D).getPropertyValue('height').slice(0, -2);
+            },
+            width() {
+                return +getComputedStyle(canvas2D).getPropertyValue('width').slice(0, -2);
+            }
+        }
+
+        let style3D = {
+            height() {
+                return +getComputedStyle(canvas3D).getPropertyValue('height').slice(0, -2);
+            },
+            width() {
+                return +getComputedStyle(canvas3D).getPropertyValue('width').slice(0, -2);
+            }
+        }
+
+        //set the correct attributes for a crystal clear image!
+        canvas2D.setAttribute('width', style2D.width() * dpi);
+        canvas2D.setAttribute('height', style2D.height() * dpi);
+
+        //set the correct attributes for a crystal clear image!
+        canvas3D.setAttribute('width', style3D.width() * dpi);
+        canvas3D.setAttribute('height', style3D.height() * dpi);
     }
+
+
 
 }
