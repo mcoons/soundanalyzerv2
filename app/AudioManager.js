@@ -262,7 +262,7 @@ export class AudioManager {
         console.log("entered initAudio");
         var url = elem.attr('audiourl');
 
-        this.audio.src = "/app/assets/tracks/" + url;
+        this.audio.src = "app/assets/tracks/" + url;
         this.audio.load();
 
         $('.playlist li').removeClass('active');

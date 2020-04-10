@@ -16,13 +16,13 @@ import {
 
 window.onload = function () {
 
-    var nothing = new Audio("./nothing.wav");
+    // var nothing = new Audio("/nothing.wav");
 
-    nothing.play().then(function () {
-        console.log("Audio started unlocked!")
-    }).catch(function () {
-        console.log("Audio started locked")
-    })
+    // nothing.play().then(function () {
+    //     console.log("Audio started unlocked!")
+    // }).catch(function () {
+    //     console.log("Audio started locked")
+    // })
 
     var options = {
         showBars: true,
