@@ -16,7 +16,7 @@ import {
 
 window.onload = function () {
 
-    var nothing = new Audio("http://touchbasicapp.com/nothing.wav");
+    var nothing = new Audio("./nothing.wav");
 
     nothing.play().then(function () {
         console.log("Audio started unlocked!")
@@ -65,30 +65,19 @@ window.onload = function () {
     //////////////////////////////////////////////////////////////////////
     // event listeners
 
-    // change visual
+    // microphone selection
     $('#options_Btn').click(function () {
-
-        // sceneManager.scene.cameras[0].target = sceneManager.cameraPositions[2].lookat;
-        // sceneManager.scene.cameras[0].alpha = sceneManager.cameraPositions[2].alpha;
-        // sceneManager.scene.cameras[0].beta = sceneManager.cameraPositions[2].beta;
-        // sceneManager.scene.cameras[0].radius = sceneManager.cameraPositions[2].radius;
-
-        // sceneManager.nextScene();
-
         audioManager.initMic();
-
     });
 
     // change visual
     $('#visual_Btn').click(function () {
-
         sceneManager.scene.cameras[0].target = sceneManager.cameraPositions[2].lookat;
         sceneManager.scene.cameras[0].alpha = sceneManager.cameraPositions[2].alpha;
         sceneManager.scene.cameras[0].beta = sceneManager.cameraPositions[2].beta;
         sceneManager.scene.cameras[0].radius = sceneManager.cameraPositions[2].radius;
 
         sceneManager.nextScene();
-
     });
 
     // camera buttons
@@ -116,8 +105,6 @@ window.onload = function () {
             console.log("Streams error: " + error);
         }
 
-
-
         let title = $('#title')[0];
 
         audioManager.isSiteTrack = true;
@@ -137,7 +124,7 @@ window.onload = function () {
         $('.playlist').fadeOut(500);
     })
 
-    // custom button that calls click on hidden fileInput element
+    // custom button that calls click on hidden fileInput element below
     $('.local_Btn').bind("click", function () {
         $('#fileInput').click();
     });
