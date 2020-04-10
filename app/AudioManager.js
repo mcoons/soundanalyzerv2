@@ -1,10 +1,14 @@
 export class AudioManager {
 
+
     constructor() {
 
         this.fileInput = $("#fileInput")[0];
         this.audio = $("#audio")[0];
         this.audio.volume = .7;
+
+        this.streams;
+
 
         this.audio.addEventListener("loadstart", function () {
             //grabbing the file
@@ -69,7 +73,9 @@ export class AudioManager {
             alert('Web Audio API is not supported in this browser');
         }
 
-        this.audioSrc = this.audioCtx.createMediaElementSource(this.audio);
+        this.unlockAudioContext(this.audioCtx);
+
+        this.audioSrc = this.audioCtx.createMediaElementSource(this.audio);  /* <<<<<<<<<<<<<<<<<<< */
 
         this.fr64Analyser = this.audioCtx.createAnalyser();
         this.fr64Analyser.fftSize = 128;
@@ -253,21 +259,88 @@ export class AudioManager {
     }
 
     initAudio(elem) {
-
         console.log("entered initAudio");
         var url = elem.attr('audiourl');
 
         this.audio.src = "/app/assets/tracks/" + url;
         this.audio.load();
-        // this.audio.play().then(function () {
-        //     console.log("Audio Successfully Playing")
-        // }).catch(function () {
-        //     console.log("Audio Failed Playing")
-        // });
-        // console.log(this.audio);
 
         $('.playlist li').removeClass('active');
         elem.addClass('active');
+    }
+
+    initMic(){
+
+        function errorMsg(msg, error) {
+            alert("Error: " + msg);
+            if (typeof error !== 'undefined') {
+                console.error(error);
+            }
+        }
+
+        function hasGetUserMedia() {
+            return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+        }
+
+        if (hasGetUserMedia()) {
+            alert("gtg");
+        } else {
+            alert('getUserMedia() is not supported by your browser');
+            return;
+        }
+
+        'use strict';
+
+        var constraints = window.constraints = {
+            audio: true
+        };
+
+        let me = this;
+
+        navigator.mediaDevices.getUserMedia(constraints)
+            .then(function (streams) {
+
+                // var audioTracks = streams.getAudioTracks();
+
+                // setTimeout(() => {
+                //     console.log(streams.getTracks());
+                //     streams.getTracks().forEach(function (track) {
+                //         track.stop();
+                //         console.log('Track Stopped');
+                //         clearInterval(interval);
+                //     })
+                // }, 1000);
+
+
+                // Create a MediaStreamAudioSourceNode
+                // Feed the HTMLMediaElement into it
+                // var audioCtx = new AudioContext();
+
+                me.streams = streams;
+                me.audioSrc = me.audioCtx.createMediaStreamSource(me.streams);
+               
+
+                // var fr64Analyser = audioCtx.createAnalyser();
+                // fr64Analyser.fftSize = 128;
+                // fr64Analyser.smoothingTimeConstant = 0.9;
+                // fr64DataArray = new Uint8Array(fr64Analyser.frequencyBinCount);
+
+                // source.connect(fr64Analyser);
+
+                // let interval = setInterval(() => {
+                //     fr64Analyser.getByteFrequencyData(fr64DataArray);
+                //     console.log(fr64DataArray[32]);
+                // }, 20);
+
+            })
+            .catch(function (error) {
+                if (error.name === 'PermissionDeniedError') {
+                    errorMsg('Permissions have not been granted to use your camera and ' +
+                        'microphone, you need to allow the page access to your devices in ' +
+                        'order for the demo to work.');
+                }
+                errorMsg('getUserMedia error: ' + error.name, error);
+            });
     }
 
     analyzeData() {
@@ -345,4 +418,12 @@ export class AudioManager {
         return sourceData.map(n => n * multiplier * 255);
     }
 
+    unlockAudioContext(audioCtx) {
+        if (audioCtx.state !== 'suspended') return;
+        const b = document.body;
+        const events = ['touchstart','touchend', 'mousedown','keydown'];
+        events.forEach(e => b.addEventListener(e, unlock, false));
+        function unlock() { audioCtx.resume().then(clean); }
+        function clean() { events.forEach(e => b.removeEventListener(e, unlock)); }
+      }
 }

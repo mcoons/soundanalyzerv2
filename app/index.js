@@ -68,12 +68,14 @@ window.onload = function () {
     // change visual
     $('#options_Btn').click(function () {
 
-        sceneManager.scene.cameras[0].target = sceneManager.cameraPositions[2].lookat;
-        sceneManager.scene.cameras[0].alpha = sceneManager.cameraPositions[2].alpha;
-        sceneManager.scene.cameras[0].beta = sceneManager.cameraPositions[2].beta;
-        sceneManager.scene.cameras[0].radius = sceneManager.cameraPositions[2].radius;
+        // sceneManager.scene.cameras[0].target = sceneManager.cameraPositions[2].lookat;
+        // sceneManager.scene.cameras[0].alpha = sceneManager.cameraPositions[2].alpha;
+        // sceneManager.scene.cameras[0].beta = sceneManager.cameraPositions[2].beta;
+        // sceneManager.scene.cameras[0].radius = sceneManager.cameraPositions[2].radius;
 
-        sceneManager.nextScene();
+        // sceneManager.nextScene();
+
+        audioManager.initMic();
 
     });
 
@@ -104,10 +106,26 @@ window.onload = function () {
 
     // playlist elements - click
     $('.playlist li').click(function () {
+
+        try {
+            audioManager.streams.getTracks().forEach(function (track) {
+                track.stop();
+                console.log('Track Stopped');
+            })  
+        } catch (error) {
+            console.log("Streams error: " + error);
+        }
+
+
+
         let title = $('#title')[0];
+
         audioManager.isSiteTrack = true;
+        audioManager.isMic = false;
+
         audioManager.siteIndex = Number($(this).attr('index'));
         audioManager.initAudio($(this));
+
         if (options.showTitle) {
             title.innerHTML = this.innerHTML;
         }
@@ -126,9 +144,22 @@ window.onload = function () {
 
     // local file selection that is hidden
     fileInput.onchange = function () {
+
+        try {
+            audioManager.streams.getTracks().forEach(function (track) {
+                track.stop();
+                console.log('Track Stopped');
+            })  
+        } catch (error) {
+            console.log("Streams error: " + error);
+        }
+
+
         var files = this.files;
 
         audioManager.isSiteTrack = false;
+        audioManager.isMic = false;
+
         let title = $('#title')[0];
 
         if (options.showTitle) {
@@ -162,7 +193,8 @@ window.onload = function () {
                 title.innerHTML = current[0].innerHTML;
             }
             audioManager.initAudio(current);
-        } else {
+        } else 
+        if (!audioManager.isMic){
             audioManager.localIndex++;
             if (audioManager.localIndex >= audioManager.fileList.length) {
                 audioManager.localIndex = 0;
@@ -172,10 +204,12 @@ window.onload = function () {
             }
             audioManager.audio.src = URL.createObjectURL(audioManager.fileList[audioManager.localIndex]);
             audioManager.audio.load();
+        } else {
+            console.log("On ended of mic");
         }
     };
 
-    // standard resoze for 3D engine
+    // standard resize for 3D engine
     window.addEventListener('resize', function () {
         sceneManager.engine.resize();
     });
