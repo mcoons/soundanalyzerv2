@@ -22,7 +22,8 @@ body {
     left: 10%;
     width: 80%;
     height: 90%;
-    touch-action: none;
+    -ms-touch-action: none;
+        touch-action: none;
 }
 
 #canvas3D {
@@ -39,8 +40,12 @@ body {
     pointer-events: none;
     font-family: 'Arima Madurai', cursive;
     position: absolute;
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
-    justify-content: center;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
     margin: 0;
     padding: 0;
     width: 100%;
@@ -48,7 +53,8 @@ body {
     font-size: 3vw;
     color: black;
     z-index: 50;
-    touch-action: none;
+    -ms-touch-action: none;
+        touch-action: none;
     text-shadow:
     -1px -1px 0 #fff,
     1px -1px 0 #fff,
@@ -153,6 +159,7 @@ audio {
     border-bottom: 2px solid rgb(100, 100, 100);
     border-left: 2px solid rgb(172, 172, 172);
     border-right: 2px solid rgb(100, 100, 100);
+    background: -webkit-linear-gradient(top left, rgb(227, 240, 255), rgb(186, 217, 255));
     background: linear-gradient(to bottom right, rgb(227, 240, 255), rgb(186, 217, 255));
 }
 
