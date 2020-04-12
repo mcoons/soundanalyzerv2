@@ -18,6 +18,18 @@ export class OverlayManager {
         this.ctx2D.globalAlpha = .5;
 
         var self = this;
+
+        window.requestAnimationFrame = (function(){
+            return window.requestAnimationFrame  ||
+              window.webkitRequestAnimationFrame ||
+              window.mozRequestAnimationFrame    ||
+              window.oRequestAnimationFrame      ||
+              window.msRequestAnimationFrame     ||
+              function(callback){
+              window.setTimeout(callback, 1000 / 60);
+            };
+            })();
+
         window.requestAnimationFrame(render2DFrame);
 
         function render2DFrame() {
@@ -28,7 +40,8 @@ export class OverlayManager {
             }
 
             if (self.options.showWaveform) {
-                self.drawWaveform(self.canvas2D, self.audioManager.tdDataArrayNormalized, self.canvas2D.width, 60);
+                // self.drawWaveform(self.canvas2D, self.audioManager.tdDataArrayNormalized, self.canvas2D.width, 60);
+                self.drawWaveform(self.canvas2D, self.audioManager.tdDataArray, self.canvas2D.width, 60);
             }
 
             if (self.options.showConsole) {
@@ -61,7 +74,7 @@ export class OverlayManager {
         let ctx = canvas.getContext('2d');
         let drawHeight = height / 2;
 
-        ctx.lineWidth = 5;
+        ctx.lineWidth = 3;
         ctx.moveTo(0, drawHeight);
         ctx.beginPath();
         for (let i = 0; i < width; i++) {
@@ -107,27 +120,56 @@ export class OverlayManager {
 
 
     draw2DBars() {
+
+let dataSource = this.audioManager.sample1;
+
         let WIDTH = this.canvas2D.width;
         let HEIGHT = this.canvas2D.height;
-        let barWidth = (WIDTH / (this.audioManager.sample1.length - 80));
+        let barWidth = (WIDTH / (dataSource.length))-1; // -80
 
         this.ctx2D.clearRect(0, 0, WIDTH, HEIGHT);
 
         let x = 0;
 
-        for (var i = 0; i < this.audioManager.sample1.length - 80; i++) {
-            // let barHeight = this.audioManager.sample1[i] * 1 + 1;
-            let barHeight = this.audioManager.sample1[i] * .5 + 1;
+        for (var i = 0; i < dataSource.length; i++) { // -80
+            // let barHeight = dataSource[i] * 1 + 1;
+            let barHeight = dataSource[i] * .5 + 1;
 
-            var r = barHeight*2-1;
-            var g = 255 * i / this.audioManager.sample1.length;
-            var b = 255 - 128 * i / (this.audioManager.sample1.length);
+            var r = barHeight * 2 - 1;
+            var g = 255 * i / dataSource.length;
+            var b = 255 - 128 * i / (dataSource.length);
 
             this.ctx2D.fillStyle = "rgba(" + r + "," + g + "," + b + ",.7)";
             this.ctx2D.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
 
-            x += barWidth; // +1
+            x += barWidth +1;
         }
+
+        // draw frequency averages
+        let topBuckets = this.audioManager.getTopBuckets();
+
+        // this.ctx2D.fillStyle = "rgba(255,255,255,.7)";
+        // topBuckets.forEach(b => {
+        //     this.ctx2D.fillRect(barWidth * b.index, HEIGHT - (30 + 5 * b.value), barWidth, barWidth);
+        // });
+
+
+        this.ctx2D.beginPath(); // Start a new path
+        this.ctx2D.strokeStyle = "rgba(255,255,255,.7)";
+        this.ctx2D.lineWidth = 3;
+
+
+        topBuckets.forEach((b, i) => {
+            if (i == 0) {
+                this.ctx2D.moveTo((barWidth+1) * b.index, HEIGHT - (50 + 5 * b.value));
+            } else {
+                this.ctx2D.lineTo((barWidth+1) * b.index, HEIGHT - (50 + 5 * b.value));
+            }
+        });
+
+
+        this.ctx2D.stroke(); // Render the path
+
     }
 
 

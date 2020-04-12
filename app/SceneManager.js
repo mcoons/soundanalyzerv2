@@ -105,6 +105,8 @@ export class SceneManager {
 
         this.scene.registerBeforeRender(() => {
             this.fix_dpi();
+            this.audioManager.analyzeData();
+
             this.currentManager.update();
         });
 
@@ -131,16 +133,16 @@ export class SceneManager {
         var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(-1, -1, 0), scene);
         light.intensity = 1.5;
 
-        var pointLight1 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(200, 300, -600), scene);
+        var pointLight1 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(500, 500, -600), scene);
         // pointLight1.intensity = 1.8;
 
-        var pointLight2 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(-200, -300, 600), scene);
+        var pointLight2 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(-500, -500, 600), scene);
         // pointLight2.intensity = 1.3;
 
-        var pointLight3 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(0, 200, 0), scene);
+        var pointLight3 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(0, 500, 0), scene);
         // pointLight3.intensity = 1.8;
 
-        var pointLight4 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(300, 480, -280), scene);
+        var pointLight4 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(500, 480, -280), scene);
         // pointLight4.intensity = 1.0;
 
         return scene;

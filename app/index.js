@@ -51,6 +51,7 @@ window.onload = function () {
     // start the Audio Manager (audio loop using  setInterval of 0020 ms)
 
     var audioManager = new AudioManager();
+    window.audioManager = audioManager;
 
     //////////////////////////////////////////////////////////////////////
     // start the Sene Manager (3D render loop using  engine.runRenderLoop)
@@ -105,6 +106,9 @@ window.onload = function () {
             console.log("Streams error: " + error);
         }
 
+        audioManager.getTopBuckets();
+        audioManager.clearSampleArrays();
+
         let title = $('#title')[0];
 
         audioManager.isSiteTrack = true;
@@ -141,6 +145,8 @@ window.onload = function () {
             console.log("Streams error: " + error);
         }
 
+        audioManager.getTopBuckets();
+        audioManager.clearSampleArrays();
 
         var files = this.files;
 
@@ -169,6 +175,9 @@ window.onload = function () {
     // advance to next song
     audio.onended = function () {
         let title = $('#title')[0];
+
+        audioManager.getTopBuckets();
+        audioManager.clearSampleArrays();
 
         if (audioManager.isSiteTrack) {
             audioManager.siteIndex++;

@@ -107,14 +107,21 @@ audio {
     border-radius: 30px;
 }
 
-#fileInput,
+#fileInput{
+    position: absolute;
+    width: 20%;
+    height: 25px;
+    bottom: 5px;
+    left: 30%;
+    z-index: 100;
+}
+
 .local_Btn {
     position: absolute;
     width: 20%;
     height: 25px;
     bottom: 5px;
     left: 30%;
-    /* border-radius: 30px; */
     z-index: 100;
 }
 
@@ -124,7 +131,6 @@ audio {
     height: 25px;
     bottom: 5px;
     left: 10%;
-    /* border-radius: 30px; */
     z-index: 100;
 }
 
@@ -134,7 +140,6 @@ audio {
     height: 25px;
     bottom: 5px;
     left: 70%;
-    /* border-radius: 30px; */
     z-index: 100;
 }
 
@@ -144,7 +149,6 @@ audio {
     height: 25px;
     bottom: 5px;
     left: 50%;
-    /* border-radius: 30px; */
     z-index: 100;
 }
 

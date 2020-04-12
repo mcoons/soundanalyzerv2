@@ -1,3 +1,9 @@
+// the full domain extends from 0 to 22,050 Hz
+// frequencies are spread linearly from 0 to 1/2 of the sample rate
+// for 48000 sample rate, the last item of the array will represent the decibel value for 24000 Hz
+// minDecibels 0 dB is the loudest possible sound, default -100 dB
+// maxDecibels default value is -30 dB
+
 export class AudioManager {
 
 
@@ -5,9 +11,17 @@ export class AudioManager {
 
         this.fileInput = $("#fileInput")[0];
         this.audio = $("#audio")[0];
-        this.audio.volume = .7;
-
+        
         this.streams;
+        
+
+        this.audio.volume = .7;
+        this.smoothingConstant = .9;
+        this.maxAverages = 100;
+        this.minDecibels = -100;  // -100
+        this.maxDecibels = 0;   // -30 
+        this.tdHistoryArraySize = 64;  // 4096
+
 
 
         this.audio.addEventListener("loadstart", function () {
@@ -75,11 +89,13 @@ export class AudioManager {
 
         this.unlockAudioContext(this.audioCtx);
 
-        this.audioSrc = this.audioCtx.createMediaElementSource(this.audio);  /* <<<<<<<<<<<<<<<<<<< */
+        this.audioSrc = this.audioCtx.createMediaElementSource(this.audio); /* <<<<<<<<<<<<<<<<<<< */
 
         this.fr64Analyser = this.audioCtx.createAnalyser();
         this.fr64Analyser.fftSize = 128;
-        this.fr64Analyser.smoothingTimeConstant = 0.9;
+        this.fr64Analyser.minDecibels = this.minDecibels;
+        this.fr64Analyser.maxDecibels = this.maxDecibels;
+        this.fr64Analyser.smoothingTimeConstant = this.smoothingConstant;
         this.fr64BufferLength = this.fr64Analyser.frequencyBinCount;
         this.fr64DataLength = this.fr64BufferLength;
         this.fr64DataArray = new Uint8Array(this.fr64BufferLength);
@@ -88,7 +104,9 @@ export class AudioManager {
 
         this.fr128Analyser = this.audioCtx.createAnalyser();
         this.fr128Analyser.fftSize = 256;
-        this.fr128Analyser.smoothingTimeConstant = 0.9;
+        this.fr128Analyser.minDecibels = this.minDecibels;
+        this.fr128Analyser.maxDecibels = this.maxDecibels;
+        this.fr128Analyser.smoothingTimeConstant = this.smoothingConstant;
         this.fr128BufferLength = this.fr128Analyser.frequencyBinCount;
         this.fr128DataLength = this.fr128BufferLength;
         this.fr128DataArray = new Uint8Array(this.fr128BufferLength);
@@ -97,7 +115,9 @@ export class AudioManager {
 
         this.fr256Analyser = this.audioCtx.createAnalyser();
         this.fr256Analyser.fftSize = 512;
-        this.fr256Analyser.smoothingTimeConstant = 0.9;
+        this.fr256Analyser.minDecibels = this.minDecibels;
+        this.fr256Analyser.maxDecibels = this.maxDecibels;
+        this.fr256Analyser.smoothingTimeConstant = this.smoothingConstant;
         this.fr256BufferLength = this.fr256Analyser.frequencyBinCount;
         this.fr256DataLength = this.fr256BufferLength;
         this.fr256DataArray = new Uint8Array(this.fr256BufferLength);
@@ -106,7 +126,9 @@ export class AudioManager {
 
         this.fr512Analyser = this.audioCtx.createAnalyser();
         this.fr512Analyser.fftSize = 1024;
-        this.fr512Analyser.smoothingTimeConstant = 0.9;
+        this.fr512Analyser.minDecibels = this.minDecibels;
+        this.fr512Analyser.maxDecibels = this.maxDecibels;
+        this.fr512Analyser.smoothingTimeConstant = this.smoothingConstant;
         this.fr512BufferLength = this.fr512Analyser.frequencyBinCount;
         this.fr512DataLength = this.fr512BufferLength;
         this.fr512DataArray = new Uint8Array(this.fr512BufferLength);
@@ -115,7 +137,9 @@ export class AudioManager {
 
         this.fr1024Analyser = this.audioCtx.createAnalyser();
         this.fr1024Analyser.fftSize = 2048;
-        this.fr1024Analyser.smoothingTimeConstant = 0.9;
+        this.fr1024Analyser.minDecibels = this.minDecibels;
+        this.fr1024Analyser.maxDecibels = this.maxDecibels;
+        this.fr1024Analyser.smoothingTimeConstant = this.smoothingConstant;
         this.fr1024BufferLength = this.fr1024Analyser.frequencyBinCount;
         this.fr1024DataLength = this.fr1024BufferLength;
         this.fr1024DataArray = new Uint8Array(this.fr1024BufferLength);
@@ -124,7 +148,9 @@ export class AudioManager {
 
         this.fr2048Analyser = this.audioCtx.createAnalyser();
         this.fr2048Analyser.fftSize = 4096;
-        this.fr2048Analyser.smoothingTimeConstant = 0.9;
+        this.fr2048Analyser.minDecibels = this.minDecibels;
+        this.fr2048Analyser.maxDecibels = this.maxDecibels;
+        this.fr2048Analyser.smoothingTimeConstant = this.smoothingConstant;
         this.fr2048BufferLength = this.fr2048Analyser.frequencyBinCount;
         this.fr2048DataLength = this.fr2048BufferLength;
         this.fr2048DataArray = new Uint8Array(this.fr2048BufferLength);
@@ -133,7 +159,9 @@ export class AudioManager {
 
         this.fr4096Analyser = this.audioCtx.createAnalyser();
         this.fr4096Analyser.fftSize = 8192;
-        this.fr4096Analyser.smoothingTimeConstant = 0.9;
+        this.fr4096Analyser.minDecibels = this.minDecibels;
+        this.fr4096Analyser.maxDecibels = this.maxDecibels;
+        this.fr4096Analyser.smoothingTimeConstant = this.smoothingConstant;
         this.fr4096BufferLength = this.fr4096Analyser.frequencyBinCount;
         this.fr4096DataLength = this.fr4096BufferLength;
         this.fr4096DataArray = new Uint8Array(this.fr4096BufferLength);
@@ -142,7 +170,9 @@ export class AudioManager {
 
         this.fr8192Analyser = this.audioCtx.createAnalyser();
         this.fr8192Analyser.fftSize = 16384;
-        this.fr8192Analyser.smoothingTimeConstant = 0.9;
+        this.fr8192Analyser.minDecibels = this.minDecibels;
+        this.fr8192Analyser.maxDecibels = this.maxDecibels;
+        this.fr8192Analyser.smoothingTimeConstant = this.smoothingConstant;
         this.fr8192BufferLength = this.fr8192Analyser.frequencyBinCount;
         this.fr8192DataLength = this.fr8192BufferLength;
         this.fr8192DataArray = new Uint8Array(this.fr8192BufferLength);
@@ -151,7 +181,9 @@ export class AudioManager {
 
         this.fr16384Analyser = this.audioCtx.createAnalyser();
         this.fr16384Analyser.fftSize = 32768;
-        this.fr16384Analyser.smoothingTimeConstant = 0.9;
+        this.fr16384Analyser.minDecibels = this.minDecibels;
+        this.fr16384Analyser.maxDecibels = this.maxDecibels;
+        this.fr16384Analyser.smoothingTimeConstant = this.smoothingConstant;
         this.fr16384BufferLength = this.fr16384Analyser.frequencyBinCount;
         this.fr16384DataLength = this.fr16384BufferLength;
         this.fr16384DataArray = new Uint8Array(this.fr16384BufferLength);
@@ -164,7 +196,9 @@ export class AudioManager {
 
         this.frAnalyser = this.audioCtx.createAnalyser();
         this.frAnalyser.fftSize = 256;
-        this.frAnalyser.smoothingTimeConstant = 0.9;
+        this.frAnalyser.minDecibels = this.minDecibels;
+        this.frAnalyser.maxDecibels = this.maxDecibels;
+        this.frAnalyser.smoothingTimeConstant = this.smoothingConstant;
         this.frBufferLength = this.frAnalyser.frequencyBinCount;
         this.frDataLength = this.frBufferLength;
         this.frDataArray = new Uint8Array(this.frBufferLength);
@@ -172,7 +206,9 @@ export class AudioManager {
 
         this.frAnalyserAll = this.audioCtx.createAnalyser();
         this.frAnalyserAll.fftSize = 32768;
-        this.frAnalyserAll.smoothingTimeConstant = 0.9;
+        this.frAnalyserAll.minDecibels = this.minDecibels;
+        this.frAnalyserAll.maxDecibels = this.maxDecibels;
+        this.frAnalyserAll.smoothingTimeConstant = this.smoothingConstant;
         this.frBufferLengthAll = this.frAnalyserAll.frequencyBinCount;
         this.frDataLengthAll = this.frBufferLengthAll;
         this.frDataArrayAll = new Uint8Array(this.frBufferLengthAll);
@@ -181,22 +217,23 @@ export class AudioManager {
 
         this.tdAnalyser = this.audioCtx.createAnalyser();
         this.tdAnalyser.fftSize = 4096;
-        this.tdAnalyser.smoothingTimeConstant = 0.9;
+        this.tdAnalyser.minDecibels = this.minDecibels;
+        this.tdAnalyser.maxDecibels = this.maxDecibels;
+        this.tdAnalyser.smoothingTimeConstant = this.smoothingConstant;
         this.tdBufferLength = this.tdAnalyser.frequencyBinCount;
         this.tdDataLength = this.tdBufferLength;
         this.tdDataArray = new Uint8Array(this.tdBufferLength);
         this.tdDataArrayNormalized = new Uint8Array(this.frBufferLength);
 
         // this.tdHistory = [];
-        this.arraySize = 4096;
-        this.tdHistory = Array(this.arraySize).fill(0);
+        this.tdHistory = Array(this.tdHistoryArraySize).fill(0);
 
         this.sample1 = [];
         this.sample1Normalized = [];
+        this.sample1Totals = [];
+        this.sample1Averages = [];
 
-        for (let index = 0; index < 576; index++) {
-            this.sample1[index] = 0;
-        }
+        this.clearSampleArrays();
 
         this.soundArrays = [
             this.fr64DataArray,
@@ -225,18 +262,33 @@ export class AudioManager {
         ];
 
 
-        this.audioSrc.connect(this.fr64Analyser);
-        this.fr64Analyser.connect(this.fr128Analyser);
-        this.fr128Analyser.connect(this.fr256Analyser);
-        this.fr256Analyser.connect(this.fr512Analyser);
-        this.fr512Analyser.connect(this.fr1024Analyser);
-        this.fr1024Analyser.connect(this.fr2048Analyser);
-        this.fr2048Analyser.connect(this.fr4096Analyser);
-        this.fr4096Analyser.connect(this.fr8192Analyser);
-        this.fr8192Analyser.connect(this.fr16384Analyser);
-        this.fr16384Analyser.connect(this.frAnalyser);
-        this.frAnalyser.connect(this.frAnalyserAll);
-        this.frAnalyserAll.connect(this.tdAnalyser);
+        // this.audioSrc.connect(this.fr64Analyser);
+        // this.fr64Analyser.connect(this.fr128Analyser);
+        // this.fr128Analyser.connect(this.fr256Analyser);
+        // this.fr256Analyser.connect(this.fr512Analyser);
+        // this.fr512Analyser.connect(this.fr1024Analyser);
+        // this.fr1024Analyser.connect(this.fr2048Analyser);
+        // this.fr2048Analyser.connect(this.fr4096Analyser);
+        // this.fr4096Analyser.connect(this.fr8192Analyser);
+        // this.fr8192Analyser.connect(this.fr16384Analyser);
+        // this.fr16384Analyser.connect(this.frAnalyser);
+        // this.frAnalyser.connect(this.frAnalyserAll);
+        // this.frAnalyserAll.connect(this.tdAnalyser);
+        // this.tdAnalyser.connect(this.audioCtx.destination);
+
+
+        this.audioSrc.connect(this.fr16384Analyser);
+        this.fr16384Analyser.connect(this.fr8192Analyser);
+        this.fr8192Analyser.connect(this.fr4096Analyser);
+        this.fr4096Analyser.connect(this.fr2048Analyser);
+        this.fr2048Analyser.connect(this.fr1024Analyser);
+        this.fr1024Analyser.connect(this.fr512Analyser);
+        this.fr512Analyser.connect(this.fr256Analyser);
+        this.fr256Analyser.connect(this.fr128Analyser);
+        this.fr128Analyser.connect(this.fr64Analyser);
+        this.fr64Analyser.connect(this.frAnalyserAll);
+        this.frAnalyserAll.connect(this.frAnalyser);
+        this.frAnalyser.connect(this.tdAnalyser);
         this.tdAnalyser.connect(this.audioCtx.destination);
 
         this.siteIndex = Math.round(Math.random() * 12) + 1;
@@ -252,11 +304,12 @@ export class AudioManager {
         title.innerHTML = current[0].innerHTML;
         this.initAudio($(current));
 
-        setInterval(() => {
-            this.analyzeData();
-        }, 20);
+        // setInterval(() => {
+        //     this.analyzeData();
+        // }, 60);
 
     }
+
 
     initAudio(elem) {
         console.log("entered initAudio");
@@ -269,7 +322,7 @@ export class AudioManager {
         elem.addClass('active');
     }
 
-    initMic(){
+    initMic() {
 
         function errorMsg(msg, error) {
             alert("Error: " + msg);
@@ -318,11 +371,11 @@ export class AudioManager {
 
                 me.streams = streams;
                 me.audioSrc = me.audioCtx.createMediaStreamSource(me.streams);
-               
+
 
                 // var fr64Analyser = audioCtx.createAnalyser();
                 // fr64Analyser.fftSize = 128;
-                // fr64Analyser.smoothingTimeConstant = 0.9;
+                // fr64Analyser.smoothingTimeConstant = this.smoothingConstant;
                 // fr64DataArray = new Uint8Array(fr64Analyser.frequencyBinCount);
 
                 // source.connect(fr64Analyser);
@@ -343,9 +396,21 @@ export class AudioManager {
             });
     }
 
+    getFrequencyValue(frequency, dataSource) {
+        let nyquist = this.audioCtx.sampleRate / 2;
+        let index = Math.round(frequency / nyquist * dataSource.length);
+        return dataSource[index];
+    }
+
+
+
+
+
     analyzeData() {
         ////////////////////////////////////
         // get FREQUENCY data for this frame
+
+        // this.sampleCount++;
 
         this.frAnalyser.getByteFrequencyData(this.frDataArray);
         this.frAnalyserAll.getByteFrequencyData(this.frDataArrayAll);
@@ -360,13 +425,7 @@ export class AudioManager {
         this.fr8192Analyser.getByteFrequencyData(this.fr8192DataArray);
         this.fr16384Analyser.getByteFrequencyData(this.fr16384DataArray);
 
-        // // get highest and lowest FREQUENCY for this frame
-        // let frCurrentHigh = 0;
-        // let frCurrentLow = 255;
-        // this.frDataArray.forEach(f => {
-        //     if (f > frCurrentHigh) frCurrentHigh = f;
-        //     if (f < frCurrentLow) frCurrentLow = f;
-        // });
+
 
         // normalize the data   0..1
         this.frDataArrayNormalized = this.normalizeData(this.frDataArray);
@@ -390,27 +449,51 @@ export class AudioManager {
 
         }
 
+        // get highest,lowest and average FREQUENCIES for this frame
+        let frCurrentHigh = 0;
+        let frCurrentLow = 255;
+
+        this.sample1.forEach((f, i) => {
+            if (f > frCurrentHigh) frCurrentHigh = f;
+            if (f < frCurrentLow) frCurrentLow = f;
+
+            this.sample1Totals[i].values.push(f / 10); //  /255
+            if (this.sample1Totals[i].values.length > this.maxAverages) {
+                this.sample1Totals[i].values.shift()
+            };
+
+            let total = 0;
+            this.sample1Totals[i].values.forEach(v => {
+                total += v;
+            })
+            this.sample1Averages[i].value = total / this.sample1Totals[i].values.length;
+        });
+
         this.sample1Normalized = this.normalizeData(this.sample1);
+
+
+
+
 
         //////////////////////////////////////
         // get TIME DOMAIN data for this frame
 
         this.tdAnalyser.getByteTimeDomainData(this.tdDataArray);
 
-        // // get the highest for this frame
-        // let highest = 0;
-        // this.tdDataArray.forEach(d => {
-        //     if (d > highest) highest = d;
-        // });
+        // get the highest for this frame
+        let highest = 0;
+        this.tdDataArray.forEach(d => {
+            if (d > highest) highest = d;
+        });
 
         // normalize the data   0..1
         this.tdDataArrayNormalized = this.normalizeData(this.tdDataArray);
 
-        // // TODO: historical data for wave form       TODO:    TODO:
-        // this.tdHistory.push(highest);
-        // if (this.tdHistory.length > this.arraySize) {
-        //     this.tdHistory.shift();
-        // }
+        // TODO: historical data for wave form       TODO:    TODO:
+        this.tdHistory.push(highest);
+        if (this.tdHistory.length > this.tdHistoryArraySize) {
+            this.tdHistory.shift();
+        }
     }
 
     normalizeData(sourceData) {
@@ -421,9 +504,84 @@ export class AudioManager {
     unlockAudioContext(audioCtx) {
         if (audioCtx.state !== 'suspended') return;
         const b = document.body;
-        const events = ['touchstart','touchend', 'mousedown','keydown'];
+        const events = ['touchstart', 'touchend', 'mousedown', 'keydown'];
         events.forEach(e => b.addEventListener(e, unlock, false));
-        function unlock() { audioCtx.resume().then(clean); }
-        function clean() { events.forEach(e => b.removeEventListener(e, unlock)); }
-      }
+
+        function unlock() {
+            audioCtx.resume().then(clean);
+        }
+
+        function clean() {
+            events.forEach(e => b.removeEventListener(e, unlock));
+        }
+    }
+
+
+    clearSampleArrays() {
+        // this.sampleCount = 0;
+
+        for (let index = 0; index < 576; index++) {
+            this.sample1[index] = 0;
+            this.sample1Normalized[index] = 0;
+            this.sample1Totals[index] = {
+                index: index,
+                values: []
+            };
+            this.sample1Averages[index] = {
+                index: index,
+                values: []
+            };
+        }
+    }
+
+    // listTopBucketsold() {
+
+    //     // get the top bucket values
+    //     var clone = this.sample1Averages.slice(0);
+    //     var clone2 = [];
+
+    //     // ascending age
+    //     console.log("\nSort array clone by descending average\n")
+    //     clone.sort((a, b) => b.value - a.value);
+
+    //     for (let index = 0; index < 20; index++) {
+    //         clone2.push(clone[index]);
+    //     }
+
+    //     clone2.sort((a, b) => a.index - b.index);
+
+
+    //     clone2.forEach(b => {
+    //         console.log(b);
+    //     });
+    // }
+
+
+
+    getTopBuckets() {
+
+        let clone2 = [];
+        for (let index = 0; index < 9; index++) {
+
+            let clone = this.sample1Averages.slice(index * 64, index * 64 + 64);
+
+            clone.sort((a, b) => b.value - a.value);
+
+            for (let index = 0; index < 64; index++) {
+                clone2.push(clone[index]);
+            }
+
+        }
+
+        clone2.sort((a, b) => a.index - b.index);
+
+        // clone2.forEach(b => {
+        //     console.log(b);
+        // });
+
+        return clone2;
+
+    }
+
+
 }

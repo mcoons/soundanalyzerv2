@@ -18,8 +18,8 @@ export class Star extends BaseObject {
         this.innerSlices = 8;
         this.outerSlices = 8;
 
-        this.innerRadius = 15;
-        this.outerRadius = 16;
+        this.innerRadius = 90;
+        this.outerRadius = 95;
 
         this.xRotationDelta = 0;
         this.yRotationDelta = 0;
@@ -141,14 +141,14 @@ export class Star extends BaseObject {
     setOptions(p_innerStartIndex, p_outerStartIndex, p_innerSlices, p_outerSlices, p_innerRadius, p_outerRadius, p_resolution, p_reflect, p_xRotation, p_yRotation, p_zRotation) {
         // reset other things in here too like color, reset rotations
 
-        this.innerStartIndex = p_innerStartIndex ? p_innerStartIndex : this.innerStartIndex;
-        this.outerStartIndex = p_outerStartIndex ? p_outerStartIndex : this.outerStartIndex;
+        // this.innerStartIndex = p_innerStartIndex ? p_innerStartIndex : this.innerStartIndex;
+        // this.outerStartIndex = p_outerStartIndex ? p_outerStartIndex : this.outerStartIndex;
 
         this.innerSlices = p_innerSlices ? p_innerSlices : this.innerSlices;
         this.outerSlices = p_outerSlices ? p_outerSlices : this.outerSlices;
 
-        this.innerRadius = p_innerRadius ? p_innerRadius : this.innerRadius;
-        this.outerRadius = p_outerRadius ? p_outerRadius : this.outerRadius;
+        // this.innerRadius = p_innerRadius ? p_innerRadius : this.innerRadius;
+        // this.outerRadius = p_outerRadius ? p_outerRadius : this.outerRadius;
 
         this.resolution = p_resolution ? p_resolution : this.resolution;
 
