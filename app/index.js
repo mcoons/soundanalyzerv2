@@ -27,10 +27,10 @@ window.onload = function () {
     var options = {
         showBars: true,
         showTitle: true,
-        showWater: false,
-        showSky: false,
         showConsole: true,
-        showWaveform: true
+        showWaveform: true,
+        autoMode: false
+
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ window.onload = function () {
     //////////////////////////////////////////////////////////////////////
     // start the Audio Manager (audio loop using  setInterval of 0020 ms)
 
-    var audioManager = new AudioManager();
+    var audioManager = new AudioManager(options);
     window.audioManager = audioManager;
 
     //////////////////////////////////////////////////////////////////////
@@ -81,6 +81,12 @@ window.onload = function () {
         sceneManager.nextScene();
     });
 
+
+    if (options.autoMode)
+        setInterval(() => {
+            $('#visual_Btn').click();
+        }, 10000);
+
     // camera buttons
     $('td').bind("click", function () {
         sceneManager.scene.cameras[0].target = sceneManager.cameraPositions[this.id - 1].lookat;
@@ -96,6 +102,8 @@ window.onload = function () {
 
     // playlist elements - click
     $('.playlist li').click(function () {
+
+        audioManager.audio.pause();
 
         try {
             audioManager.streams.getTracks().forEach(function (track) {
@@ -135,6 +143,8 @@ window.onload = function () {
 
     // local file selection that is hidden
     fileInput.onchange = function () {
+
+        audioManager.audio.pause();
 
         try {
             audioManager.streams.getTracks().forEach(function (track) {
@@ -200,6 +210,7 @@ window.onload = function () {
             }
             audioManager.audio.src = URL.createObjectURL(audioManager.fileList[audioManager.localIndex]);
             audioManager.audio.load();
+
         } else {
             console.log("On ended of mic");
         }
@@ -207,8 +218,8 @@ window.onload = function () {
 
     // standard resize for 3D engine
     window.addEventListener('resize', function () {
-        sceneManager.engine.resize();
         fix_dpi();
+        sceneManager.engine.resize();
     });
 
     //get the canvas, canvas context, and dpi

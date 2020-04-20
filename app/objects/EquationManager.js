@@ -30,7 +30,7 @@ export class EquationManager {
     this.cameraMoveDir = .002;
   }
 
-  create() {
+ create() {
     this.sceneManager.scene.cameras[0].beta = .01;
 
     let radius = 200;
@@ -38,15 +38,15 @@ export class EquationManager {
     for (let theta = 0; theta < 2 * Math.PI; theta += Math.PI / 32) { // 512 items ---  256*2    128*4    64*8
 
 
-      // let thing = BABYLON.MeshBuilder.CreateBox(("box"), {
-      //   height: 20,
-      //   width: 20,
-      //   depth: 20
-      // }, this.scene);
-
-      let thing = BABYLON.MeshBuilder.CreateSphere(("sphere"), {
-        diameter: 20
+      let thing = BABYLON.MeshBuilder.CreateBox(("box"), {
+        height: 20,
+        width: 20,
+        depth: 20
       }, this.scene);
+
+      // let thing = BABYLON.MeshBuilder.CreateSphere(("sphere"), {
+      //   diameter: 20
+      // }, this.scene);
 
 
 
@@ -74,15 +74,15 @@ export class EquationManager {
       this.objects1.push(thing);
 
 
-      // let thing2 = BABYLON.MeshBuilder.CreateBox(("box"), {
-      //   height: 20,
-      //   width: 20,
-      //   depth: 20
-      // }, this.scene);
-
-      let thing2 = BABYLON.MeshBuilder.CreateSphere(("sphere"), {
-        diameter: 20
+      let thing2 = BABYLON.MeshBuilder.CreateBox(("box"), {
+        height: 20,
+        width: 20,
+        depth: 20
       }, this.scene);
+
+      // let thing2 = BABYLON.MeshBuilder.CreateSphere(("sphere"), {
+      //   diameter: 20
+      // }, this.scene);
 
       thing2.position.x = radius * Math.cos(theta + this.thetaDelta);
       thing2.position.z = radius * Math.sin(theta + this.thetaDelta);
@@ -108,15 +108,15 @@ export class EquationManager {
 
 
 
-      // let thing3 = BABYLON.MeshBuilder.CreateBox(("box"), {
-      //   height: 20,
-      //   width: 20,
-      //   depth: 20
-      // }, this.scene);
-
-      let thing3 = BABYLON.MeshBuilder.CreateSphere(("sphere"), {
-        diameter: 20
+      let thing3 = BABYLON.MeshBuilder.CreateBox(("box"), {
+        height: 20,
+        width: 20,
+        depth: 20
       }, this.scene);
+
+      // let thing3 = BABYLON.MeshBuilder.CreateSphere(("sphere"), {
+      //   diameter: 20
+      // }, this.scene);
 
       thing3.position.x = radius * Math.cos(theta + this.thetaDelta);
       thing3.position.z = radius * Math.sin(theta + this.thetaDelta);
@@ -144,15 +144,15 @@ export class EquationManager {
 
 
 
-      // let thing4 = BABYLON.MeshBuilder.CreateBox(("box"), {
-      //   height: 20,
-      //   width: 20,
-      //   depth: 20
-      // }, this.scene);
-
-      let thing4 = BABYLON.MeshBuilder.CreateSphere(("sphere"), {
-        diameter: 20
+      let thing4 = BABYLON.MeshBuilder.CreateBox(("box"), {
+        height: 20,
+        width: 20,
+        depth: 20
       }, this.scene);
+
+      // let thing4 = BABYLON.MeshBuilder.CreateSphere(("sphere"), {
+      //   diameter: 20
+      // }, this.scene);
 
       thing4.position.x = radius * Math.cos(theta + this.thetaDelta);
       thing4.position.z = radius * Math.sin(theta + this.thetaDelta);
@@ -180,15 +180,15 @@ export class EquationManager {
 
 
 
-      // let thing5 = BABYLON.MeshBuilder.CreateBox(("box"), {
-      //   height: 20,
-      //   width: 20,
-      //   depth: 20
-      // }, this.scene);
-
-      let thing5 = BABYLON.MeshBuilder.CreateSphere(("sphere"), {
-        diameter: 20
+      let thing5 = BABYLON.MeshBuilder.CreateBox(("box"), {
+        height: 20,
+        width: 20,
+        depth: 20
       }, this.scene);
+
+      // let thing5 = BABYLON.MeshBuilder.CreateSphere(("sphere"), {
+      //   diameter: 20
+      // }, this.scene);
 
       thing5.position.x = radius * Math.cos(theta + this.thetaDelta);
       thing5.position.z = radius * Math.sin(theta + this.thetaDelta);
@@ -218,15 +218,15 @@ export class EquationManager {
 
 
 
-      // let thing6 = BABYLON.MeshBuilder.CreateBox(("box"), {
-      //   height: 20,
-      //   width: 20,
-      //   depth: 20
-      // }, this.scene);
-
-      let thing6 = BABYLON.MeshBuilder.CreateSphere(("sphere"), {
-        diameter: 20
+      let thing6 = BABYLON.MeshBuilder.CreateBox(("box"), {
+        height: 20,
+        width: 20,
+        depth: 20
       }, this.scene);
+
+      // let thing6 = BABYLON.MeshBuilder.CreateSphere(("sphere"), {
+      //   diameter: 20
+      // }, this.scene);
 
       thing6.position.x = radius * Math.cos(theta + this.thetaDelta);
       thing6.position.z = radius * Math.sin(theta + this.thetaDelta);
@@ -256,15 +256,15 @@ export class EquationManager {
 
 
 
-      // let thing7 = BABYLON.MeshBuilder.CreateBox(("box"), {
-      //   height: 20,
-      //   width: 20,
-      //   depth: 20
-      // }, this.scene);
-
-      let thing7 = BABYLON.MeshBuilder.CreateSphere(("sphere"), {
-        diameter: 20
+      let thing7 = BABYLON.MeshBuilder.CreateBox(("box"), {
+        height: 20,
+        width: 20,
+        depth: 20
       }, this.scene);
+
+      // let thing7 = BABYLON.MeshBuilder.CreateSphere(("sphere"), {
+      //   diameter: 20
+      // }, this.scene);
 
       thing7.position.x = radius * Math.cos(theta + this.thetaDelta);
       thing7.position.z = radius * Math.sin(theta + this.thetaDelta);
@@ -294,15 +294,15 @@ export class EquationManager {
 
 
 
-      // let thing8 = BABYLON.MeshBuilder.CreateBox(("box"), {
-      //   height: 20,
-      //   width: 20,
-      //   depth: 20
-      // }, this.scene);
-
-      let thing8 = BABYLON.MeshBuilder.CreateSphere(("sphere"), {
-        diameter: 20
+      let thing8 = BABYLON.MeshBuilder.CreateBox(("box"), {
+        height: 20,
+        width: 20,
+        depth: 20
       }, this.scene);
+
+      // let thing8 = BABYLON.MeshBuilder.CreateSphere(("sphere"), {
+      //   diameter: 20
+      // }, this.scene);
 
       thing8.position.x = radius * Math.cos(theta + this.thetaDelta);
       thing8.position.z = radius * Math.sin(theta + this.thetaDelta);

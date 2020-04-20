@@ -26,6 +26,10 @@ import {
     EquationManager
 } from './objects/EquationManager.js';
 
+import {
+    CubeManager
+} from './objects/CubeManager.js';
+
 
 export class SceneManager {
 
@@ -97,20 +101,25 @@ export class SceneManager {
             BlockPlaneManager3,
             BlockSpiralManager,
             //            RippleManager, 
-            StarManager,
-            EquationManager
+            CubeManager,
+            EquationManager,
+            StarManager
         ];
 
         this.nextScene();
 
-        this.scene.registerBeforeRender(() => {
+        // this.scene.registerBeforeRender(() => {
+        //     // this.fix_dpi();
+        //     this.audioManager.analyzeData();
+
+        //     this.currentManager.update();
+        // });
+
+        this.engine.runRenderLoop(() => {
             this.fix_dpi();
             this.audioManager.analyzeData();
 
             this.currentManager.update();
-        });
-
-        this.engine.runRenderLoop(() => {
             this.scene.render();
         });
     } // end constructor

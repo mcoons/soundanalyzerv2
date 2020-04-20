@@ -1,13 +1,15 @@
 // the full domain extends from 0 to 22,050 Hz
 // frequencies are spread linearly from 0 to 1/2 of the sample rate
 // for 48000 sample rate, the last item of the array will represent the decibel value for 24000 Hz
-// minDecibels 0 dB is the loudest possible sound, default -100 dB
-// maxDecibels default value is -30 dB
+// minDecibels - 0 dB is the loudest possible sound, default min is -100 dB
+// maxDecibels - default value is -30 dB
 
 export class AudioManager {
 
 
-    constructor() {
+    constructor(options) {
+
+        this.options = options;
 
         this.fileInput = $("#fileInput")[0];
         this.audio = $("#audio")[0];
@@ -31,17 +33,17 @@ export class AudioManager {
 
         this.audio.addEventListener("durationchange", function () {
             //you can display the duration now
-            // console.log("Duration has changed");
+            console.log("Duration has changed");
         });
 
         this.audio.addEventListener("loadedmetadata", function () {
             //you can display the duration now
-            // console.log("Metadata has been loaded");
+            console.log("Metadata has been loaded");
         });
 
         this.audio.addEventListener("loadeddata", function () {
             //you could display the playhead now
-            // console.log("Data has been loaded");
+            console.log("Data has been loaded");
         });
 
         this.audio.addEventListener("progress", function () {
@@ -51,7 +53,7 @@ export class AudioManager {
 
         this.audio.addEventListener("canplay", function () {
             //audio is ready to play
-            // console.log("Media ready to be played");
+            console.log("Media ready to be played");
         });
 
         this.audio.addEventListener("canplaythrough", function () {
@@ -60,11 +62,11 @@ export class AudioManager {
         });
 
         this.audio.addEventListener("suspend", function () {
-            // console.log("Download has suspended");
+            console.log("Download has suspended");
         });
 
         this.audio.addEventListener("abort", function () {
-            // console.log("Download has aborted");
+            console.log("Download has aborted");
         });
 
         this.audio.addEventListener("error", function () {
@@ -72,11 +74,19 @@ export class AudioManager {
         });
 
         this.audio.addEventListener("emptied", function () {
-            // console.log("Media buffer has been emptied");
+            console.log("Media buffer has been emptied");
         });
 
-        this.audio.addEventListener("stalled", function () {
+        this.audio.addEventListener("stalled", function (e) {
             console.log("Download has stalled");
+            console.log(e);
+
+            // var audio = this;
+            // audio.load();
+    
+            // // Threw in these two lines for good measure.
+            // audio.play();
+            // audio.pause();
         });
 
         try {
@@ -172,7 +182,7 @@ export class AudioManager {
         this.fr8192Analyser.fftSize = 16384;
         this.fr8192Analyser.minDecibels = this.minDecibels;
         this.fr8192Analyser.maxDecibels = this.maxDecibels;
-        this.fr8192Analyser.smoothingTimeConstant = this.smoothingConstant;
+        this.fr8192Analyser.smoothingTimeConstant = this.smoothingConstant-.05;
         this.fr8192BufferLength = this.fr8192Analyser.frequencyBinCount;
         this.fr8192DataLength = this.fr8192BufferLength;
         this.fr8192DataArray = new Uint8Array(this.fr8192BufferLength);
@@ -183,7 +193,7 @@ export class AudioManager {
         this.fr16384Analyser.fftSize = 32768;
         this.fr16384Analyser.minDecibels = this.minDecibels;
         this.fr16384Analyser.maxDecibels = this.maxDecibels;
-        this.fr16384Analyser.smoothingTimeConstant = this.smoothingConstant;
+        this.fr16384Analyser.smoothingTimeConstant = this.smoothingConstant-.1;
         this.fr16384BufferLength = this.fr16384Analyser.frequencyBinCount;
         this.fr16384DataLength = this.fr16384BufferLength;
         this.fr16384DataArray = new Uint8Array(this.fr16384BufferLength);
@@ -301,7 +311,10 @@ export class AudioManager {
 
         let current = $('.playlist li:nth-child(' + this.siteIndex + ')');
 
-        title.innerHTML = current[0].innerHTML;
+        if (this.options.showTitle){
+            title.innerHTML = current[0].innerHTML;
+        }
+
         this.initAudio($(current));
 
         // setInterval(() => {
@@ -316,10 +329,20 @@ export class AudioManager {
         var url = elem.attr('audiourl');
 
         this.audio.src = "app/assets/tracks/" + url;
-        this.audio.load();
+        // this.unlockAudioContext(this.audioCtx);
+        this.audio.load()
+        
+        this.audio.play()            
+        .then(function () {
+            console.log("Audio Successfully Playing");
+        })
+        .catch(function () {
+            console.log("Audio Failed Playing");
+        });
 
         $('.playlist li').removeClass('active');
         elem.addClass('active');
+
     }
 
     initMic() {
@@ -533,29 +556,6 @@ export class AudioManager {
             };
         }
     }
-
-    // listTopBucketsold() {
-
-    //     // get the top bucket values
-    //     var clone = this.sample1Averages.slice(0);
-    //     var clone2 = [];
-
-    //     // ascending age
-    //     console.log("\nSort array clone by descending average\n")
-    //     clone.sort((a, b) => b.value - a.value);
-
-    //     for (let index = 0; index < 20; index++) {
-    //         clone2.push(clone[index]);
-    //     }
-
-    //     clone2.sort((a, b) => a.index - b.index);
-
-
-    //     clone2.forEach(b => {
-    //         console.log(b);
-    //     });
-    // }
-
 
 
     getTopBuckets() {

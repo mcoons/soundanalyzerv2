@@ -377,7 +377,7 @@ export class StarManager {
                 rad,
                 rad + 1,
 
-                256,
+                this.pieResolution,
 
                 null,
 
