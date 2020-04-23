@@ -28,6 +28,11 @@ export class EquationManager {
     this.thetaDelta = 0;
 
     this.cameraMoveDir = .002;
+
+    this.sceneManager.scene.cameras[0].target = new BABYLON.Vector3(0, 0, 0);
+    this.sceneManager.scene.cameras[0].alpha = 4.72;
+    this.sceneManager.scene.cameras[0].beta = .01;
+    this.sceneManager.scene.cameras[0].radius = 1050;
   }
 
  create() {

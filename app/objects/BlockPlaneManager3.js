@@ -12,6 +12,11 @@ export class BlockPlaneManager3 {
         this.master.scaling.x = .7;
         this.master.scaling.y = .7;
         this.master.scaling.z = .7;
+
+        this.sceneManager.scene.cameras[0].target = new BABYLON.Vector3(0, 0, 0);
+        this.sceneManager.scene.cameras[0].alpha = 4.72;
+        this.sceneManager.scene.cameras[0].beta = 1.00;
+        this.sceneManager.scene.cameras[0].radius = 1100;
     }
 
     create() {

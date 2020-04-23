@@ -17,18 +17,23 @@ export class CubeManager {
         this.thetaDelta = 0;
 
         this.cameraMoveDir = .002;
+
+        this.sceneManager.scene.cameras[0].target = new BABYLON.Vector3(0, -40, 0);
+        this.sceneManager.scene.cameras[0].alpha = Math.PI/2;
+        this.sceneManager.scene.cameras[0].beta = Math.PI/2;
+        this.sceneManager.scene.cameras[0].radius = 650;
     }
 
     create() {
         let width = 30;
         let depth = 30;
 
-        this.sceneManager.scene.cameras[0].beta = Math.PI/2;
-        this.sceneManager.scene.cameras[0].alpha = Math.PI/2;
-        this.sceneManager.scene.cameras[0].radius = 850;
+        // this.sceneManager.scene.cameras[0].beta = Math.PI/2;
+        // this.sceneManager.scene.cameras[0].alpha = Math.PI/2;
+        // this.sceneManager.scene.cameras[0].radius = 850;
 
-        for (let y = 0; y <= 7; y++) { // 9 * 64 = 576
-            for (let x = 0; x <= 7; x++) { // 9 * 64 = 576
+        for (let y = 0; y <= 6; y++) { // 9 * 64 = 576
+            for (let x = 0; x <= 9; x++) { // 9 * 64 = 576
                 for (let z = 0; z <= 7; z++) {
                     console.log('creating');
 
@@ -42,8 +47,8 @@ export class CubeManager {
                     //     diameter: 20
                     // }, this.scene);
 
-                    thing.position.x = (x - 3.5) * 80;  // 80
-                    thing.position.y = (y - 3.5) * 80;  // 80
+                    thing.position.x = (x - 4.5) * 80;  // 80
+                    thing.position.y = (y - 3) * 80;  // 80
                     thing.position.z = (z - 3.5) * 80;  // 80
 
                     thing.parent = this.master;
@@ -97,22 +102,24 @@ export class CubeManager {
 
         // console.log("updating");
         this.objects.forEach((o, i) => {
-            let yy = this.audioManager.sample1[i]*1.05;
-            yy = (yy / 200 * yy / 200) * 300;
 
-            o.scaling.x = yy / 120 + .02;
-            o.scaling.y = yy / 120 + .02;
-            o.scaling.z = yy / 120 + .02;
+            let yy = this.audioManager.sample1[i]*1.05;
+            // yy = (yy / 200 * yy / 200) * 300;
+
+            o.scaling.x = yy / 160;//  + .01;
+            o.scaling.y = yy / 160;//  + .01;
+            o.scaling.z = yy / 160;//  + .01;
 
             let r =  128-yy; // * .8;
-            let b = yy*2;
+            let b = yy;
             let g = 128 - yy;
 
             o.material.diffuseColor.r = r / 255;
             o.material.diffuseColor.g = g / 255;
             o.material.diffuseColor.b = b / 255;
 
-            o.material.alpha = ( (yy / 255) * (yy / 255) )    + .01;
+            o.material.alpha = ( (yy / 255) * (yy / 255) ) ;//  + .01;//   - .05;
+            // o.material.alpha = yy/255 > .25 ? 1 : 0;
             // console.log('updating');
 
         })

@@ -121,7 +121,7 @@ export class OverlayManager {
 
     draw2DBars() {
 
-let dataSource = this.audioManager.sample1;
+        let dataSource = this.audioManager.sample1;
 
         let WIDTH = this.canvas2D.width;
         let HEIGHT = this.canvas2D.height;

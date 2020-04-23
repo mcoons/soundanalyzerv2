@@ -64,34 +64,34 @@ export class SceneManager {
 
         // define preset camera positions
         this.cameraPositions = [{
-                lookat: new BABYLON.Vector3(-200, 0, 100),
+                lookat: new BABYLON.Vector3(-150, 0, 75),
                 alpha: -Math.PI / 2,
                 beta: 0.01,
-                radius: 250
+                radius: 200
             },
             {
-                lookat: new BABYLON.Vector3(200, 0, 100),
+                lookat: new BABYLON.Vector3(150, 0, 75),
                 alpha: -Math.PI / 2,
                 beta: 0.01,
-                radius: 250
+                radius: 200
             },
             {
                 lookat: new BABYLON.Vector3(0, 0, 0),
-                alpha: 4.711,
-                beta: 1.096,
-                radius: 1300
+                alpha: 4.72,
+                beta: .01,
+                radius: 460
             },
             {
-                lookat: new BABYLON.Vector3(-200, 0, -100),
+                lookat: new BABYLON.Vector3(-150, 0, -75),
                 alpha: -Math.PI / 2,
                 beta: .01,
-                radius: 250
+                radius: 200
             },
             {
-                lookat: new BABYLON.Vector3(200, 0, -100),
+                lookat: new BABYLON.Vector3(150, 0, -75),
                 alpha: -Math.PI / 2,
                 beta: 0.01,
-                radius: 250
+                radius: 200
             },
         ];
         // this.clock = new Clock(this.scene);
@@ -128,7 +128,7 @@ export class SceneManager {
         // create a basic BJS Scene object
         let scene = new BABYLON.Scene(this.engine);
         scene.clearColor = BABYLON.Color3.Black();
-        scene.ambientColor = new BABYLON.Color3(1.4, 1.3, 1.5);
+        scene.ambientColor = new BABYLON.Color3(.8, .8, .8);
 
         this.glowLayer = new BABYLON.GlowLayer("glow", scene);
         this.glowLayer.intensity = 3.5;
@@ -143,7 +143,7 @@ export class SceneManager {
         light.intensity = 1.5;
 
         var pointLight1 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(500, 500, -600), scene);
-        // pointLight1.intensity = 1.8;
+        pointLight1.intensity = .8;
 
         var pointLight2 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(-500, -500, 600), scene);
         // pointLight2.intensity = 1.3;
@@ -152,7 +152,8 @@ export class SceneManager {
         // pointLight3.intensity = 1.8;
 
         var pointLight4 = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(500, 480, -280), scene);
-        // pointLight4.intensity = 1.0;
+        pointLight4.intensity = .5;
+        // pointLight1 = new BABYLON.Color3(1,0,0);
 
         return scene;
     }
@@ -183,7 +184,7 @@ export class SceneManager {
             canvas3D = document.getElementById('canvas3D'),
             dpi = window.devicePixelRatio || 1;
 
-        //create a style object that returns width and height
+        //create a 2D style object that returns width and height
         let style2D = {
             height() {
                 return +getComputedStyle(canvas2D).getPropertyValue('height').slice(0, -2);

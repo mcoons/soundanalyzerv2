@@ -25,7 +25,7 @@ export class StarManager {
         this.sceneManager.scene.cameras[0].target = new BABYLON.Vector3(0, 0, 0);
         this.sceneManager.scene.cameras[0].alpha = 4.72;
         this.sceneManager.scene.cameras[0].beta = .01;
-        this.sceneManager.scene.cameras[0].radius = 682;
+        this.sceneManager.scene.cameras[0].radius = 460;
 
         $("#cameraTarget").removeClass("hidden");
 
@@ -51,7 +51,7 @@ export class StarManager {
             }, starMaster,
             this.audioManager.soundArrays[1]);
 
-        starMaster.position = new BABYLON.Vector3(-300, 0, 100);
+        starMaster.position = new BABYLON.Vector3(-225, 0, 75);
         starMaster.parent = this.masterTransform;
         starMaster.scaling.x = .3;
         starMaster.scaling.y = .3;
@@ -75,7 +75,7 @@ export class StarManager {
             }, starMaster,
             this.audioManager.soundArrays[2]);
 
-        starMaster.position = new BABYLON.Vector3(-100, 0, 100);
+        starMaster.position = new BABYLON.Vector3(-75, 0, 75);
         starMaster.parent = this.masterTransform;
         starMaster.scaling.x = .3;
         starMaster.scaling.y = .3;
@@ -100,7 +100,7 @@ export class StarManager {
             }, starMaster,
             this.audioManager.soundArrays[3]);
 
-        starMaster.position = new BABYLON.Vector3(100, 0, 100);
+        starMaster.position = new BABYLON.Vector3(75, 0, 75);
         starMaster.parent = this.masterTransform;
         starMaster.scaling.x = .3;
         starMaster.scaling.y = .3;
@@ -125,7 +125,7 @@ export class StarManager {
             }, starMaster,
             this.audioManager.soundArrays[4]);
 
-        starMaster.position = new BABYLON.Vector3(300, 0, 100);
+        starMaster.position = new BABYLON.Vector3(225, 0, 75);
         starMaster.parent = this.masterTransform;
         starMaster.scaling.x = .3;
         starMaster.scaling.y = .3;
@@ -150,7 +150,7 @@ export class StarManager {
             }, starMaster,
             this.audioManager.soundArrays[5]);
 
-        starMaster.position = new BABYLON.Vector3(-300, 0, -100);
+        starMaster.position = new BABYLON.Vector3(-225, 0, -75);
         starMaster.parent = this.masterTransform;
         starMaster.scaling.x = .3;
         starMaster.scaling.y = .3;
@@ -175,7 +175,7 @@ export class StarManager {
             }, starMaster,
             this.audioManager.soundArrays[6]);
 
-        starMaster.position = new BABYLON.Vector3(-100, 0, -100);
+        starMaster.position = new BABYLON.Vector3(-75, 0, -75);
         starMaster.parent = this.masterTransform;
         starMaster.scaling.x = .33;
         starMaster.scaling.y = .33;
@@ -200,7 +200,7 @@ export class StarManager {
             }, starMaster,
             this.audioManager.soundArrays[7]);
 
-        starMaster.position = new BABYLON.Vector3(100, 0, -100);
+        starMaster.position = new BABYLON.Vector3(75, 0, -75);
         starMaster.parent = this.masterTransform;
         starMaster.scaling.x = .35;
         starMaster.scaling.y = .35;
@@ -225,7 +225,7 @@ export class StarManager {
             }, starMaster,
             this.audioManager.soundArrays[8]);
 
-        starMaster.position = new BABYLON.Vector3(300, 0, -100);
+        starMaster.position = new BABYLON.Vector3(225, 0, -75);
         starMaster.parent = this.masterTransform;
         starMaster.scaling.x = .3;
         starMaster.scaling.y = .3;

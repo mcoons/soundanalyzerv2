@@ -19,7 +19,7 @@ export class AudioManager {
 
         this.audio.volume = .7;
         this.smoothingConstant = .9;
-        this.maxAverages = 100;
+        this.maxAverages = 50;
         this.minDecibels = -100;  // -100
         this.maxDecibels = 0;   // -30 
         this.tdHistoryArraySize = 64;  // 4096
