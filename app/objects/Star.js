@@ -28,6 +28,7 @@ export class Star extends BaseObject {
         this.innerPath = [];
         this.outerPath = [];
 
+        // oscillates for the up/down of data points on each pie slice
         this.innerIndexDirection = -1;
         this.outerIndexDirection = -1;
 

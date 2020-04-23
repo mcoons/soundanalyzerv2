@@ -79,7 +79,7 @@ export class OverlayManager {
         ctx.beginPath();
         for (let i = 0; i < width; i++) {
             let minPixel = drawData[i] * .5;
-            ctx.lineTo(i, minPixel);
+            ctx.lineTo(i, minPixel+60);
         }
 
         ctx.strokeStyle = 'white';
@@ -121,7 +121,7 @@ export class OverlayManager {
 
     draw2DBars() {
 
-let dataSource = this.audioManager.sample1;
+        let dataSource = this.audioManager.sample1;
 
         let WIDTH = this.canvas2D.width;
         let HEIGHT = this.canvas2D.height;

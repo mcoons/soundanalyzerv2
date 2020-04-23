@@ -143,3 +143,30 @@ $( "#myDiv" ).data( "keyName", { foo: "bar" } );
  
 $( "#myDiv" ).data( "keyName" ); // Returns { foo: "bar" }
  */
+
+
+
+
+
+ Angular implementation
+
+ Main Components
+
+ app-root - includes HTML
+
+    title
+    console
+    buttons
+        siteMusicBtn
+        localFileBtn
+        changeVisualBtn
+    optionsAccordian - right side
+    audioElement
+
+    canvas2D
+        soundWave
+        eqBars
+        eqAve
+
+    canvas3D
+        managers

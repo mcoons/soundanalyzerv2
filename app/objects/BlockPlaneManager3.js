@@ -1,5 +1,6 @@
 export class BlockPlaneManager3 {
 
+    
     constructor(sceneManager, eventBus, audioManager) {
         this.sceneManager = sceneManager;
         this.scene = this.sceneManager.scene;
@@ -11,6 +12,11 @@ export class BlockPlaneManager3 {
         this.master.scaling.x = .7;
         this.master.scaling.y = .7;
         this.master.scaling.z = .7;
+
+        this.sceneManager.scene.cameras[0].target = new BABYLON.Vector3(0, 0, 0);
+        this.sceneManager.scene.cameras[0].alpha = 4.72;
+        this.sceneManager.scene.cameras[0].beta = 1.00;
+        this.sceneManager.scene.cameras[0].radius = 1100;
     }
 
     create() {
@@ -25,7 +31,7 @@ export class BlockPlaneManager3 {
                     depth: depth
                 }, this.scene);
 
-                thing.position.x = (x - 32) * 30;
+                thing.position.x = (x - 31.5) * 30;
                 thing.position.z = (z - 5) * 60;
                 thing.position.y = 0;
 
@@ -54,12 +60,14 @@ export class BlockPlaneManager3 {
     update() {
         this.objects.forEach((o, i) => {
             let yy = this.audioManager.sample1[i];
-            yy = (yy / 255 * yy / 255) * 255;
-            o.scaling.y = yy / 2 + .01;
+            yy = (yy / 200 * yy / 200) * 255;
+            // yy = (yy / 255 * yy / 255) * 255;
+            // yy = (yy / 64 * yy / 64) * 32;
+            o.scaling.y = yy*.5  + .01;
 
-            let r = yy * .8;
-            let b = 200 - yy * 1.5;
-            let g = 128 - yy / 2;
+            let r = yy;// * .8;
+            let b = 200 - yy * 2;
+            let g = 128 - yy/2 ;
 
             o.position.y = o.scaling.y / 2;
 

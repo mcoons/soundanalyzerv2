@@ -19,6 +19,11 @@ export class BlockSpiralManager {
     this.wheel1Master.scaling.y = 4;
     this.wheel1Master.scaling.z = 4;
 
+    this.sceneManager.scene.cameras[0].target = new BABYLON.Vector3(0, -50, 0);
+    this.sceneManager.scene.cameras[0].alpha = 4.72;
+    this.sceneManager.scene.cameras[0].beta = 1.00;
+    this.sceneManager.scene.cameras[0].radius = 1000;
+
   }
 
   create() {
