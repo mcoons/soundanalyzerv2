@@ -95,29 +95,6 @@ export class OverlayManager {
         logToScreen(outputString);
     }
 
-    // draw2DBars() {
-    //     let WIDTH = this.canvas2D.width;
-    //     let HEIGHT = this.canvas2D.height;
-    //     let barWidth = (WIDTH / (this.audioManager.fr512DataLength - 80));
-
-    //     this.ctx2D.clearRect(0, 0, WIDTH, HEIGHT);
-
-    //     let x = 0;
-
-    //     for (var i = 0; i < this.audioManager.fr512BufferLength - 80; i++) {
-    //         let barHeight = this.audioManager.fr512DataArray[i] * 1 + 1;
-
-    //         var r = barHeight;
-    //         var g = 255 * i / this.audioManager.fr512DataLength;
-    //         var b = 255 - 128 * i / (this.audioManager.fr512DataLength - 80);
-
-    //         this.ctx2D.fillStyle = "rgba(" + r + "," + g + "," + b + ",.7)";
-    //         this.ctx2D.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
-
-    //         x += barWidth + 1;
-    //     }
-    // }
-
 
     draw2DBars() {
 
@@ -132,7 +109,6 @@ export class OverlayManager {
         let x = 0;
 
         for (var i = 0; i < dataSource.length; i++) { // -80
-            // let barHeight = dataSource[i] * 1 + 1;
             let barHeight = dataSource[i] * .5 + 1;
 
             var r = barHeight * 2 - 1;
@@ -147,12 +123,6 @@ export class OverlayManager {
 
         // draw frequency averages
         let topBuckets = this.audioManager.getTopBuckets();
-
-        // this.ctx2D.fillStyle = "rgba(255,255,255,.7)";
-        // topBuckets.forEach(b => {
-        //     this.ctx2D.fillRect(barWidth * b.index, HEIGHT - (30 + 5 * b.value), barWidth, barWidth);
-        // });
-
 
         this.ctx2D.beginPath(); // Start a new path
         this.ctx2D.strokeStyle = "rgba(255,255,255,.7)";

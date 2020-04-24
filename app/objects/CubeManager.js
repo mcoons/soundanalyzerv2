@@ -28,10 +28,6 @@ export class CubeManager {
         let width = 30;
         let depth = 30;
 
-        // this.sceneManager.scene.cameras[0].beta = Math.PI/2;
-        // this.sceneManager.scene.cameras[0].alpha = Math.PI/2;
-        // this.sceneManager.scene.cameras[0].radius = 850;
-
         for (let y = 0; y <= 6; y++) { // 9 * 64 = 576
             for (let x = 0; x <= 9; x++) { // 9 * 64 = 576
                 for (let z = 0; z <= 7; z++) {
@@ -136,15 +132,3 @@ export class CubeManager {
 }
 
 
-//                 32                 +               32                       64 wide         32-63 of 64
-//         32      +       32         +        32      +       32              32 wide         32-63 of 128
-//     32  +   32  +   32  +   32     +    32  +   32  +   32  +   32          16 wide         32-63 of 256
-//   32+32 + 32+32 + 32+32 + 32+32    +  32+32 + 32+32 + 32+32 + 32+32          8 wide         32-63 of 512
-//                                                                              4 wide         32-63 of 1024
-//                                                                              2 wide         32-63 of 2048
-//                                                                              1 wide         32-63 of 4096
-//                                                                             .5 wide          0-63 of 8192
-
-//                                                                             32*9  =  288
-
-//                                                                             0-287 objects

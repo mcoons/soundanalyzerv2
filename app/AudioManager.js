@@ -97,7 +97,7 @@ export class AudioManager {
             alert('Web Audio API is not supported in this browser');
         }
 
-        this.unlockAudioContext(this.audioCtx);
+        // this.unlockAudioContext(this.audioCtx);
 
         this.audioSrc = this.audioCtx.createMediaElementSource(this.audio); /* <<<<<<<<<<<<<<<<<<< */
 
@@ -272,21 +272,6 @@ export class AudioManager {
         ];
 
 
-        // this.audioSrc.connect(this.fr64Analyser);
-        // this.fr64Analyser.connect(this.fr128Analyser);
-        // this.fr128Analyser.connect(this.fr256Analyser);
-        // this.fr256Analyser.connect(this.fr512Analyser);
-        // this.fr512Analyser.connect(this.fr1024Analyser);
-        // this.fr1024Analyser.connect(this.fr2048Analyser);
-        // this.fr2048Analyser.connect(this.fr4096Analyser);
-        // this.fr4096Analyser.connect(this.fr8192Analyser);
-        // this.fr8192Analyser.connect(this.fr16384Analyser);
-        // this.fr16384Analyser.connect(this.frAnalyser);
-        // this.frAnalyser.connect(this.frAnalyserAll);
-        // this.frAnalyserAll.connect(this.tdAnalyser);
-        // this.tdAnalyser.connect(this.audioCtx.destination);
-
-
         this.audioSrc.connect(this.fr16384Analyser);
         this.fr16384Analyser.connect(this.fr8192Analyser);
         this.fr8192Analyser.connect(this.fr4096Analyser);
@@ -315,11 +300,9 @@ export class AudioManager {
             title.innerHTML = current[0].innerHTML;
         }
 
-        this.initAudio($(current));
+        this.unlockAudioContext(this.audioCtx);
 
-        // setInterval(() => {
-        //     this.analyzeData();
-        // }, 60);
+        setTimeout(this.initAudio($(current)), 5000);
 
     }
 
@@ -329,7 +312,6 @@ export class AudioManager {
         var url = elem.attr('audiourl');
 
         this.audio.src = "app/assets/tracks/" + url;
-        // this.unlockAudioContext(this.audioCtx);
         this.audio.load()
         
         this.audio.play()            
@@ -433,8 +415,6 @@ export class AudioManager {
         ////////////////////////////////////
         // get FREQUENCY data for this frame
 
-        // this.sampleCount++;
-
         this.frAnalyser.getByteFrequencyData(this.frDataArray);
         this.frAnalyserAll.getByteFrequencyData(this.frDataArrayAll);
 
@@ -525,10 +505,34 @@ export class AudioManager {
     }
 
     unlockAudioContext(audioCtx) {
-        if (audioCtx.state !== 'suspended') return;
+        console.log("entering unlock");
+
+        this.audio.src = "app/nothing.wav";
+        this.audio.load();
+        this.audio.play()            
+        .then(function () {
+            console.log("Audio Successfully Playing in unlock");
+        })
+        .catch(function (error) {
+            console.log("Audio Failed Playing in unlock");
+            console.log(error);
+        });
+
+        if (audioCtx.state !== 'suspended'){
+
+            console.log("Audio ! suspended in unlock");
+            this.audio.pause()
+            this.audio.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAVFYAAFRWAAABAAgAZGF0YQAAAAA=';            return;
+        } 
+
+        console.log("Audio is suspended in unlock");
+
         const b = document.body;
         const events = ['touchstart', 'touchend', 'mousedown', 'keydown'];
         events.forEach(e => b.addEventListener(e, unlock, false));
+
+        this.audio.pause()
+        this.audio.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAVFYAAFRWAAABAAgAZGF0YQAAAAA=';            return;
 
         function unlock() {
             audioCtx.resume().then(clean);
@@ -585,3 +589,16 @@ export class AudioManager {
 
 
 }
+
+//                 32                 +               32                       64 wide         32-63 of 64
+//         32      +       32         +        32      +       32              32 wide         32-63 of 128
+//     32  +   32  +   32  +   32     +    32  +   32  +   32  +   32          16 wide         32-63 of 256
+//   32+32 + 32+32 + 32+32 + 32+32    +  32+32 + 32+32 + 32+32 + 32+32          8 wide         32-63 of 512
+//                                                                              4 wide         32-63 of 1024
+//                                                                              2 wide         32-63 of 2048
+//                                                                              1 wide         32-63 of 4096
+//                                                                             .5 wide          0-63 of 8192
+
+//                                                                             32*9  =  288
+
+//                                                                             0-287 objects
