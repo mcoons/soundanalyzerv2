@@ -108,13 +108,6 @@ export class SceneManager {
 
         this.nextScene();
 
-        // this.scene.registerBeforeRender(() => {
-        //     // this.fix_dpi();
-        //     this.audioManager.analyzeData();
-
-        //     this.currentManager.update();
-        // });
-
         this.engine.runRenderLoop(() => {
             this.fix_dpi();
             this.audioManager.analyzeData();
